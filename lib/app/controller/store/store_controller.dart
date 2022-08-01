@@ -379,7 +379,7 @@ class StoreController extends GetxController with GetTickerProviderStateMixin {
           .dio(requestModel: orderAddRequestModel)
           .then((value) {
         if (value.status == "success") {
-          print("성공!");
+          print("성공!!");
         } else {
           print("else");
         }
