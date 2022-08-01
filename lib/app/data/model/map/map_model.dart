@@ -1,26 +1,25 @@
 import 'package:intl/intl.dart';
 
 // delivery
-class RoomBaseResponseModel {
+class RoomsBaseResponseModel {
   late String? status;
   late List<RoomResponseModel> rooms = <RoomResponseModel>[];
   late List<Map<String, dynamic>> roomsMap = <Map<String, dynamic>>[];
 
-  RoomBaseResponseModel.fromJson(Map<String, dynamic> data) {
+  RoomsBaseResponseModel.fromJson(Map<String, dynamic> data) {
     status = data["status"];
-    data["message"]["room"]
-        .map((e) => rooms.add(RoomResponseModel.fromJson(e)))
-        .toList();
+    // data["message"]["room"]
+    //     .map((e) => rooms.add(RoomResponseModel.fromJson(e)))
+    //     .toList();
 
     data["message"]["room"].map((e) => roomsMap.add(e)).toList();
-    // roomsMap = data["message"]["room"];
   }
 }
 
 class RoomResponseModel {
   late int idx;
-  late int userIdx;
-  late String userName;
+  late int memIdx;
+  late String memName;
   late int storeIdx;
   late String storeName;
   late String address;
@@ -35,8 +34,8 @@ class RoomResponseModel {
 
   RoomResponseModel({
     required this.idx,
-    required this.userIdx,
-    required this.userName,
+    required this.memIdx,
+    required this.memName,
     required this.storeIdx,
     required this.storeName,
     required this.address,
@@ -53,8 +52,8 @@ class RoomResponseModel {
   factory RoomResponseModel.fromJson(Map<String, dynamic> data) {
     return RoomResponseModel(
       idx: data['idx'],
-      userIdx: data['user_idx'],
-      userName: data['user_name'],
+      memIdx: data['mem_idx'],
+      memName: data['mem_name'],
       storeIdx: data['store_idx'],
       storeName: data['store_name'],
       address: data['address'],
@@ -69,35 +68,3 @@ class RoomResponseModel {
     );
   }
 }
-
-// class StoreBaseResponseModel {
-//   late String? status;
-//   late List<StoreResponseModel> stores = <StoreResponseModel>[];
-
-//   StoreBaseResponseModel.fromJson(Map<String, dynamic> data) {
-//     status = data["status"];
-//     data["message"]["store"]
-//         .map((e) => stores.add(StoreResponseModel.fromJson(e)))
-//         .toList();
-//   }
-// }
-
-// class StoreResponseModel {
-//   late int idx;
-//   late int categoryIdx;
-//   late String name;
-
-//   StoreResponseModel({
-//     required this.idx,
-//     required this.categoryIdx,
-//     required this.name,
-//   });
-
-//   factory StoreResponseModel.fromJson(Map<String, dynamic> data) {
-//     return StoreResponseModel(
-//       idx: data['idx'],
-//       categoryIdx: data['category_idx'],
-//       name: data['name'],
-//     );
-//   }
-// }

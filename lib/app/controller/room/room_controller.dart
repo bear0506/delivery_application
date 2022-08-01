@@ -5,10 +5,51 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import 'package:delivery_service/main.dart';
+
+import 'package:delivery_service/app/data/provider/room/room_provider.dart';
+import 'package:delivery_service/app/data/model/room/room_model.dart';
+
+import 'package:delivery_service/app/controller/map/map_controller.dart';
+
+enum Sort {
+  popularity,
+  newOrder,
+  quickTimeOrder,
+  delieveryCostMuch,
+  delieveryCostLess,
+  numberOfPeople,
+}
+
 class RoomController extends GetxController {
   late BuildContext context;
 
+  Rx<Sort> sort = Sort.popularity.obs;
+
+  late RxList<RoomResponseModel> rooms = <RoomResponseModel>[].obs;
+  late RxList<RoomResponseModel> roomsInStore = <RoomResponseModel>[].obs;
+  late Rx<RoomResponseModel> room = RoomResponseModel(
+    idx: 0,
+    memIdx: 0,
+    memName: "",
+    storeIdx: 0,
+    storeName: "",
+    address: "",
+    lat: "",
+    lng: "",
+    timeLimit: "",
+    currentNum: 0,
+    maximumNum: 0,
+    deliveryTime: "",
+    deliveryFee: 0,
+    active: false,
+  ).obs;
+
   Rx<ScrollController> scrollController = ScrollController().obs;
+  Rx<ScrollController> scrollController2 = ScrollController().obs;
+
+  late Rx<dynamic> storeIdx;
+  late Rx<dynamic> roomIdx;
 
   RxInt count = 0.obs;
 
@@ -67,9 +108,86 @@ class RoomController extends GetxController {
     extentRatio.value = currentExtent.value / maxExtent.value;
   }
 
+  // 전체 조회
+  Future<void> handleRoomAllProvider() async {
+    try {
+      await RoomAllProvider().dio().then((value) {
+        if (value.status == "success") {
+          rooms.addAll(value.rooms);
+          rooms.refresh();
+        } else {
+          print("else");
+        }
+      });
+    } catch (e) {
+      logger.d(e);
+    } finally {
+      Future.delayed(
+          const Duration(milliseconds: 500),
+          // ignore: avoid_print
+          () {});
+    }
+  }
+
+  // 특정 가게 방 조회
+  Future<void> handleRoomsInStoreProvider() async {
+    roomsInStore.clear();
+
+    storeIdx = Get.parameters["storeIdx"].obs;
+
+    try {
+      await RoomsInStoreProvider()
+          .dio(storeIdx: int.parse(storeIdx.value))
+          .then((value) {
+        if (value.status == "success") {
+          print("방 조회 성공!");
+
+          roomsInStore.addAll(value.rooms);
+          roomsInStore.refresh();
+        } else {
+          print("else");
+        }
+      });
+    } catch (e) {
+      logger.d(e);
+    } finally {
+      Future.delayed(
+          const Duration(milliseconds: 500),
+          // ignore: avoid_print
+          () {});
+    }
+  }
+
+  // 특정 방 조회
+  Future<void> handleRoomProvider() async {
+    roomIdx = Get.parameters["roomIdx"].obs;
+
+    try {
+      await RoomInitProvider()
+          .dio(roomIdx: int.parse(roomIdx.value))
+          .then((value) {
+        if (value.status == "success") {
+          room.value = value.room;
+          room.refresh();
+        } else {
+          print("fail");
+        }
+      });
+    } catch (e) {
+      logger.d(e);
+    } finally {
+      Future.delayed(
+          const Duration(milliseconds: 500),
+          // ignore: avoid_print
+          () {});
+    }
+  }
+
   @override
   // ignore: unnecessary_overrides
-  void onInit() {
+  void onInit() async {
+    await handleRoomAllProvider();
+
     scrollController.value.addListener(getCurrentExtent);
     scrollController.value.addListener(isSliverAppBarExpanded);
 

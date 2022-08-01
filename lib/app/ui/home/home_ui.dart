@@ -1,4 +1,6 @@
+import 'package:delivery_service/app/controller/main/main_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'dart:math';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -12,56 +14,36 @@ import 'package:delivery_service/common/my_flutter_app_icons.dart';
 import 'package:delivery_service/app/ui/map/map_ui.dart';
 import 'package:delivery_service/app/ui/list/list_ui.dart';
 
+import 'package:kpostal/kpostal.dart';
+import 'package:step_progress_indicator/step_progress_indicator.dart';
+
 const navBarHeight = 10.0;
 
 class HomeUi extends GetView<HomeController> {
   HomeUi({Key? key}) : super(key: key);
 
-  final HomeController _homeController = Get.put(HomeController());
+  // final HomeController _homeController = Get.put(HomeController());
 
   @override
   Widget build(BuildContext context) {
-    return Obx(
-      () => Scaffold(
-        extendBodyBehindAppBar: true,
-        extendBody: true,
-        drawer: const DrawerWidget(),
-        appBar: const AppbarWidget(),
-        body: Stack(
-          alignment: Alignment.center,
-          children: <Widget>[
-            MapUi(),
-            Positioned(
-              right: 50.w,
-              bottom: 80.h,
-              child: SpeedDialWidget(),
-            ),
-            Visibility(
-              visible: _homeController.modalVisibility.value,
-              child: Positioned(
-                top: 430.h + MediaQuery.of(context).padding.top,
-                child: Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.black,
-                    borderRadius: BorderRadius.all(Radius.circular(15)),
-                  ),
-                  width: 1350.w,
-                  height: 500.h,
-                  child: Text(
-                    _homeController.modalVisibility.value.toString(),
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 50.w,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-        bottomNavigationBar: SlidingUpPanelWidget(),
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      extendBody: true,
+      drawer: const DrawerWidget(),
+      appBar: const AppbarWidget(),
+      body: Stack(
+        alignment: Alignment.center,
+        children: <Widget>[
+          MapUi(),
+          Positioned(
+            right: 50.w,
+            bottom: 80.h,
+            child: SpeedDialWidget(),
+          ),
+          MapModalWidget(),
+        ],
       ),
+      bottomNavigationBar: SlidingUpPanelWidget(),
     );
   }
 }
@@ -77,7 +59,7 @@ class DrawerWidget extends GetView<HomeController> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          buildHeader(context),
+          DrawerWidgetHeader(),
           buildMenuItems(context),
         ],
       ),
@@ -85,71 +67,149 @@ class DrawerWidget extends GetView<HomeController> {
   }
 }
 
-Widget buildHeader(BuildContext context) => Container(
-      height: 450.h + MediaQuery.of(context).padding.top,
-      color: const Color(0xFFF5F5F5),
-      padding: EdgeInsets.only(
-        top: MediaQuery.of(context).padding.top,
-      ),
-      child: Container(
-        padding: EdgeInsets.all(75.w),
-        child: InkWell(
-          child: Row(
-            children: [
-              Image.asset(
-                'assets/icons/userIcon.png',
-                height: 250.h,
-                width: 250.w,
+class DrawerWidgetHeader extends GetView<HomeController> {
+  final HomeController homeController = Get.find();
+  final MainController mainController = Get.put(MainController());
+
+  @override
+  Widget build(BuildContext context) {
+    print(mainController.currentMember.value.idx);
+
+    return Obx(
+      () => mainController.currentMember.value.idx == 0
+          ? Container(
+              height: 450.h + MediaQuery.of(context).padding.top,
+              color: const Color(0xFFF5F5F5),
+              padding: EdgeInsets.only(
+                top: MediaQuery.of(context).padding.top,
               ),
-              Container(
-                margin: EdgeInsets.only(left: 80.w),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
+              child: Container(
+                // color: Colors.amber,
+                padding: EdgeInsets.all(75.w),
+                child: InkWell(
+                  child: Row(
+                    children: [
+                      Image.asset(
+                        'assets/icons/userIcon.png',
+                        height: 250.h,
+                        width: 250.w,
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(left: 80.w),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              '로그인/회원가입',
+                              textAlign: TextAlign.start,
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 60.sp,
+                                fontFamily: 'Core_Gothic_D5',
+                              ),
+                            ),
+                            SizedBox(
+                              height: 20.h,
+                            ),
+                            Text(
+                              '자유롭게 배달띱을 즐겨보아요',
+                              textAlign: TextAlign.start,
+                              style: TextStyle(
+                                color: const Color(0xFF9B9B9B),
+                                fontSize: 35.sp,
+                                fontFamily: 'Core_Gothic_D4',
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  onTap: () => Get.toNamed('/signin'),
+                ),
+              ),
+            )
+          : Container(
+              height: 450.h + MediaQuery.of(context).padding.top,
+              color: const Color(0xFFF5F5F5),
+              padding: EdgeInsets.only(
+                top: MediaQuery.of(context).padding.top,
+              ),
+              child: Container(
+                // color: Colors.amber,
+                padding: EdgeInsets.all(75.w),
+                child: Row(
                   children: [
-                    Text(
-                      '로그인/회원가입',
-                      textAlign: TextAlign.start,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 60.sp,
-                        fontFamily: 'Core_Gothic_D5',
+                    Container(
+                      width: 250.w,
+                      height: 250.h,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                            image: NetworkImage(
+                                mainController.currentMember.value.photo),
+                            fit: BoxFit.cover),
                       ),
                     ),
-                    SizedBox(
-                      height: 20.h,
-                    ),
-                    Text(
-                      '자유롭게 배달띱을 즐겨보아요',
-                      textAlign: TextAlign.start,
-                      style: TextStyle(
-                        color: const Color(0xFF9B9B9B),
-                        fontSize: 35.sp,
-                        fontFamily: 'Core_Gothic_D4',
+                    Container(
+                      margin: EdgeInsets.only(left: 80.w),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            mainController.currentMember.value.nickname + " 님",
+                            textAlign: TextAlign.start,
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 60.sp,
+                              fontFamily: 'Core_Gothic_D5',
+                            ),
+                          ),
+                          SizedBox(
+                            height: 20.h,
+                          ),
+                          Text(
+                            '환영합니다!',
+                            textAlign: TextAlign.start,
+                            style: TextStyle(
+                              color: const Color(0xFF9B9B9B),
+                              fontSize: 35.sp,
+                              fontFamily: 'Core_Gothic_D4',
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
               ),
-            ],
-          ),
-          onTap: () => Get.toNamed('/signin'),
-        ),
-      ),
+            ),
     );
+  }
+}
 
-Widget buildMenuItems(BuildContext context) => ListView(
-      padding: EdgeInsets.symmetric(vertical: 50.h, horizontal: 0),
-      physics: const NeverScrollableScrollPhysics(),
-      scrollDirection: Axis.vertical,
-      shrinkWrap: true,
-      children: <Widget>[
-        SizedBox(
-          height: 200.h,
+Widget buildMenuItems(BuildContext context) {
+  return ListView(
+    padding: EdgeInsets.symmetric(
+      vertical: 50.h,
+    ),
+    physics: const NeverScrollableScrollPhysics(),
+    scrollDirection: Axis.vertical,
+    shrinkWrap: true,
+    children: <Widget>[
+      SizedBox(
+        height: 200.h,
+        child: Padding(
+          padding: EdgeInsets.only(
+            left: 10.w,
+          ),
           child: ListTile(
-            leading: Icon(
-              Icons.settings,
-              size: 100.w,
+            leading: Image.asset(
+              "assets/icons/my.png",
+              width: 80.w,
+              height: 80.h,
             ),
             horizontalTitleGap: 0,
             title: Text(
@@ -161,21 +221,27 @@ Widget buildMenuItems(BuildContext context) => ListView(
                 fontFamily: 'Core_Gothic_D5',
               ),
             ),
-            onTap: () {},
+            onTap: () => Get.toNamed('/mypage'),
           ),
         ),
-        Divider(
-          height: 1.h,
-          thickness: 1,
-          indent: 75.w,
-          endIndent: 75.w,
-        ),
-        SizedBox(
-          height: 200.h,
+      ),
+      Divider(
+        height: 1.h,
+        thickness: 1,
+        indent: 60.w,
+        endIndent: 60.w,
+      ),
+      SizedBox(
+        height: 200.h,
+        child: Padding(
+          padding: EdgeInsets.only(
+            left: 10.w,
+          ),
           child: ListTile(
-            leading: Icon(
-              Icons.settings,
-              size: 100.w,
+            leading: Image.asset(
+              "assets/icons/notice.png",
+              width: 80.w,
+              height: 80.h,
             ),
             horizontalTitleGap: 0,
             title: Text(
@@ -187,21 +253,27 @@ Widget buildMenuItems(BuildContext context) => ListView(
                 fontFamily: 'Core_Gothic_D5',
               ),
             ),
-            onTap: () {},
+            onTap: () => Get.toNamed('/notice'),
           ),
         ),
-        Divider(
-          height: 1.h,
-          thickness: 1,
-          indent: 75.w,
-          endIndent: 75.w,
-        ),
-        SizedBox(
-          height: 200.h,
+      ),
+      Divider(
+        height: 1.h,
+        thickness: 1,
+        indent: 60.w,
+        endIndent: 60.w,
+      ),
+      SizedBox(
+        height: 200.h,
+        child: Padding(
+          padding: EdgeInsets.only(
+            left: 10.w,
+          ),
           child: ListTile(
-            leading: Icon(
-              Icons.settings,
-              size: 100.w,
+            leading: Image.asset(
+              "assets/icons/event.png",
+              width: 80.w,
+              height: 80.h,
             ),
             horizontalTitleGap: 0,
             title: Text(
@@ -213,21 +285,27 @@ Widget buildMenuItems(BuildContext context) => ListView(
                 fontFamily: 'Core_Gothic_D5',
               ),
             ),
-            onTap: () {},
+            onTap: () => Get.toNamed('/event'),
           ),
         ),
-        Divider(
-          height: 1.h,
-          thickness: 1,
-          indent: 75.w,
-          endIndent: 75.w,
-        ),
-        SizedBox(
-          height: 200.h,
+      ),
+      Divider(
+        height: 1.h,
+        thickness: 1,
+        indent: 60.w,
+        endIndent: 60.w,
+      ),
+      SizedBox(
+        height: 200.h,
+        child: Padding(
+          padding: EdgeInsets.only(
+            left: 10.w,
+          ),
           child: ListTile(
-            leading: Icon(
-              Icons.settings,
-              size: 100.w,
+            leading: Image.asset(
+              "assets/icons/service.png",
+              width: 80.w,
+              height: 80.h,
             ),
             horizontalTitleGap: 0,
             title: Text(
@@ -239,21 +317,27 @@ Widget buildMenuItems(BuildContext context) => ListView(
                 fontFamily: 'Core_Gothic_D5',
               ),
             ),
-            onTap: () {},
+            onTap: () => Get.toNamed('/help'),
           ),
         ),
-        Divider(
-          height: 1.h,
-          thickness: 1,
-          indent: 75.w,
-          endIndent: 75.w,
-        ),
-        SizedBox(
-          height: 200.h,
+      ),
+      Divider(
+        height: 1.h,
+        thickness: 1,
+        indent: 60.w,
+        endIndent: 60.w,
+      ),
+      SizedBox(
+        height: 200.h,
+        child: Padding(
+          padding: EdgeInsets.only(
+            left: 10.w,
+          ),
           child: ListTile(
-            leading: Icon(
-              Icons.settings,
-              size: 100.w,
+            leading: Image.asset(
+              "assets/icons/how_to.png",
+              width: 80.w,
+              height: 80.h,
             ),
             horizontalTitleGap: 0,
             title: Text(
@@ -268,18 +352,24 @@ Widget buildMenuItems(BuildContext context) => ListView(
             onTap: () {},
           ),
         ),
-        Divider(
-          height: 1.h,
-          thickness: 1,
-          indent: 75.w,
-          endIndent: 75.w,
-        ),
-        SizedBox(
-          height: 200.h,
+      ),
+      Divider(
+        height: 1.h,
+        thickness: 1,
+        indent: 60.w,
+        endIndent: 60.w,
+      ),
+      SizedBox(
+        height: 200.h,
+        child: Padding(
+          padding: EdgeInsets.only(
+            left: 10.w,
+          ),
           child: ListTile(
-            leading: Icon(
-              Icons.settings,
-              size: 100.w,
+            leading: Image.asset(
+              "assets/icons/setting.png",
+              width: 80.w,
+              height: 80.h,
             ),
             horizontalTitleGap: 0,
             title: Text(
@@ -291,18 +381,20 @@ Widget buildMenuItems(BuildContext context) => ListView(
                 fontFamily: 'Core_Gothic_D5',
               ),
             ),
-            onTap: () {},
+            onTap: () => Get.toNamed("/setting"),
           ),
         ),
-      ],
-    );
+      ),
+    ],
+  );
+}
 
 class AppbarWidget extends GetView<HomeController>
     implements PreferredSizeWidget {
   const AppbarWidget({Key? key}) : super(key: key);
 
   @override
-  Size get preferredSize => Size.fromHeight(420.h);
+  Size get preferredSize => Size.fromHeight(470.h);
 
   @override
   Widget build(BuildContext context) {
@@ -321,6 +413,7 @@ class AppbarWidget extends GetView<HomeController>
         child: SafeArea(
           child: Column(
             children: [
+              SizedBox(height: 50.h),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -542,48 +635,351 @@ class AppbarWidget extends GetView<HomeController>
               SizedBox(
                 height: 75.h,
               ),
-              Container(
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(36),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.grey,
-                        spreadRadius: 1,
-                        blurRadius: 3,
-                        offset: Offset(0.3, 0.3),
-                      ),
-                    ]),
-                width: 1170.w,
-                height: 160.h,
-                child: TextField(
-                  textAlign: TextAlign.start,
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 55.sp,
-                    fontFamily: 'Core_Gothic_D',
-                    fontWeight: FontWeight.w600,
+              InkWell(
+                onTap: () => Get.to(
+                  () => KpostalView(
+                    callback: (Kpostal result) {
+                      print(result.address);
+                      print(result.latitude.toString());
+                      print(result.longitude.toString());
+                    },
                   ),
-                  decoration: InputDecoration(
-                    // contentPadding: EdgeInsets.all(35.w),
-                    contentPadding:
-                        EdgeInsets.symmetric(vertical: 50.h, horizontal: 60.w),
-                    border: InputBorder.none,
-                    hintText: '오늘의 메뉴를 알려주세요.',
-                    suffixIcon: GestureDetector(
-                      onTap: () {},
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 35.h, horizontal: 50.w),
-                        child: Image.asset(
-                          'assets/icons/search.png',
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(36),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.grey,
+                          spreadRadius: 1,
+                          blurRadius: 3,
+                          offset: Offset(0.3, 0.3),
+                        ),
+                      ]),
+                  width: 1340.w,
+                  height: 160.h,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 60.w),
+                        child: Text(
+                          "배달주소",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: const Color(0xFFFF8800),
+                            fontSize: 55.sp,
+                            fontFamily: 'Core_Gothic_D5',
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
-                    ),
+                      Expanded(
+                        child: Text(
+                          "서울 중구 퇴계로 36길 2, 910호",
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            color: const Color(0xFF333333),
+                            fontSize: 45.sp,
+                            fontFamily: 'Core_Gothic_D5',
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(60.w),
+                        child: Image.asset(
+                          'assets/icons/arrow.png',
+                          width: 50.w,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class MapModalWidget extends GetView<HomeController> {
+  final HomeController _homeController = Get.put(HomeController());
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(
+      () => Visibility(
+        visible: _homeController.modalVisibility.value,
+        child: Positioned(
+          top: MediaQuery.of(context).padding.top,
+          child: Container(
+            margin: EdgeInsets.symmetric(vertical: 20.h, horizontal: 0),
+            width: 1240.w,
+            height: 630.h,
+            decoration: BoxDecoration(
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.grey,
+                  spreadRadius: 1,
+                  blurRadius: 5,
+                  offset: Offset(0.3, 1.2),
+                ),
+              ],
+              borderRadius: BorderRadius.circular(20),
+              color: const Color(0xFFF9F9F9),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    SizedBox(
+                      height: 300.h,
+                      width: 300.w,
+                      child: Image.asset(
+                        // roomInfo['img'],
+                        "assets/icons/c.png",
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                    Container(
+                      height: 300.h,
+                      width: 785.w,
+                      margin: EdgeInsets.only(
+                        left: 50.w,
+                      ),
+                      child: Column(
+                        children: <Widget>[
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              SizedBox(
+                                width: 550.w,
+                                child: Text(
+                                  _homeController.currentRoom.value.idx != -1
+                                      ? _homeController
+                                          .currentRoom.value.storeName
+                                      : "",
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 55.sp,
+                                    fontFamily: 'Core_Gothic_D5',
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                width: 210.w,
+                                height: 70.h,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(36),
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      color: Colors.grey,
+                                      spreadRadius: 0.01,
+                                      blurRadius: 1,
+                                      offset: Offset(0.3, 1.2),
+                                    ),
+                                  ],
+                                ),
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  child: TweenAnimationBuilder<Duration>(
+                                    duration: const Duration(minutes: 3),
+                                    tween: Tween(
+                                      begin: const Duration(minutes: 3),
+                                      end: Duration.zero,
+                                    ),
+                                    builder: (BuildContext context,
+                                        Duration value, Widget? child) {
+                                      final minutes = value.inMinutes
+                                          .toString()
+                                          .padLeft(2, '0');
+                                      final seconds = (value.inSeconds % 60)
+                                          .toString()
+                                          .padLeft(2, '0');
+                                      return Text(
+                                        '$minutes:$seconds',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 40.sp,
+                                          fontFamily: 'Core_Gothic_D5',
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 70.h,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Text(
+                                _homeController.currentRoom.value.idx != -1
+                                    ? _homeController.currentRoom.value.memName
+                                    : "",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 40.sp,
+                                  fontFamily: 'Core_Gothic_D4',
+                                ),
+                              ),
+                              Text(
+                                _homeController.currentRoom.value.idx != -1
+                                    ? "123m"
+                                    : "",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 40.sp,
+                                  fontFamily: 'Core_Gothic_D3',
+                                ),
+                              )
+                            ],
+                          ),
+                          SizedBox(
+                            height: 50.h,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Text(
+                                '배달비',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: const Color(0xFFFF8800),
+                                  fontSize: 40.sp,
+                                  fontFamily: 'Core_Gothic_D5',
+                                ),
+                              ),
+                              SizedBox(
+                                width: 20.w,
+                              ),
+                              Text(
+                                _homeController.currentRoom.value.idx != -1
+                                    ? _homeController
+                                        .currentRoom.value.deliveryFee
+                                        .toString()
+                                    : "",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 40.sp,
+                                  fontFamily: 'Core_Gothic_D3',
+                                ),
+                              ),
+                              const Spacer(),
+                              Container(
+                                width: 280.w,
+                                height: 50.h,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFFFB300),
+                                  borderRadius: const BorderRadius.all(
+                                    Radius.circular(25),
+                                  ),
+                                  border: Border.all(
+                                    color: const Color(0xFFFFB300),
+                                  ),
+                                ),
+                                child: StepProgressIndicator(
+                                  padding: 1,
+                                  totalSteps: 4,
+                                  // currentStep: int.parse(roomInfo['capacity']),
+                                  currentStep: 1,
+                                  size: 40.h,
+                                  selectedColor: const Color(0xFFFF4E00),
+                                  unselectedColor: const Color(0xFFFFFFFF),
+                                  roundedEdges: const Radius.circular(10),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    SizedBox(
+                      width: 590.w,
+                      height: 150.h,
+                      child: OutlinedButton(
+                        onPressed: () {},
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(
+                              color: Color(0xFFFF8800), width: 1),
+                          backgroundColor: const Color(0xFFFF8800),
+                          primary: Colors.white,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(
+                                50,
+                              ),
+                            ),
+                          ),
+                          elevation: 2,
+                          shadowColor: Colors.black,
+                        ),
+                        child: Text(
+                          "담으러가기",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 60.sp,
+                            fontFamily: 'Core_Gothic_D5',
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 500.w,
+                      height: 150.h,
+                      child: OutlinedButton(
+                        onPressed: () => _homeController.TurnOffMapModal(),
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(
+                              color: Color(0xFFA1A1A1), width: 1),
+                          backgroundColor: const Color(0xFFA1A1A1),
+                          primary: Colors.white,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(
+                                50,
+                              ),
+                            ),
+                          ),
+                          elevation: 2,
+                          shadowColor: Colors.black,
+                        ),
+                        child: Text(
+                          "닫기",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 60.sp,
+                            fontFamily: 'Core_Gothic_D5',
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

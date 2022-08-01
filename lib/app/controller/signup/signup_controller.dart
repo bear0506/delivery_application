@@ -1,5 +1,6 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:delivery_service/app/core/values/colors.dart';
 import 'package:delivery_service/app/data/model/signup/signup_model.dart';
@@ -27,42 +28,44 @@ class SignUpController extends GetxController {
     {
       "title": "이용약관".obs,
       "content":
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-          .obs,
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+              .obs,
       "isChecked": false.obs
     },
     {
       "title": "개인정보 수집 및 이용 동의".obs,
       "content":
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-          .obs,
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+              .obs,
       "isChecked": false.obs,
     },
   ].obs;
 
   TextStyle outlinedButtonTextStyle() => isAllCheckBox["isChecked"] == true
-      ? const TextStyle(color: kPrimaryColor, fontWeight: FontWeight.bold)
-      : const TextStyle(color: Colors.grey, fontWeight: FontWeight.bold);
+      ? TextStyle(
+          color: kPrimaryColor, fontSize: 70.sp, fontFamily: 'Core_Gothic_D5')
+      : TextStyle(
+          color: Colors.grey, fontSize: 70.sp, fontFamily: 'Core_Gothic_D5');
 
   ButtonStyle outlinedButtonStyle() => isAllCheckBox["isChecked"] == true
       ? OutlinedButton.styleFrom(
-    side: const BorderSide(color: kPrimaryColor, width: 1),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(50.0),
-    ),
-    backgroundColor: Colors.white,
-    elevation: 1.1,
-    shadowColor: Colors.black,
-  )
+          side: const BorderSide(color: kPrimaryColor, width: 1),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(50.0),
+          ),
+          backgroundColor: Colors.white,
+          elevation: 1.1,
+          shadowColor: Colors.black,
+        )
       : OutlinedButton.styleFrom(
-    side: BorderSide(color: Colors.grey.shade200, width: 1),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(50.0),
-    ),
-    backgroundColor: Colors.grey.shade100,
-    elevation: 1.1,
-    shadowColor: Colors.black,
-  );
+          side: BorderSide(color: Colors.grey.shade200, width: 1),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(50.0),
+          ),
+          backgroundColor: Colors.grey.shade100,
+          elevation: 1.1,
+          shadowColor: Colors.black,
+        );
 
   Future<dynamic>? outlinedButtonOnPressed() {
     return isAllCheckBox["isChecked"] == true
@@ -84,7 +87,7 @@ class SignUpController extends GetxController {
   // 이름 필드 텍스트 활성 여부
   RxBool isNameTextFormFieldEnabled = true.obs;
   // 핸드폰 번호 텍스트 필드 활성 여부
-  RxBool isPhoneTextFormFieldEnabled = true.obs;
+  RxBool isPhoneTextFormFieldEnabled = false.obs;
   // 인증번호 발송 버튼 활성 여부
   RxBool isPhoneOutlinedButtonEnabled = false.obs;
   // 인증번호 텍스트 필드 보이기/숨기기
@@ -98,23 +101,23 @@ class SignUpController extends GetxController {
   ButtonStyle phoneOutlinedButtonStyle() =>
       isPhoneOutlinedButtonEnabled.value == true
           ? OutlinedButton.styleFrom(
-        side: const BorderSide(color: kPrimaryColor, width: 1),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(50.0),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 1.1,
-        shadowColor: Colors.black,
-      )
+              side: const BorderSide(color: kPrimaryColor, width: 1),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(50.0),
+              ),
+              backgroundColor: Colors.white,
+              elevation: 1.1,
+              shadowColor: Colors.black,
+            )
           : OutlinedButton.styleFrom(
-        side: BorderSide(color: Colors.grey.shade200, width: 1),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(50.0),
-        ),
-        backgroundColor: Colors.grey.shade100,
-        elevation: 1.1,
-        shadowColor: Colors.black,
-      );
+              side: BorderSide(color: Colors.grey.shade200, width: 1),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(50.0),
+              ),
+              backgroundColor: Colors.grey.shade100,
+              elevation: 1.1,
+              shadowColor: Colors.black,
+            );
   // 인증번호 발송 버튼 텍스트 스타일
   TextStyle phoneOutlinedButtonTextStyle() =>
       isPhoneOutlinedButtonEnabled.value == true
@@ -125,28 +128,32 @@ class SignUpController extends GetxController {
   ButtonStyle phoneVerifyOutlinedButtonStyle() =>
       isPhoneVerifyOutlinedButtonEnabled.value == true
           ? OutlinedButton.styleFrom(
-        side: const BorderSide(color: kPrimaryColor, width: 1),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(50.0),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 1.1,
-        shadowColor: Colors.black,
-      )
+              side: const BorderSide(color: kPrimaryColor, width: 1),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(50.0),
+              ),
+              backgroundColor: Colors.white,
+              elevation: 1.1,
+              shadowColor: Colors.black,
+            )
           : OutlinedButton.styleFrom(
-        side: BorderSide(color: Colors.grey.shade200, width: 1),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(50.0),
-        ),
-        backgroundColor: Colors.grey.shade100,
-        elevation: 1.1,
-        shadowColor: Colors.black,
-      );
+              side: BorderSide(color: Colors.grey.shade200, width: 1),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(50.0),
+              ),
+              backgroundColor: Colors.grey.shade100,
+              elevation: 1.1,
+              shadowColor: Colors.black,
+            );
   // 인증완료 버튼 텍스트 스타일
   TextStyle phoneVerifyOutlinedButtonTextStyle() =>
       isPhoneVerifyOutlinedButtonEnabled.value == true
-          ? const TextStyle(color: kPrimaryColor, fontWeight: FontWeight.bold)
-          : const TextStyle(color: Colors.grey, fontWeight: FontWeight.bold);
+          ? TextStyle(
+              color: kPrimaryColor,
+              fontSize: 60.sp,
+              fontWeight: FontWeight.bold)
+          : TextStyle(
+              color: Colors.grey, fontSize: 60.sp, fontWeight: FontWeight.bold);
 
   // 이름 키보드 이동(완료) 버튼
   void handleNameOnFieldSubmitted({required dynamic value}) {
@@ -167,6 +174,8 @@ class SignUpController extends GetxController {
     value.length >= 2
         ? isPhoneTextFormFieldEnabled.value = true
         : isPhoneTextFormFieldEnabled.value = false;
+
+    print(isPhoneTextFormFieldEnabled.value);
   }
 
   // 핸드폰 번호 텍스트 필드 변경
@@ -294,20 +303,20 @@ class SignUpController extends GetxController {
             .then((value) {
           handlePhoneChangeState(
               isPhoneTextFormFieldEnabled:
-              value.status != "success" ? false : true,
+                  value.status != "success" ? false : true,
               isPhoneOutlinedButtonEnabled:
-              value.status != "success" ? true : false,
+                  value.status != "success" ? true : false,
               isPhoneVerifyTextFormFieldVisible:
-              value.status != "success" ? false : true,
+                  value.status != "success" ? false : true,
               isLoaderVisible: false);
 
           if (value.status == "success") {
             Future.delayed(const Duration(milliseconds: 100),
-                    () => phoneVerifyTextFormFieldFocusNode.requestFocus());
+                () => phoneVerifyTextFormFieldFocusNode.requestFocus());
           } else {
             globalSnackBarWidget(message: value.message);
             Future.delayed(const Duration(milliseconds: 100),
-                    () => phoneTextFormFieldFocusNode.requestFocus());
+                () => phoneTextFormFieldFocusNode.requestFocus());
           }
         });
       } else {
@@ -340,9 +349,9 @@ class SignUpController extends GetxController {
             .then((value) {
           handlePhoneVerifyChangeState(
               isPhoneVerifyTextFormFieldEnabled:
-              value.status != "success" ? true : false,
+                  value.status != "success" ? true : false,
               isPhoneVerifyOutlinedButtonEnabled:
-              value.status != "success" ? true : false,
+                  value.status != "success" ? true : false,
               isLoaderVisible: false);
 
           if (value.status == "success") {
@@ -350,7 +359,7 @@ class SignUpController extends GetxController {
           } else {
             globalSnackBarWidget(message: value.message);
             Future.delayed(const Duration(milliseconds: 100),
-                    () => phoneVerifyTextFormFieldFocusNode.requestFocus());
+                () => phoneVerifyTextFormFieldFocusNode.requestFocus());
           }
         });
       } else {
@@ -390,29 +399,33 @@ class SignUpController extends GetxController {
 
   TextStyle infoOutlinedButtonTextStyle() =>
       isInfoOutlinedButtonEnabled.value == true
-          ? const TextStyle(color: kPrimaryColor, fontWeight: FontWeight.bold)
-          : const TextStyle(color: Colors.grey, fontWeight: FontWeight.bold);
+          ? TextStyle(
+              color: kPrimaryColor,
+              fontSize: 50.sp,
+              fontWeight: FontWeight.bold)
+          : TextStyle(
+              color: Colors.grey, fontSize: 50.sp, fontWeight: FontWeight.bold);
 
   ButtonStyle infoOutlinedButtonStyle() =>
       isInfoOutlinedButtonEnabled.value == true
           ? OutlinedButton.styleFrom(
-        side: const BorderSide(color: kPrimaryColor, width: 1),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(50.0),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 1.1,
-        shadowColor: Colors.black,
-      )
+              side: const BorderSide(color: kPrimaryColor, width: 1),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(50.0),
+              ),
+              backgroundColor: Colors.white,
+              elevation: 1.1,
+              shadowColor: Colors.black,
+            )
           : OutlinedButton.styleFrom(
-        side: BorderSide(color: Colors.grey.shade200, width: 1),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(50.0),
-        ),
-        backgroundColor: Colors.grey.shade100,
-        elevation: 1.1,
-        shadowColor: Colors.black,
-      );
+              side: BorderSide(color: Colors.grey.shade200, width: 1),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(50.0),
+              ),
+              backgroundColor: Colors.grey.shade100,
+              elevation: 1.1,
+              shadowColor: Colors.black,
+            );
 
   // 닉네임
   void handleNickNameOnFieldSubmitted({required dynamic value}) {
@@ -509,23 +522,25 @@ class SignUpController extends GetxController {
             .then((value) {
           handleInfoChangeState(
               isNickNameTextFormFieldEnabled:
-              value.status != "success" ? true : false,
+                  value.status != "success" ? true : false,
               isEmailTextFormFieldEnabled:
-              value.status != "success" ? true : false,
+                  value.status != "success" ? true : false,
               isInfoOutlinedButtonEnabled:
-              value.status != "success" ? false : true,
+                  value.status != "success" ? false : true,
               isLoaderVisible: false);
+
+          print(value);
 
           if (value.status == "success") {
             Get.toNamed("/signup/password", preventDuplicates: false);
           } else if (value.status == "nickname_duplication") {
             globalSnackBarWidget(message: value.message);
             Future.delayed(const Duration(milliseconds: 100),
-                    () => nickNameTextFormFieldFocusNode.requestFocus());
+                () => nickNameTextFormFieldFocusNode.requestFocus());
           } else if (value.status == "email_duplication") {
             globalSnackBarWidget(message: value.message);
             Future.delayed(const Duration(milliseconds: 100),
-                    () => emailTextFormFieldFocusNode.requestFocus());
+                () => emailTextFormFieldFocusNode.requestFocus());
           } else {
             globalSnackBarWidget(message: value.message);
           }
@@ -566,7 +581,7 @@ class SignUpController extends GetxController {
   RxBool isPasswordOutlinedButtonEnabled = false.obs;
 
   RegExp pwRegExp =
-  RegExp(r"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{6,}$");
+      RegExp(r"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{6,}$");
 
   Rx<SignUpRequestModel> signUpRequestModel = SignUpRequestModel(
     email: "",
@@ -578,29 +593,33 @@ class SignUpController extends GetxController {
 
   TextStyle passwordOutlinedButtonTextStyle() =>
       isPasswordOutlinedButtonEnabled.value == true
-          ? const TextStyle(color: kPrimaryColor, fontWeight: FontWeight.bold)
-          : const TextStyle(color: Colors.grey, fontWeight: FontWeight.bold);
+          ? TextStyle(
+              color: kPrimaryColor,
+              fontSize: 50.sp,
+              fontWeight: FontWeight.bold)
+          : TextStyle(
+              color: Colors.grey, fontSize: 50.sp, fontWeight: FontWeight.bold);
 
   ButtonStyle passwordOutlinedButtonStyle() =>
       isPasswordOutlinedButtonEnabled.value == true
           ? OutlinedButton.styleFrom(
-        side: const BorderSide(color: kPrimaryColor, width: 1),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(50.0),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 1.1,
-        shadowColor: Colors.black,
-      )
+              side: const BorderSide(color: kPrimaryColor, width: 1),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(50.0),
+              ),
+              backgroundColor: Colors.white,
+              elevation: 1.1,
+              shadowColor: Colors.black,
+            )
           : OutlinedButton.styleFrom(
-        side: BorderSide(color: Colors.grey.shade200, width: 1),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(50.0),
-        ),
-        backgroundColor: Colors.grey.shade100,
-        elevation: 1.1,
-        shadowColor: Colors.black,
-      );
+              side: BorderSide(color: Colors.grey.shade200, width: 1),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(50.0),
+              ),
+              backgroundColor: Colors.grey.shade100,
+              elevation: 1.1,
+              shadowColor: Colors.black,
+            );
 
   void handlePasswordOnFieldSubmitted({required dynamic value}) {
     if (pwRegExp.hasMatch(value)) {
@@ -705,16 +724,16 @@ class SignUpController extends GetxController {
             .then((value) {
           handlePasswordChangeState(
               isPasswordTextFormFieldEnabled:
-              value.status != "success" ? true : false,
+                  value.status != "success" ? true : false,
               isPasswordReTextFormFieldEnabled:
-              value.status != "success" ? true : false,
+                  value.status != "success" ? true : false,
               isPasswordOutlinedButtonEnabled:
-              value.status != "success" ? false : true,
+                  value.status != "success" ? false : true,
               isLoaderVisible: false);
 
           if (value.status == "success") {
             Get.offAllNamed(
-                "/success?title=회원가입 완료&content=회원가입을 축하합니다! 이제 집팅을 즐겨보세요!&action=signin");
+                "/success?title=회원가입 완료&content=회원가입을 축하합니다! 이제 배달띱을 즐겨보세요!&action=signin");
           } else {
             globalSnackBarWidget(message: value.message);
           }

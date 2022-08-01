@@ -1,21 +1,17 @@
 import 'dart:convert';
 
+import 'package:delivery_service/main.dart';
 import 'package:get/get.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-enum Sort {
-  popularity,
-  newOrder,
-  quickTimeOrder,
-  delieveryCostMuch,
-  delieveryCostLess,
-  numberOfPeople,
-}
+import 'package:delivery_service/app/data/provider/store/store_provider.dart';
+import 'package:delivery_service/app/data/model/store/store_model.dart';
+import 'package:get_storage/get_storage.dart';
 
-RxDouble categoryHeight = 120.h.obs;
-RxDouble productHeight = 450.h.obs;
+RxDouble categoryHeight = 20.h.obs;
+RxDouble productHeight = 423.h.obs;
 
 class StoreCategory {
   StoreCategory({
@@ -25,6 +21,16 @@ class StoreCategory {
 
   final String name;
   final List<StoreProduct> products;
+}
+
+class StoreMenuTab {
+  StoreMenuTab({
+    required this.name,
+    required this.menus,
+  });
+
+  final String name;
+  final List<StoreMenuResponseModel> menus;
 }
 
 class StoreProduct {
@@ -43,6 +49,24 @@ class StoreProduct {
   final double price;
   final String image;
   final List<StoreAdditionalProduct> additionalProducts;
+}
+
+class StoreMenu {
+  StoreMenu({
+    required this.idx,
+    required this.name,
+    required this.info,
+    required this.price,
+    required this.image,
+    required this.isLast,
+  });
+
+  final int idx;
+  final String name;
+  final String info;
+  final double price;
+  final String image;
+  final bool isLast;
 }
 
 class StoreAdditionalProduct {
@@ -78,105 +102,327 @@ class StoreTabCategory {
   final double offsetTo;
 }
 
-class StoreItem {
-  StoreItem({
-    required this.category,
-    required this.product,
+class StoreMenuTabModel {
+  StoreMenuTabModel({
+    required this.menuTab,
+    required this.selected,
+    required this.offsetFrom,
+    required this.offsetTo,
   });
 
-  final StoreCategory? category;
-  final StoreProduct? product;
+  StoreMenuTabModel copyWith(bool selected) => StoreMenuTabModel(
+        menuTab: menuTab,
+        selected: selected,
+        offsetFrom: offsetFrom,
+        offsetTo: offsetTo,
+      );
 
-  bool get isCategory => category != null;
+  final StoreMenuTab menuTab;
+  final bool selected;
+  final double offsetFrom;
+  final double offsetTo;
+}
+
+class StoreItem {
+  StoreItem({
+    required this.menuTab,
+    required this.menu,
+  });
+
+  final StoreMenuTab menuTab;
+  final StoreMenu menu;
+
+  bool get isMenuTab => menuTab.name != "";
 }
 
 class StoreController extends GetxController with GetTickerProviderStateMixin {
-  Rx<Sort> sort = Sort.popularity.obs;
-  late Rx<dynamic> storeIdx = Get.parameters["storeIdx"].obs;
+  // Rx<Sort> sort = Sort.popularity.obs;
+  Rx<Color> tempColor = const Color(0xFFF8F8F8).obs;
 
-  final RxList<Tab> myTabs = <Tab>[
-    const Tab(text: "전체"),
-    const Tab(text: "한식"),
-    const Tab(text: "분식"),
-    const Tab(text: "치킨"),
-    const Tab(text: "피자"),
-    const Tab(text: "돈까스"),
-  ].obs;
+  late Rx<dynamic> storeIdx, menuIdx;
 
-  RxList<dynamic> myTabsData = [
-    {
-      "img": "assets/icons/meat_store.png".obs,
-      "storeName": "성민이네 엘스점".obs,
-      "time": "20분 ~ 30분".obs,
-      "starScore": "4.5".obs,
-      "reviewNumber": "[159]".obs,
-      "price": "3,000원".obs,
-    },
-    {
-      "img": "assets/icons/salad_store.png".obs,
-      "storeName": "성민이네 리센츠점".obs,
-      "time": "20분 ~ 30분".obs,
-      "starScore": "4.5".obs,
-      "reviewNumber": "[159]".obs,
-      "price": "3,000원".obs,
-    },
-    {
-      "img": "assets/icons/chicken_store.png".obs,
-      "storeName": "성민이네 트리지움점".obs,
-      "time": "20분 ~ 30분".obs,
-      "starScore": "4.5".obs,
-      "reviewNumber": "[159]".obs,
-      "price": "3,000원".obs,
-    },
-    {
-      "img": "assets/icons/pizza_store.png".obs,
-      "storeName": "성민이네 파크리오점".obs,
-      "time": "20분 ~ 30분".obs,
-      "starScore": "4.5".obs,
-      "reviewNumber": "[159]".obs,
-      "price": "3,000원".obs,
-    },
-    {
-      "img": "assets/icons/meat_store.png".obs,
-      "storeName": "성민이네 잠실5단지점".obs,
-      "time": "20분 ~ 30분".obs,
-      "starScore": "4.5".obs,
-      "reviewNumber": "[159]".obs,
-      "price": "3,000원".obs,
-    },
-    {
-      "img": "assets/icons/salad_store.png".obs,
-      "storeName": "성민이네 잠실본동점".obs,
-      "time": "20분 ~ 30분".obs,
-      "starScore": "4.5".obs,
-      "reviewNumber": "[159]".obs,
-      "price": "3,000원".obs,
-    },
-  ].obs;
+  late RxString categoryTabName = "".obs;
 
-  final RxList<SingleChildScrollView> myTabViews = <SingleChildScrollView>[
-    SingleChildScrollView(
-      child: Container(
-        color: Colors.blue,
-      ),
-    )
-  ].obs;
+  late RxList<CategoryResponseModel> categories = <CategoryResponseModel>[].obs;
+  late RxList<StoreResponseModel> stores = <StoreResponseModel>[].obs;
+  late Rx<StoreResponseModel> store = StoreResponseModel(
+    idx: 0,
+    categoryIdx: "",
+    name: "",
+    address: "",
+    deliveryFee: "",
+    deliveryTime: "",
+    minimumOrder: "",
+    information: "",
+    tab: <StoreTabResponseModel>[],
+    active: false,
+  ).obs;
+
+  late Rx<StoreMenuResponseModel> currentMenu = StoreMenuResponseModel(
+    idx: 0,
+    storeIdx: 0,
+    tabIdx: "",
+    name: "",
+    price: 0,
+    count: 0.obs,
+    info: "",
+    active: false,
+    menuOptionTab: <StoreMenuOptionTabResponseModel>[],
+  ).obs;
+
+  late RxInt menuCount;
+  RxInt menuPrice = 0.obs;
+
+  // 리퀘스트 모델(데이터 넘기기)
+  Rx<CartCheckRequestModel> cartCheckRequestModel = CartCheckRequestModel(
+    storeIdx: 0,
+  ).obs;
+
+  void handleCartCheckRequestModel({
+    required int storeIdx,
+  }) {
+    cartCheckRequestModel.update((_) {
+      _?.storeIdx = storeIdx;
+    });
+  }
+
+  Rx<OrderAddRequestModel> orderAddRequestModel = OrderAddRequestModel(
+    storeIdx: 0,
+    price: 0,
+    deliveryFee: 0,
+  ).obs;
+
+  void handleOrderAddRequestModel({
+    required int storeIdx,
+    required int price,
+    required int deliveryFee,
+  }) {
+    orderAddRequestModel.update((_) {
+      _?.storeIdx = storeIdx;
+      _?.price = price;
+      _?.deliveryFee = deliveryFee;
+    });
+  }
+
+  // 전체 카테고리 조회
+  Future<void> handleCategoryAllProvider() async {
+    try {
+      await CategoryAllProvider().dio().then((value) {
+        if (value.status == "success") {
+          categories.addAll(value.categories);
+          categories.refresh();
+
+          initStoreListTab();
+        } else {
+          print("else");
+        }
+      });
+    } catch (e) {
+      logger.d(e);
+    } finally {
+      Future.delayed(
+          const Duration(milliseconds: 500),
+          // ignore: avoid_print
+          () {});
+    }
+  }
+
+  // 전체 가게 조회
+  Future<void> handleStoreAllProvider() async {
+    try {
+      await StoreAllProvider().dio().then((value) {
+        if (value.status == "success") {
+          print("Success!");
+
+          stores.addAll(value.stores);
+          stores.refresh();
+        } else {
+          print("else");
+        }
+      });
+    } catch (e) {
+      logger.d(e);
+    } finally {
+      Future.delayed(
+          const Duration(milliseconds: 500),
+          // ignore: avoid_print
+          () {});
+    }
+  }
+
+  // 특정 가게 조회
+  Future<void> handleStoreInitProvider() async {
+    storeMenuTabs.clear();
+    items.clear();
+    storeUITabController.value = TabController(length: 0, vsync: this);
+
+    storeIdx = Get.parameters["storeIdx"].obs;
+
+    try {
+      await StoreInitProvider()
+          .dio(idx: int.parse(storeIdx.value))
+          .then((value) {
+        if (value.status == "success") {
+          store.value = value.stores[0];
+          store.refresh();
+
+          initStoreTabMenu();
+        } else {
+          print("else");
+        }
+      });
+    } catch (e) {
+      logger.d(e);
+    } finally {
+      Future.delayed(
+          const Duration(milliseconds: 500),
+          // ignore: avoid_print
+          () {});
+    }
+  }
+
+  // 특정 메뉴 조회
+  Future<void> handleMenuInitProvider() async {
+    menuIdx = Get.parameters["menuIdx"].obs;
+
+    try {
+      await MenuInitProvider().dio(idx: int.parse(menuIdx.value)).then((value) {
+        if (value.status == "success") {
+          currentMenu.value = value.menu;
+          currentMenu.refresh;
+
+          onInitStoreMenuDetailUI();
+
+          // handleCartUpdateProvider();
+        } else {
+          print("else");
+        }
+      });
+    } catch (e) {
+      logger.d(e);
+    } finally {
+      Future.delayed(
+          const Duration(milliseconds: 500),
+          // ignore: avoid_print
+          () {});
+    }
+  }
+
+  //장바구니 상태 확인
+  Future<void> handleCartUpdateProvider() async {
+    try {
+      handleCartCheckRequestModel(
+        storeIdx: int.parse(Get.parameters["storeIdx"].obs.string),
+      );
+
+      await CartCheckProvider()
+          .dio(requestModel: cartCheckRequestModel)
+          .then((value) {
+        if (value.status == "success") {
+          // print(value.message);
+
+          if (value.message == "ADD") {
+            handleOrderAddProvider();
+          } else if (value.message == "UPDATE") {
+            print("같은 가게 메뉴 있음");
+          } else if (value.message == "DELETE") {
+            print("다른 가게 메뉴 있음");
+          }
+
+          // print(currentMenu.value.menuOptionTab);
+        } else {
+          print(value.status);
+          print(value.message);
+          print("else");
+        }
+      });
+    } catch (e) {
+      logger.d(e);
+    }
+  }
+
+  //장바구니 추가
+  Future<void> handleOrderAddProvider() async {
+    try {
+      handleOrderAddRequestModel(
+        storeIdx: int.parse(Get.parameters["storeIdx"].obs.string),
+        price: menuPrice.value,
+        deliveryFee:
+            calculateDeliveryFee(store.value.deliveryFee, menuPrice.value),
+      );
+
+      await OrderAddProvider()
+          .dio(requestModel: orderAddRequestModel)
+          .then((value) {
+        if (value.status == "success") {
+          print("성공!");
+        } else {
+          print("else");
+        }
+      });
+    } catch (e) {
+      logger.d(e);
+    }
+  }
+
+  //장바구니 메뉴 추가 -> 여기부터 작업
+  Future<void> handleOrderDetailAddProvider() async {
+    try {
+      handleOrderAddRequestModel(
+        storeIdx: int.parse(Get.parameters["storeIdx"].obs.string),
+        price: menuPrice.value,
+        deliveryFee:
+            calculateDeliveryFee(store.value.deliveryFee, menuPrice.value),
+      );
+
+      await OrderAddProvider()
+          .dio(requestModel: orderAddRequestModel)
+          .then((value) {
+        if (value.status == "success") {
+          print("성공!");
+        } else {
+          print("else");
+        }
+      });
+    } catch (e) {
+      logger.d(e);
+    }
+  }
+
+  int calculateDeliveryFee(String deliveryFee, int menuPrice) {
+    dynamic keys = json.decode(store.value.deliveryFee).keys.toList();
+    dynamic values = json.decode(store.value.deliveryFee).values.toList();
+
+    for (int i = keys.length - 1; i >= 0; i--) {
+      dynamic key = keys[i].split("~");
+
+      if (i == 0) {
+        return values[0];
+      } else {
+        if (int.parse(key[0]) <= menuPrice && int.parse(key[1]) > menuPrice)
+          return values[i];
+        else
+          continue;
+      }
+    }
+
+    return -1;
+  }
 
   Rx<ScrollController> scrollController = ScrollController().obs;
   Rx<ScrollController> scrollController2 = ScrollController().obs;
   Rx<ScrollController> scrollController3 = ScrollController().obs;
 
-  Rx<ScrollController> storeUiScrollController = ScrollController().obs;
+  Rx<ScrollController> storeUIScrollController = ScrollController().obs;
 
-  late Rx<TabController> tabController = TabController(
-    length: tabs.length,
+  late Rx<TabController> storeUITabController = TabController(
+    length: 0,
     vsync: this,
   ).obs;
 
-  late Rx<TabController> tabController2 = TabController(
-    length: myTabs.length,
+  late Rx<TabController> storeListUITabController = TabController(
+    length: 0,
     vsync: this,
-    initialIndex: 0,
   ).obs;
 
   RxInt count = 1.obs;
@@ -202,642 +448,14 @@ class StoreController extends GetxController with GetTickerProviderStateMixin {
 
   RxBool scrollBool = false.obs;
 
-  RxList<StoreTabCategory> tabs = <StoreTabCategory>[].obs;
-  RxList<StoreItem> items = <StoreItem>[].obs;
+  // 0629
+  RxList<StoreMenuTabModel> storeMenuTabs = <StoreMenuTabModel>[].obs;
+  late RxList<StoreItem> items = <StoreItem>[].obs;
 
   late FocusScopeNode currentFocus;
   late FocusNode menusCheckBoxFocusNode;
   late FocusNode privacyCheckBoxFocusNode;
   late FocusNode menusOutlinedButtonFocusNode;
-
-  RxList<StoreCategory> storeCategories = [
-    StoreCategory(
-      name: "치킨",
-      products: [
-        StoreProduct(
-          index: 1,
-          name: "발사믹치킨",
-          decsription: "발사믹 비네거의 깊은 풍미와 달콤함이 어우러진 달콤쌈콤 치킨",
-          price: 22000,
-          image: "asssets/icons/ch.png",
-          additionalProducts: [
-            StoreAdditionalProduct(
-                name: "칩카사바", price: 1500, isChecked: false.obs),
-            StoreAdditionalProduct(
-                name: "리얼치킨버거", price: 4900, isChecked: false.obs),
-            StoreAdditionalProduct(
-                name: "교촌칠리포테이토", price: 4000, isChecked: false.obs),
-          ],
-        ),
-        StoreProduct(
-          index: 2,
-          name: "황금올리브",
-          decsription: "발사믹 비네거의 깊은 풍미와 달콤함이 어우러진 달콤쌈콤 치킨",
-          price: 22000,
-          image: "asssets/icons/ch.png",
-          additionalProducts: [
-            StoreAdditionalProduct(
-                name: "칩카사바", price: 1500, isChecked: false.obs),
-            StoreAdditionalProduct(
-                name: "리얼치킨버거", price: 4900, isChecked: false.obs),
-            StoreAdditionalProduct(
-                name: "교촌칠리포테이토", price: 4000, isChecked: false.obs),
-          ],
-        ),
-        StoreProduct(
-          index: 3,
-          name: "레드콤보",
-          decsription: "발사믹 비네거의 깊은 풍미와 달콤함이 어우러진 달콤쌈콤 치킨",
-          price: 22000,
-          image: "asssets/icons/ch.png",
-          additionalProducts: [
-            StoreAdditionalProduct(
-                name: "칩카사바", price: 1500, isChecked: false.obs),
-            StoreAdditionalProduct(
-                name: "리얼치킨버거", price: 4900, isChecked: false.obs),
-            StoreAdditionalProduct(
-                name: "교촌칠리포테이토", price: 4000, isChecked: false.obs),
-          ],
-        ),
-        StoreProduct(
-          index: 4,
-          name: "허니콤보",
-          decsription: "발사믹 비네거의 깊은 풍미와 달콤함이 어우러진 달콤쌈콤 치킨",
-          price: 22000,
-          image: "asssets/icons/ch.png",
-          additionalProducts: [
-            StoreAdditionalProduct(
-                name: "칩카사바", price: 1500, isChecked: false.obs),
-            StoreAdditionalProduct(
-                name: "리얼치킨버거", price: 4900, isChecked: false.obs),
-            StoreAdditionalProduct(
-                name: "교촌칠리포테이토", price: 4000, isChecked: false.obs),
-          ],
-        ),
-      ],
-    ),
-    StoreCategory(
-      name: '피자',
-      products: [
-        StoreProduct(
-          index: 5,
-          name: "치즈피자",
-          decsription: "발사믹 비네거의 깊은 풍미와 달콤함이 어우러진 달콤쌈콤 치킨",
-          price: 22000,
-          image: "asssets/icons/ch.png",
-          additionalProducts: [
-            StoreAdditionalProduct(
-                name: "칩카사바", price: 1500, isChecked: false.obs),
-            StoreAdditionalProduct(
-                name: "리얼치킨버거", price: 4900, isChecked: false.obs),
-            StoreAdditionalProduct(
-                name: "교촌칠리포테이토", price: 4000, isChecked: false.obs),
-          ],
-        ),
-        StoreProduct(
-          index: 6,
-          name: "포테이토피자",
-          decsription: "발사믹 비네거의 깊은 풍미와 달콤함이 어우러진 달콤쌈콤 치킨",
-          price: 22000,
-          image: "asssets/icons/ch.png",
-          additionalProducts: [
-            StoreAdditionalProduct(
-                name: "칩카사바", price: 1500, isChecked: false.obs),
-            StoreAdditionalProduct(
-                name: "리얼치킨버거", price: 4900, isChecked: false.obs),
-            StoreAdditionalProduct(
-                name: "교촌칠리포테이토", price: 4000, isChecked: false.obs),
-          ],
-        ),
-        StoreProduct(
-          index: 7,
-          name: "하와이안피자",
-          decsription: "발사믹 비네거의 깊은 풍미와 달콤함이 어우러진 달콤쌈콤 치킨",
-          price: 22000,
-          image: "asssets/icons/ch.png",
-          additionalProducts: [
-            StoreAdditionalProduct(
-                name: "칩카사바", price: 1500, isChecked: false.obs),
-            StoreAdditionalProduct(
-                name: "리얼치킨버거", price: 4900, isChecked: false.obs),
-            StoreAdditionalProduct(
-                name: "교촌칠리포테이토", price: 4000, isChecked: false.obs),
-          ],
-        ),
-        StoreProduct(
-          index: 8,
-          name: "콤비네이션피자",
-          decsription: "발사믹 비네거의 깊은 풍미와 달콤함이 어우러진 달콤쌈콤 치킨",
-          price: 22000,
-          image: "asssets/icons/ch.png",
-          additionalProducts: [
-            StoreAdditionalProduct(
-                name: "칩카사바", price: 1500, isChecked: false.obs),
-            StoreAdditionalProduct(
-                name: "리얼치킨버거", price: 4900, isChecked: false.obs),
-            StoreAdditionalProduct(
-                name: "교촌칠리포테이토", price: 4000, isChecked: false.obs),
-          ],
-        ),
-      ],
-    ),
-    StoreCategory(
-      name: '햄버거',
-      products: [
-        StoreProduct(
-          index: 9,
-          name: "빅맥",
-          decsription: "발사믹 비네거의 깊은 풍미와 달콤함이 어우러진 달콤쌈콤 치킨",
-          price: 22000,
-          image: "asssets/icons/ch.png",
-          additionalProducts: [
-            StoreAdditionalProduct(
-                name: "칩카사바", price: 1500, isChecked: false.obs),
-            StoreAdditionalProduct(
-                name: "리얼치킨버거", price: 4900, isChecked: false.obs),
-            StoreAdditionalProduct(
-                name: "교촌칠리포테이토", price: 4000, isChecked: false.obs),
-          ],
-        ),
-        StoreProduct(
-          index: 10,
-          name: "1955",
-          decsription: "발사믹 비네거의 깊은 풍미와 달콤함이 어우러진 달콤쌈콤 치킨",
-          price: 22000,
-          image: "asssets/icons/ch.png",
-          additionalProducts: [
-            StoreAdditionalProduct(
-                name: "칩카사바", price: 1500, isChecked: false.obs),
-            StoreAdditionalProduct(
-                name: "리얼치킨버거", price: 4900, isChecked: false.obs),
-            StoreAdditionalProduct(
-                name: "교촌칠리포테이토", price: 4000, isChecked: false.obs),
-          ],
-        ),
-        StoreProduct(
-          index: 11,
-          name: "치즈버거",
-          decsription: "발사믹 비네거의 깊은 풍미와 달콤함이 어우러진 달콤쌈콤 치킨",
-          price: 22000,
-          image: "asssets/icons/ch.png",
-          additionalProducts: [
-            StoreAdditionalProduct(
-                name: "칩카사바", price: 1500, isChecked: false.obs),
-            StoreAdditionalProduct(
-                name: "리얼치킨버거", price: 4900, isChecked: false.obs),
-            StoreAdditionalProduct(
-                name: "교촌칠리포테이토", price: 4000, isChecked: false.obs),
-          ],
-        ),
-        StoreProduct(
-          index: 12,
-          name: "상하이",
-          decsription: "발사믹 비네거의 깊은 풍미와 달콤함이 어우러진 달콤쌈콤 치킨",
-          price: 22000,
-          image: "asssets/icons/ch.png",
-          additionalProducts: [
-            StoreAdditionalProduct(
-                name: "칩카사바", price: 1500, isChecked: false.obs),
-            StoreAdditionalProduct(
-                name: "리얼치킨버거", price: 4900, isChecked: false.obs),
-            StoreAdditionalProduct(
-                name: "교촌칠리포테이토", price: 4000, isChecked: false.obs),
-          ],
-        ),
-      ],
-    ),
-    StoreCategory(
-      name: '음료',
-      products: [
-        StoreProduct(
-          index: 13,
-          name: "콜라",
-          decsription: "발사믹 비네거의 깊은 풍미와 달콤함이 어우러진 달콤쌈콤 치킨",
-          price: 22000,
-          image: "asssets/icons/ch.png",
-          additionalProducts: [
-            StoreAdditionalProduct(
-                name: "칩카사바", price: 1500, isChecked: false.obs),
-            StoreAdditionalProduct(
-                name: "리얼치킨버거", price: 4900, isChecked: false.obs),
-            StoreAdditionalProduct(
-                name: "교촌칠리포테이토", price: 4000, isChecked: false.obs),
-          ],
-        ),
-        StoreProduct(
-          index: 14,
-          name: "사이다",
-          decsription: "발사믹 비네거의 깊은 풍미와 달콤함이 어우러진 달콤쌈콤 치킨",
-          price: 22000,
-          image: "asssets/icons/ch.png",
-          additionalProducts: [
-            StoreAdditionalProduct(
-                name: "칩카사바", price: 1500, isChecked: false.obs),
-            StoreAdditionalProduct(
-                name: "리얼치킨버거", price: 4900, isChecked: false.obs),
-            StoreAdditionalProduct(
-                name: "교촌칠리포테이토", price: 4000, isChecked: false.obs),
-          ],
-        ),
-        StoreProduct(
-          index: 15,
-          name: "소주",
-          decsription: "발사믹 비네거의 깊은 풍미와 달콤함이 어우러진 달콤쌈콤 치킨",
-          price: 22000,
-          image: "asssets/icons/ch.png",
-          additionalProducts: [
-            StoreAdditionalProduct(
-                name: "칩카사바", price: 1500, isChecked: false.obs),
-            StoreAdditionalProduct(
-                name: "리얼치킨버거", price: 4900, isChecked: false.obs),
-            StoreAdditionalProduct(
-                name: "교촌칠리포테이토", price: 4000, isChecked: false.obs),
-          ],
-        ),
-        StoreProduct(
-          index: 16,
-          name: "맥주",
-          decsription: "발사믹 비네거의 깊은 풍미와 달콤함이 어우러진 달콤쌈콤 치킨",
-          price: 22000,
-          image: "asssets/icons/ch.png",
-          additionalProducts: [
-            StoreAdditionalProduct(
-                name: "칩카사바", price: 1500, isChecked: false.obs),
-            StoreAdditionalProduct(
-                name: "리얼치킨버거", price: 4900, isChecked: false.obs),
-            StoreAdditionalProduct(
-                name: "교촌칠리포테이토", price: 4000, isChecked: false.obs),
-          ],
-        ),
-      ],
-    ),
-    StoreCategory(
-      name: '사이드',
-      products: [
-        StoreProduct(
-          index: 17,
-          name: "웨지감자",
-          decsription: "발사믹 비네거의 깊은 풍미와 달콤함이 어우러진 달콤쌈콤 치킨",
-          price: 22000,
-          image: "asssets/icons/ch.png",
-          additionalProducts: [
-            StoreAdditionalProduct(
-                name: "칩카사바", price: 1500, isChecked: false.obs),
-            StoreAdditionalProduct(
-                name: "리얼치킨버거", price: 4900, isChecked: false.obs),
-            StoreAdditionalProduct(
-                name: "교촌칠리포테이토", price: 4000, isChecked: false.obs),
-          ],
-        ),
-        StoreProduct(
-          index: 18,
-          name: "핫윙",
-          decsription: "발사믹 비네거의 깊은 풍미와 달콤함이 어우러진 달콤쌈콤 치킨",
-          price: 22000,
-          image: "asssets/icons/ch.png",
-          additionalProducts: [
-            StoreAdditionalProduct(
-                name: "칩카사바", price: 1500, isChecked: false.obs),
-            StoreAdditionalProduct(
-                name: "리얼치킨버거", price: 4900, isChecked: false.obs),
-            StoreAdditionalProduct(
-                name: "교촌칠리포테이토", price: 4000, isChecked: false.obs),
-          ],
-        ),
-        StoreProduct(
-          index: 19,
-          name: "치즈볼",
-          decsription: "발사믹 비네거의 깊은 풍미와 달콤함이 어우러진 달콤쌈콤 치킨",
-          price: 22000,
-          image: "asssets/icons/ch.png",
-          additionalProducts: [
-            StoreAdditionalProduct(
-                name: "칩카사바", price: 1500, isChecked: false.obs),
-            StoreAdditionalProduct(
-                name: "리얼치킨버거", price: 4900, isChecked: false.obs),
-            StoreAdditionalProduct(
-                name: "교촌칠리포테이토", price: 4000, isChecked: false.obs),
-          ],
-        ),
-        StoreProduct(
-          index: 20,
-          name: "치즈스틱",
-          decsription: "발사믹 비네거의 깊은 풍미와 달콤함이 어우러진 달콤쌈콤 치킨",
-          price: 22000,
-          image: "asssets/icons/ch.png",
-          additionalProducts: [
-            StoreAdditionalProduct(
-                name: "칩카사바", price: 1500, isChecked: false.obs),
-            StoreAdditionalProduct(
-                name: "리얼치킨버거", price: 4900, isChecked: false.obs),
-            StoreAdditionalProduct(
-                name: "교촌칠리포테이토", price: 4000, isChecked: false.obs),
-          ],
-        ),
-      ],
-    ),
-  ].obs;
-
-  RxMap<String, StoreProduct> storeTempMenus = {
-    "1": StoreProduct(
-      index: 1,
-      name: "발사믹치킨",
-      decsription: "발사믹 비네거의 깊은 풍미와 달콤함이 어우러진 달콤쌈콤 치킨",
-      price: 22000,
-      image: "asssets/icons/ch.png",
-      additionalProducts: [
-        StoreAdditionalProduct(name: "칩카사바", price: 1500, isChecked: false.obs),
-        StoreAdditionalProduct(
-            name: "리얼치킨버거", price: 4900, isChecked: false.obs),
-        StoreAdditionalProduct(
-            name: "교촌칠리포테이토", price: 4000, isChecked: false.obs),
-      ],
-    ),
-    "2": StoreProduct(
-      index: 2,
-      name: "황금올리브",
-      decsription: "발사믹 비네거의 깊은 풍미와 달콤함이 어우러진 달콤쌈콤 치킨ㅋㅋㅋㅋ",
-      price: 22000,
-      image: "asssets/icons/ch.png",
-      additionalProducts: [
-        StoreAdditionalProduct(name: "칩카사바", price: 1500, isChecked: false.obs),
-        StoreAdditionalProduct(
-            name: "리얼치킨버거", price: 4900, isChecked: false.obs),
-        StoreAdditionalProduct(
-            name: "교촌칠리포테이토", price: 4000, isChecked: false.obs),
-      ],
-    ),
-    "3": StoreProduct(
-      index: 3,
-      name: "레드콤보",
-      decsription: "발사믹 비네거의 깊은 풍미와 달콤함이 어우러진 달콤쌈콤 치킨",
-      price: 22000,
-      image: "asssets/icons/ch.png",
-      additionalProducts: [
-        StoreAdditionalProduct(name: "칩카사바", price: 1500, isChecked: false.obs),
-        StoreAdditionalProduct(
-            name: "리얼치킨버거", price: 4900, isChecked: false.obs),
-        StoreAdditionalProduct(
-            name: "교촌칠리포테이토", price: 4000, isChecked: false.obs),
-      ],
-    ),
-    "4": StoreProduct(
-      index: 4,
-      name: "허니콤보",
-      decsription: "발사믹 비네거의 깊은 풍미와 달콤함이 어우러진 달콤쌈콤 치킨",
-      price: 22000,
-      image: "asssets/icons/ch.png",
-      additionalProducts: [
-        StoreAdditionalProduct(name: "칩카사바", price: 1500, isChecked: false.obs),
-        StoreAdditionalProduct(
-            name: "리얼치킨버거", price: 4900, isChecked: false.obs),
-        StoreAdditionalProduct(
-            name: "교촌칠리포테이토", price: 4000, isChecked: false.obs),
-      ],
-    ),
-    "5": StoreProduct(
-      index: 5,
-      name: "치즈피자",
-      decsription: "발사믹 비네거의 깊은 풍미와 달콤함이 어우러진 달콤쌈콤 치킨",
-      price: 22000,
-      image: "asssets/icons/ch.png",
-      additionalProducts: [
-        StoreAdditionalProduct(name: "칩카사바", price: 1500, isChecked: false.obs),
-        StoreAdditionalProduct(
-            name: "리얼치킨버거", price: 4900, isChecked: false.obs),
-        StoreAdditionalProduct(
-            name: "교촌칠리포테이토", price: 4000, isChecked: false.obs),
-      ],
-    ),
-    "6": StoreProduct(
-      index: 6,
-      name: "포테이토피자",
-      decsription: "발사믹 비네거의 깊은 풍미와 달콤함이 어우러진 달콤쌈콤 치킨",
-      price: 22000,
-      image: "asssets/icons/ch.png",
-      additionalProducts: [
-        StoreAdditionalProduct(name: "칩카사바", price: 1500, isChecked: false.obs),
-        StoreAdditionalProduct(
-            name: "리얼치킨버거", price: 4900, isChecked: false.obs),
-        StoreAdditionalProduct(
-            name: "교촌칠리포테이토", price: 4000, isChecked: false.obs),
-      ],
-    ),
-    "7": StoreProduct(
-      index: 7,
-      name: "하와이안피자",
-      decsription: "발사믹 비네거의 깊은 풍미와 달콤함이 어우러진 달콤쌈콤 치킨",
-      price: 22000,
-      image: "asssets/icons/ch.png",
-      additionalProducts: [
-        StoreAdditionalProduct(name: "칩카사바", price: 1500, isChecked: false.obs),
-        StoreAdditionalProduct(
-            name: "리얼치킨버거", price: 4900, isChecked: false.obs),
-        StoreAdditionalProduct(
-            name: "교촌칠리포테이토", price: 4000, isChecked: false.obs),
-      ],
-    ),
-    "8": StoreProduct(
-      index: 8,
-      name: "콤비네이션피자",
-      decsription: "발사믹 비네거의 깊은 풍미와 달콤함이 어우러진 달콤쌈콤 치킨",
-      price: 22000,
-      image: "asssets/icons/ch.png",
-      additionalProducts: [
-        StoreAdditionalProduct(name: "칩카사바", price: 1500, isChecked: false.obs),
-        StoreAdditionalProduct(
-            name: "리얼치킨버거", price: 4900, isChecked: false.obs),
-        StoreAdditionalProduct(
-            name: "교촌칠리포테이토", price: 4000, isChecked: false.obs),
-      ],
-    ),
-    "9": StoreProduct(
-      index: 9,
-      name: "빅맥",
-      decsription: "발사믹 비네거의 깊은 풍미와 달콤함이 어우러진 달콤쌈콤 치킨",
-      price: 22000,
-      image: "asssets/icons/ch.png",
-      additionalProducts: [
-        StoreAdditionalProduct(name: "칩카사바", price: 1500, isChecked: false.obs),
-        StoreAdditionalProduct(
-            name: "리얼치킨버거", price: 4900, isChecked: false.obs),
-        StoreAdditionalProduct(
-            name: "교촌칠리포테이토", price: 4000, isChecked: false.obs),
-      ],
-    ),
-    "10": StoreProduct(
-      index: 10,
-      name: "1955",
-      decsription: "발사믹 비네거의 깊은 풍미와 달콤함이 어우러진 달콤쌈콤 치킨",
-      price: 22000,
-      image: "asssets/icons/ch.png",
-      additionalProducts: [
-        StoreAdditionalProduct(name: "칩카사바", price: 1500, isChecked: false.obs),
-        StoreAdditionalProduct(
-            name: "리얼치킨버거", price: 4900, isChecked: false.obs),
-        StoreAdditionalProduct(
-            name: "교촌칠리포테이토", price: 4000, isChecked: false.obs),
-      ],
-    ),
-    "11": StoreProduct(
-      index: 11,
-      name: "치즈버거",
-      decsription: "발사믹 비네거의 깊은 풍미와 달콤함이 어우러진 달콤쌈콤 치킨",
-      price: 22000,
-      image: "asssets/icons/ch.png",
-      additionalProducts: [
-        StoreAdditionalProduct(name: "칩카사바", price: 1500, isChecked: false.obs),
-        StoreAdditionalProduct(
-            name: "리얼치킨버거", price: 4900, isChecked: false.obs),
-        StoreAdditionalProduct(
-            name: "교촌칠리포테이토", price: 4000, isChecked: false.obs),
-      ],
-    ),
-    "12": StoreProduct(
-      index: 12,
-      name: "상하이",
-      decsription: "발사믹 비네거의 깊은 풍미와 달콤함이 어우러진 달콤쌈콤 치킨",
-      price: 22000,
-      image: "asssets/icons/ch.png",
-      additionalProducts: [
-        StoreAdditionalProduct(name: "칩카사바", price: 1500, isChecked: false.obs),
-        StoreAdditionalProduct(
-            name: "리얼치킨버거", price: 4900, isChecked: false.obs),
-        StoreAdditionalProduct(
-            name: "교촌칠리포테이토", price: 4000, isChecked: false.obs),
-      ],
-    ),
-    "13": StoreProduct(
-      index: 13,
-      name: "콜라",
-      decsription: "발사믹 비네거의 깊은 풍미와 달콤함이 어우러진 달콤쌈콤 치킨",
-      price: 22000,
-      image: "asssets/icons/ch.png",
-      additionalProducts: [
-        StoreAdditionalProduct(name: "칩카사바", price: 1500, isChecked: false.obs),
-        StoreAdditionalProduct(
-            name: "리얼치킨버거", price: 4900, isChecked: false.obs),
-        StoreAdditionalProduct(
-            name: "교촌칠리포테이토", price: 4000, isChecked: false.obs),
-      ],
-    ),
-    "14": StoreProduct(
-      index: 14,
-      name: "사이다",
-      decsription: "발사믹 비네거의 깊은 풍미와 달콤함이 어우러진 달콤쌈콤 치킨",
-      price: 22000,
-      image: "asssets/icons/ch.png",
-      additionalProducts: [
-        StoreAdditionalProduct(name: "칩카사바", price: 1500, isChecked: false.obs),
-        StoreAdditionalProduct(
-            name: "리얼치킨버거", price: 4900, isChecked: false.obs),
-        StoreAdditionalProduct(
-            name: "교촌칠리포테이토", price: 4000, isChecked: false.obs),
-      ],
-    ),
-    "15": StoreProduct(
-      index: 15,
-      name: "소주",
-      decsription: "발사믹 비네거의 깊은 풍미와 달콤함이 어우러진 달콤쌈콤 치킨",
-      price: 22000,
-      image: "asssets/icons/ch.png",
-      additionalProducts: [
-        StoreAdditionalProduct(name: "칩카사바", price: 1500, isChecked: false.obs),
-        StoreAdditionalProduct(
-            name: "리얼치킨버거", price: 4900, isChecked: false.obs),
-        StoreAdditionalProduct(
-            name: "교촌칠리포테이토", price: 4000, isChecked: false.obs),
-      ],
-    ),
-    "16": StoreProduct(
-      index: 16,
-      name: "맥주",
-      decsription: "발사믹 비네거의 깊은 풍미와 달콤함이 어우러진 달콤쌈콤 치킨",
-      price: 22000,
-      image: "asssets/icons/ch.png",
-      additionalProducts: [
-        StoreAdditionalProduct(name: "칩카사바", price: 1500, isChecked: false.obs),
-        StoreAdditionalProduct(
-            name: "리얼치킨버거", price: 4900, isChecked: false.obs),
-        StoreAdditionalProduct(
-            name: "교촌칠리포테이토", price: 4000, isChecked: false.obs),
-      ],
-    ),
-    "17": StoreProduct(
-      index: 17,
-      name: "웨지감자",
-      decsription: "발사믹 비네거의 깊은 풍미와 달콤함이 어우러진 달콤쌈콤 치킨",
-      price: 22000,
-      image: "asssets/icons/ch.png",
-      additionalProducts: [
-        StoreAdditionalProduct(name: "칩카사바", price: 1500, isChecked: false.obs),
-        StoreAdditionalProduct(
-            name: "리얼치킨버거", price: 4900, isChecked: false.obs),
-        StoreAdditionalProduct(
-            name: "교촌칠리포테이토", price: 4000, isChecked: false.obs),
-      ],
-    ),
-    "18": StoreProduct(
-      index: 18,
-      name: "핫윙",
-      decsription: "발사믹 비네거의 깊은 풍미와 달콤함이 어우러진 달콤쌈콤 치킨",
-      price: 22000,
-      image: "asssets/icons/ch.png",
-      additionalProducts: [
-        StoreAdditionalProduct(name: "칩카사바", price: 1500, isChecked: false.obs),
-        StoreAdditionalProduct(
-            name: "리얼치킨버거", price: 4900, isChecked: false.obs),
-        StoreAdditionalProduct(
-            name: "교촌칠리포테이토", price: 4000, isChecked: false.obs),
-      ],
-    ),
-    "19": StoreProduct(
-      index: 19,
-      name: "치즈볼",
-      decsription: "발사믹 비네거의 깊은 풍미와 달콤함이 어우러진 달콤쌈콤 치킨",
-      price: 22000,
-      image: "asssets/icons/ch.png",
-      additionalProducts: [
-        StoreAdditionalProduct(name: "칩카사바", price: 1500, isChecked: false.obs),
-        StoreAdditionalProduct(
-            name: "리얼치킨버거", price: 4900, isChecked: false.obs),
-        StoreAdditionalProduct(
-            name: "교촌칠리포테이토", price: 4000, isChecked: false.obs),
-      ],
-    ),
-    "20": StoreProduct(
-      index: 20,
-      name: "치즈스틱",
-      decsription: "발사믹 비네거의 깊은 풍미와 달콤함이 어우러진 달콤쌈콤 치킨",
-      price: 22000,
-      image: "asssets/icons/ch.png",
-      additionalProducts: [
-        StoreAdditionalProduct(name: "칩카사바", price: 1500, isChecked: false.obs),
-        StoreAdditionalProduct(
-            name: "리얼치킨버거", price: 4900, isChecked: false.obs),
-        StoreAdditionalProduct(
-            name: "교촌칠리포테이토", price: 4000, isChecked: false.obs),
-      ],
-    ),
-  }.obs;
-
-  RxList<dynamic> isCheckbox = [
-    {
-      "title": "칩카사바".obs,
-      "price": "+1500원".obs,
-      "isChecked": false.obs,
-    },
-    {
-      "title": "리얼치킨버거".obs,
-      "price": "+4900원".obs,
-      "isChecked": false.obs,
-    },
-    {
-      "title": "교촌칠리포테이토".obs,
-      "price": "+4000원".obs,
-      "isChecked": false.obs,
-    },
-  ].obs;
 
   RxList roomInfos = [
     jsonDecode(
@@ -862,24 +480,25 @@ class StoreController extends GetxController with GetTickerProviderStateMixin {
   }
 
   void getCurrentExtent2() {
-    maxExtent.value = storeUiScrollController.value.offset;
+    maxExtent.value = storeUIScrollController.value.offset;
   }
 
   @override
-  void onInit() {
+  void onInit() async {
+    // await handleStoreAllProvider();
+    await handleCategoryAllProvider();
+
     super.onInit();
 
     scrollController.value.addListener(getCurrentExtent);
     scrollController.value.addListener(isSliverAppBarExpanded);
+    storeUIScrollController.value.addListener(getCurrentExtent2);
 
-    storeUiScrollController.value.addListener(getCurrentExtent2);
-
-    storeUiScrollController.value.addListener(() {
-      //scroll listener
+    storeUIScrollController.value.addListener(() {
       double showoffset =
           10.0; //Back to top botton will show on scroll offset 10.0
 
-      if (storeUiScrollController.value.offset > showoffset) {
+      if (storeUIScrollController.value.offset > showoffset) {
         showbtn.value = true;
       } else {
         showbtn.value = false;
@@ -889,91 +508,127 @@ class StoreController extends GetxController with GetTickerProviderStateMixin {
     menusCheckBoxFocusNode = FocusNode();
     privacyCheckBoxFocusNode = FocusNode();
     menusOutlinedButtonFocusNode = FocusNode();
+  }
 
-    // double offsetFrom = 0.0;
-    double offsetFrom = 1800.h + AppBar().preferredSize.height;
-    double offsetTo = 1800.0.h + AppBar().preferredSize.height;
+  void initStoreListTab() {
+    storeListUITabController.value =
+        TabController(length: categories.length, vsync: this);
 
-    for (int i = 0; i < storeCategories.length; i++) {
-      final category = storeCategories[i];
+    storeListUITabController.value.addListener(_onTabControllListner);
+  }
+
+  void initStoreTabMenu() {
+    var storeTabsResponse = store.value.tab;
+
+    double offsetFrom = 1940.0.h;
+    double offsetTo = 1940.0.h;
+
+    for (int i = 0; i < storeTabsResponse.length; i++) {
+      var storeTab = storeTabsResponse[i];
 
       if (i > 0) {
         offsetFrom +=
-            storeCategories[i - 1].products.length * productHeight.value;
+            storeTabsResponse[i - 1].menu.length * productHeight.value;
       }
 
-      if (i < storeCategories.length - 1) {
-        offsetTo = offsetFrom +
-            storeCategories[i + 1].products.length * productHeight.value;
+      if (i < storeTabsResponse.length - 1) {
+        offsetTo =
+            offsetFrom + storeTabsResponse[i].menu.length * productHeight.value;
       } else {
         offsetTo = double.infinity;
       }
 
-      // ignore: avoid_print
-      print("offsetFrom : $offsetFrom");
-      // ignore: avoid_print
-      print("offsetTo : $offsetTo");
+      storeMenuTabs.add(
+        StoreMenuTabModel(
+            menuTab: StoreMenuTab(
+              name: storeTab.name,
+              menus: storeTab.menu,
+            ),
+            selected: (i == 0),
+            offsetFrom: categoryHeight * i + offsetFrom,
+            offsetTo: offsetTo),
+      );
 
-      tabs.add(
-        StoreTabCategory(
-          category: category,
-          selected: (i == 0),
-          offsetFrom: categoryHeight * i + offsetFrom,
-          offsetTo: offsetTo,
+      storeMenuTabs.refresh();
+
+      storeUITabController.value =
+          TabController(length: storeMenuTabs.length, vsync: this);
+
+      items.add(
+        StoreItem(
+          menuTab: StoreMenuTab(
+            name: storeTab.name,
+            menus: storeTab.menu,
+          ),
+          menu: StoreMenu(
+            idx: 0,
+            name: "",
+            info: "",
+            price: 0,
+            image: "",
+            isLast: false,
+          ),
         ),
       );
 
-      items.add(
-        StoreItem(category: category, product: null),
-      );
+      for (int j = 0; j < storeTab.menu.length; j++) {
+        var menu = storeTab.menu[j];
 
-      for (int j = 0; j < category.products.length; j++) {
-        final product = category.products[j];
         items.add(
           StoreItem(
-            category: null,
-            product: product,
+            menuTab: StoreMenuTab(
+              name: "",
+              menus: <StoreMenuResponseModel>[],
+            ),
+            menu: StoreMenu(
+              idx: menu.idx,
+              name: menu.name,
+              info: menu.info,
+              price: menu.price.toDouble(),
+              image: "asssets/icons/ch.png",
+              isLast: j == storeTab.menu.length - 1 ? true : false,
+            ),
           ),
         );
       }
+
+      items.refresh();
+
+      storeUIScrollController.value.addListener(_onScrollListner);
     }
-
-    storeUiScrollController.value.addListener(_onScrollListner);
-
-    tabController2.value.addListener(_onTabControllListner);
   }
 
   void _onScrollListner() {
-    for (int i = 0; i < tabs.length; i++) {
-      final tab = tabs[i];
-      if (storeUiScrollController.value.offset >= tab.offsetFrom &&
-          storeUiScrollController.value.offset <= tab.offsetTo &&
-          !tab.selected) {
+    for (int i = 0; i < storeMenuTabs.length; i++) {
+      final menuTab = storeMenuTabs[i];
+      if (storeUIScrollController.value.offset >= menuTab.offsetFrom &&
+          storeUIScrollController.value.offset <= menuTab.offsetTo &&
+          !menuTab.selected) {
         onCategorySelected(i, animationRequired: false);
-        tabController.value.animateTo(i);
+        storeUITabController.value.animateTo(i);
         break;
       }
     }
   }
 
   void _onTabControllListner() {
-    if (!tabController2.value.indexIsChanging) {
-      selectedTab = tabController2.value.index.obs;
-      update();
+    if (!storeListUITabController.value.indexIsChanging) {
+      categoryTabName.value =
+          categories[storeListUITabController.value.index].name;
     }
   }
 
   void onCategorySelected(int index, {bool animationRequired = true}) {
-    final selected = tabs[index];
+    var selected = storeMenuTabs[index];
 
-    for (int i = 0; i < tabs.length; i++) {
-      tabs[i] =
-          tabs[i].copyWith(selected.category.name == tabs[i].category.name);
+    for (int i = 0; i < storeMenuTabs.length; i++) {
+      storeMenuTabs[i] = storeMenuTabs[i]
+          .copyWith(selected.menuTab == storeMenuTabs[i].menuTab);
     }
     update();
 
     if (animationRequired) {
-      storeUiScrollController.value.animateTo(
+      storeUIScrollController.value.animateTo(
         selected.offsetFrom,
         duration: const Duration(
           microseconds: 500,
@@ -984,11 +639,38 @@ class StoreController extends GetxController with GetTickerProviderStateMixin {
   }
 
   void onInitStoreMenuDetailUI() {
-    storeTempMenus.forEach((key, value) {
-      for (int i = 0; i < storeTempMenus[key]!.additionalProducts.length; i++) {
-        storeTempMenus[key]!.additionalProducts[i].isChecked = false.obs;
+    // menuCount = 1.obs;
+    onChangeMenuPrice();
+  }
+
+  void onChangeMenuPrice() {
+    menuPrice.value = currentMenu.value.price;
+
+    for (int i = 0; i < currentMenu.value.menuOptionTab.length; i++) {
+      var optionTab = currentMenu.value.menuOptionTab[i];
+
+      for (int j = 0; j < optionTab.menuOption.length; j++) {
+        var option = optionTab.menuOption[j];
+
+        if (option.check.value == true) {
+          menuPrice.value += option.price;
+        }
       }
-    });
+    }
+
+    menuPrice.value = menuPrice.value * currentMenu.value.count.value;
+  }
+
+  void onClickMenuCountPlus() {
+    currentMenu.value.count.value = currentMenu.value.count.value + 1;
+    onChangeMenuPrice();
+  }
+
+  void onClickMenuCountMinus() {
+    if (currentMenu.value.count.value > 1) {
+      currentMenu.value.count.value = currentMenu.value.count.value - 1;
+    }
+    onChangeMenuPrice();
   }
 
   @override
@@ -1008,8 +690,11 @@ class StoreController extends GetxController with GetTickerProviderStateMixin {
   void dispose() {
     Get.delete<StoreController>();
 
-    storeUiScrollController.value.removeListener(_onScrollListner);
-    tabController2.value.removeListener(_onTabControllListner);
+    storeUIScrollController.value.removeListener(_onScrollListner);
+    storeUIScrollController.value.removeListener(getCurrentExtent2);
+
+    storeListUITabController.value.removeListener(_onTabControllListner);
+
     menusCheckBoxFocusNode.dispose();
     privacyCheckBoxFocusNode.dispose();
     menusOutlinedButtonFocusNode.dispose();

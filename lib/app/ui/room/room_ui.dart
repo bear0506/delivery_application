@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:delivery_service/app/controller/room/room_controller.dart';
+import 'package:intl/intl.dart';
 
 class RoomUi extends GetView<RoomController> {
   RoomUi({Key? key}) : super(key: key);
@@ -51,7 +52,7 @@ class RoomUi extends GetView<RoomController> {
                       ),
                       Expanded(
                         child: Text(
-                          "${roomController.roomInfos[0]['user'].toString()}님의 모임",
+                          "${roomController.room.value.memName}님의 모임",
                           textAlign: TextAlign.start,
                           style: TextStyle(
                             color: const Color(0xFF333333),
@@ -131,89 +132,96 @@ class StoreInformation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 480.h,
-      color: Colors.white,
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          vertical: 70.h,
-          horizontal: 100.w,
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              roomController.roomInfos[0]['storeName'],
-              style: TextStyle(
-                color: const Color(0xFF333333),
-                fontSize: 60.sp,
-                fontFamily: 'Core_Gothic_D6',
-                fontWeight: FontWeight.bold,
+    return Obx(
+      () => Container(
+        height: 480.h,
+        color: Colors.white,
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            vertical: 70.h,
+            horizontal: 100.w,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                roomController.room.value.storeName,
+                style: TextStyle(
+                  color: const Color(0xFF333333),
+                  fontSize: 60.sp,
+                  fontFamily: 'Core_Gothic_D6',
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            SizedBox(
-              height: 30.h,
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.baseline,
-              textBaseline: TextBaseline.ideographic,
-              children: [
-                Image.asset(
-                  "assets/icons/favorite2.png",
-                  width: 41.w,
-                  height: 50.h,
-                ),
-                Text(
-                  "${roomController.roomInfos[0]['starRate']}(${roomController.roomInfos[0]['reviewCount']})",
-                  style: TextStyle(
-                    color: const Color(0xFF333333),
-                    fontSize: 50.sp,
-                    fontFamily: 'Core_Gothic_D5',
+              SizedBox(
+                height: 30.h,
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.ideographic,
+                children: [
+                  Image.asset(
+                    "assets/icons/favorite2.png",
+                    width: 41.w,
+                    height: 50.h,
                   ),
-                ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "배달시간",
-                  style: TextStyle(
-                    color: const Color(0xFFFF8800),
-                    fontSize: 50.sp,
-                    fontFamily: 'Core_Gothic_D5',
-                  ),
-                ),
-                SizedBox(
-                  width: 50.w,
-                ),
-                Text(
-                  roomController.roomInfos[0]['deliveryTime'],
-                  style: TextStyle(
-                    color: const Color(0xFF333333),
-                    fontSize: 50.sp,
-                    fontFamily: 'Core_Gothic_D5',
-                  ),
-                ),
-                const Spacer(),
-                TextButton(
-                  onPressed: () {},
-                  style: TextButton.styleFrom(
-                    splashFactory: NoSplash.splashFactory,
-                  ),
-                  child: Text(
-                    "가게 둘러보기",
+                  Text(
+                    "4.5(159)",
                     style: TextStyle(
-                      color: const Color(0xFFFF8800),
-                      fontSize: 40.sp,
+                      color: const Color(0xFF333333),
+                      fontSize: 50.sp,
                       fontFamily: 'Core_Gothic_D5',
                     ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "배달시간",
+                    style: TextStyle(
+                      color: const Color(0xFFFF8800),
+                      fontSize: 50.sp,
+                      fontFamily: 'Core_Gothic_D5',
+                    ),
+                  ),
+                  SizedBox(
+                    width: 50.w,
+                  ),
+                  Text(
+                    roomController.room.value.deliveryTime
+                            .replaceAll("~", " ~ ") +
+                        "분",
+                    style: TextStyle(
+                      color: const Color(0xFF333333),
+                      fontSize: 50.sp,
+                      fontFamily: 'Core_Gothic_D5',
+                    ),
+                  ),
+                  const Spacer(),
+                  TextButton(
+                    onPressed: () {
+                      Get.toNamed("/store=" +
+                          roomController.room.value.storeIdx.toString());
+                    },
+                    style: TextButton.styleFrom(
+                      splashFactory: NoSplash.splashFactory,
+                    ),
+                    child: Text(
+                      "가게 둘러보기",
+                      style: TextStyle(
+                        color: const Color(0xFFFF8800),
+                        fontSize: 40.sp,
+                        fontFamily: 'Core_Gothic_D5',
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -227,183 +235,187 @@ class OrdererInformation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 780.h,
-      color: Colors.white,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: EdgeInsets.only(
-              left: 100.w,
-              top: 70.h,
-              right: 100.w,
-              bottom: 30.h,
-            ),
-            child: Text(
-              "주문자",
-              style: TextStyle(
-                color: const Color(0xFF333333),
-                fontSize: 70.sp,
-                fontFamily: 'Core_Gothic_D6',
-                fontWeight: FontWeight.bold,
+    return Obx(
+      () => Container(
+        height: 780.h,
+        color: Colors.white,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.only(
+                left: 100.w,
+                top: 70.h,
+                right: 100.w,
+                bottom: 30.h,
               ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(
-              bottom: 70.h,
-            ),
-            child: Container(
-              width: 1440.w,
-              height: 500.h,
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  fit: BoxFit.fill,
-                  image: AssetImage(
-                      "assets/icons/ordererBackground.png"), // 배경 이미지
+              child: Text(
+                "주문자",
+                style: TextStyle(
+                  color: const Color(0xFF333333),
+                  fontSize: 70.sp,
+                  fontFamily: 'Core_Gothic_D6',
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Image.asset(
-                    roomController.roomInfos[0]['img'].toString(),
-                    width: 400.w,
-                    height: 400.h,
+            ),
+            Padding(
+              padding: EdgeInsets.only(
+                bottom: 70.h,
+              ),
+              child: Container(
+                width: 1440.w,
+                height: 500.h,
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    fit: BoxFit.fill,
+                    image: AssetImage(
+                        "assets/icons/ordererBackground.png"), // 배경 이미지
                   ),
-                  Container(
-                    width: 10.w,
-                    height: 400.h,
-                    color: const Color(0xFFFF8800),
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            "ID",
-                            style: TextStyle(
-                              color: const Color(0xFF333333),
-                              fontSize: 60.sp,
-                              fontFamily: 'Core_Gothic_D6',
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 350.w,
-                          ),
-                          Text(
-                            roomController.roomInfos[0]['user'],
-                            style: TextStyle(
-                              color: const Color(0xFF333333),
-                              fontSize: 60.sp,
-                              fontFamily: 'Core_Gothic_D6',
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Container(
-                        width: 730.w,
-                        height: 3.h,
-                        color: const Color(0xFFD1D1D1),
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            "주소",
-                            style: TextStyle(
-                              color: const Color(0xFF333333),
-                              fontSize: 40.sp,
-                              fontFamily: 'Core_Gothic_D5',
-                            ),
-                          ),
-                          SizedBox(
-                            width: 214.w,
-                          ),
-                          InkWell(
-                            onTap: () {},
-                            child: SizedBox(
-                              child: Row(
-                                children: [
-                                  Text(
-                                    roomController.roomInfos[0]['address'],
-                                    style: TextStyle(
-                                      color: const Color(0xFF333333),
-                                      fontSize: 40.sp,
-                                      fontFamily: 'Core_Gothic_D5',
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 20.w,
-                                  ),
-                                  Image.asset(
-                                    "assets/icons/details.png",
-                                    width: 15.w,
-                                    height: 30.h,
-                                  ),
-                                ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Image.asset(
+                      roomController.roomInfos[0]['img'].toString(),
+                      width: 400.w,
+                      height: 400.h,
+                    ),
+                    Container(
+                      width: 10.w,
+                      height: 400.h,
+                      color: const Color(0xFFFF8800),
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        SizedBox(
+                          width: 730.w,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "ID",
+                                style: TextStyle(
+                                  color: const Color(0xFF333333),
+                                  fontSize: 60.sp,
+                                  fontFamily: 'Core_Gothic_D6',
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
+                              Text(
+                                roomController.room.value.memName,
+                                style: TextStyle(
+                                  color: const Color(0xFF333333),
+                                  fontSize: 60.sp,
+                                  fontFamily: 'Core_Gothic_D6',
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            "거래 횟수",
-                            style: TextStyle(
-                              color: const Color(0xFF333333),
-                              fontSize: 40.sp,
-                              fontFamily: 'Core_Gothic_D5',
-                            ),
+                        ),
+                        Container(
+                          width: 730.w,
+                          height: 3.h,
+                          color: const Color(0xFFD1D1D1),
+                        ),
+                        SizedBox(
+                          width: 730.w,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "주소",
+                                style: TextStyle(
+                                  color: const Color(0xFF333333),
+                                  fontSize: 40.sp,
+                                  fontFamily: 'Core_Gothic_D5',
+                                ),
+                              ),
+                              InkWell(
+                                onTap: () {},
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      roomController.room.value.address,
+                                      style: TextStyle(
+                                        color: const Color(0xFF333333),
+                                        fontSize: 40.sp,
+                                        fontFamily: 'Core_Gothic_D5',
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 20.w,
+                                    ),
+                                    Image.asset(
+                                      "assets/icons/details.png",
+                                      width: 15.w,
+                                      height: 30.h,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
-                          SizedBox(
-                            width: 489.w,
+                        ),
+                        SizedBox(
+                          width: 730.w,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "거래 횟수",
+                                style: TextStyle(
+                                  color: const Color(0xFF333333),
+                                  fontSize: 40.sp,
+                                  fontFamily: 'Core_Gothic_D5',
+                                ),
+                              ),
+                              Text(
+                                "${roomController.roomInfos[0]['numberOfTransactions']}회",
+                                style: TextStyle(
+                                  color: const Color(0xFFFF8800),
+                                  fontSize: 40.sp,
+                                  fontFamily: 'Core_Gothic_D5',
+                                ),
+                              ),
+                            ],
                           ),
-                          Text(
-                            "${roomController.roomInfos[0]['numberOfTransactions']}회",
-                            style: TextStyle(
-                              color: const Color(0xFFFF8800),
-                              fontSize: 40.sp,
-                              fontFamily: 'Core_Gothic_D5',
-                            ),
+                        ),
+                        SizedBox(
+                          width: 730.w,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "매너 점수",
+                                style: TextStyle(
+                                  color: const Color(0xFF333333),
+                                  fontSize: 40.sp,
+                                  fontFamily: 'Core_Gothic_D5',
+                                ),
+                              ),
+                              Text(
+                                "${roomController.roomInfos[0]['mannerScore']}점",
+                                style: TextStyle(
+                                  color: const Color(0xFFFF8800),
+                                  fontSize: 40.sp,
+                                  fontFamily: 'Core_Gothic_D5',
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            "매너 점수",
-                            style: TextStyle(
-                              color: const Color(0xFF333333),
-                              fontSize: 40.sp,
-                              fontFamily: 'Core_Gothic_D5',
-                            ),
-                          ),
-                          SizedBox(
-                            width: 466.w,
-                          ),
-                          Text(
-                            "${roomController.roomInfos[0]['mannerScore']}점",
-                            style: TextStyle(
-                              color: const Color(0xFFFF8800),
-                              fontSize: 40.sp,
-                              fontFamily: 'Core_Gothic_D5',
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  )
-                ],
+                        ),
+                      ],
+                    )
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -416,14 +428,13 @@ class DeliveryFeeInformation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(
-        left: 100.w,
-        top: 70.h,
-        right: 100.w,
-      ),
-      child: Container(
-        color: Colors.white,
+    return Obx(
+      () => Padding(
+        padding: EdgeInsets.only(
+          left: 100.w,
+          top: 70.h,
+          right: 100.w,
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -455,11 +466,8 @@ class DeliveryFeeInformation extends StatelessWidget {
                     fontFamily: 'Core_Gothic_D5',
                   ),
                 ),
-                SizedBox(
-                  width: 730.w,
-                ),
                 Text(
-                  "${roomController.roomInfos[0]['deliveryFee']}원",
+                  "${NumberFormat('###,###,###,###').format(roomController.room.value.deliveryFee)}원",
                   style: TextStyle(
                     color: const Color(0xFF333333),
                     fontSize: 60.sp,
@@ -482,27 +490,28 @@ class DeliveryFeeInformation extends StatelessWidget {
                     fontFamily: 'Core_Gothic_D5',
                   ),
                 ),
-                SizedBox(
-                  width: 840.w,
-                ),
-                Text(
-                  "-",
-                  style: TextStyle(
-                    color: const Color(0xFF333333),
-                    fontSize: 60.sp,
-                    fontFamily: 'Core_Gothic_D5',
-                  ),
-                ),
-                SizedBox(
-                  width: 30.w,
-                ),
-                Text(
-                  "0원",
-                  style: TextStyle(
-                    color: const Color(0xFF333333),
-                    fontSize: 60.sp,
-                    fontFamily: 'Core_Gothic_D5',
-                  ),
+                Row(
+                  children: [
+                    Text(
+                      "-",
+                      style: TextStyle(
+                        color: const Color(0xFF333333),
+                        fontSize: 60.sp,
+                        fontFamily: 'Core_Gothic_D5',
+                      ),
+                    ),
+                    SizedBox(
+                      width: 30.w,
+                    ),
+                    Text(
+                      "0원",
+                      style: TextStyle(
+                        color: const Color(0xFF333333),
+                        fontSize: 60.sp,
+                        fontFamily: 'Core_Gothic_D5',
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -520,27 +529,28 @@ class DeliveryFeeInformation extends StatelessWidget {
                     fontFamily: 'Core_Gothic_D5',
                   ),
                 ),
-                SizedBox(
-                  width: 840.w,
-                ),
-                Text(
-                  "÷",
-                  style: TextStyle(
-                    color: const Color(0xFF333333),
-                    fontSize: 60.sp,
-                    fontFamily: 'Core_Gothic_D5',
-                  ),
-                ),
-                SizedBox(
-                  width: 30.w,
-                ),
-                Text(
-                  "${roomController.roomInfos[0]['capacity']}명",
-                  style: TextStyle(
-                    color: const Color(0xFF333333),
-                    fontSize: 60.sp,
-                    fontFamily: 'Core_Gothic_D5',
-                  ),
+                Row(
+                  children: [
+                    Text(
+                      "÷",
+                      style: TextStyle(
+                        color: const Color(0xFF333333),
+                        fontSize: 60.sp,
+                        fontFamily: 'Core_Gothic_D5',
+                      ),
+                    ),
+                    SizedBox(
+                      width: 30.w,
+                    ),
+                    Text(
+                      "${roomController.room.value.currentNum}명",
+                      style: TextStyle(
+                        color: const Color(0xFF333333),
+                        fontSize: 60.sp,
+                        fontFamily: 'Core_Gothic_D5',
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -567,11 +577,9 @@ class DeliveryFeeInformation extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(
-                  width: 794.w,
-                ),
                 Text(
-                  "${roomController.roomInfos[0]['totalDeliveryFee']}원",
+                  // "${roomController.roomInfos[0]['totalDeliveryFee']}원",
+                  "${NumberFormat('###,###,###,###').format(roomController.room.value.deliveryFee / roomController.room.value.currentNum)}원",
                   style: TextStyle(
                     color: const Color(0xFFFF8800),
                     fontSize: 70.sp,

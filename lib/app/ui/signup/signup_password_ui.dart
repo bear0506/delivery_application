@@ -29,7 +29,7 @@ class SignUpPasswordUi extends GetView<SignUpController> {
             () => Stack(
               children: [
                 Scaffold(
-                  resizeToAvoidBottomInset: true,
+                  resizeToAvoidBottomInset: false,
                   appBar: AppbarWidget(appBar: AppBar()),
                   body: SafeArea(
                     child: Form(
@@ -138,11 +138,11 @@ class PasswordWidget extends GetView<SignUpController> {
               fontFamily: 'Core_Gothic_D4',
             ),
             decoration: InputDecoration(
-              enabledBorder: const UnderlineInputBorder(
-                borderSide: BorderSide(
-                  color: Color(0xFFFF8800),
-                ),
-              ),
+              // enabledBorder: const UnderlineInputBorder(
+              //   borderSide: BorderSide(
+              //     color: Color(0xFFFF8800),
+              //   ),
+              // ),
               focusedBorder: const UnderlineInputBorder(
                 borderSide: BorderSide(
                   color: Color(0xFFFF8800),
@@ -189,11 +189,11 @@ class PasswordWidget extends GetView<SignUpController> {
               fontFamily: 'Core_Gothic_D4',
             ),
             decoration: InputDecoration(
-              enabledBorder: const UnderlineInputBorder(
-                borderSide: BorderSide(
-                  color: Color(0xFFFF8800),
-                ),
-              ),
+              // enabledBorder: const UnderlineInputBorder(
+              //   borderSide: BorderSide(
+              //     color: Color(0xFFFF8800),
+              //   ),
+              // ),
               focusedBorder: const UnderlineInputBorder(
                 borderSide: BorderSide(
                   color: Color(0xFFFF8800),
@@ -234,28 +234,14 @@ class BottomOutlinedButtonWidget extends GetView<SignUpController> {
             ),
             width: 800.w,
             height: 450.h,
-            child: OutlinedButton(
+            child: ElevatedButton(
               focusNode: controller.passwordOutlinedButtonFocusNode,
               onPressed: () => controller.handlePasswordProvider(),
               child: Text(
                 "회원가입",
                 style: controller.passwordOutlinedButtonTextStyle(),
-                // style: TextStyle(
-                //   color: const Color(0xFFFF8800),
-                //   fontSize: 70.sp,
-                //   fontFamily: 'Core_Gothic_D5',
-                // ),
               ),
               style: controller.passwordOutlinedButtonStyle(),
-              // style: ElevatedButton.styleFrom(
-              //   primary: Colors.white,
-              //   onPrimary: Colors.white,
-              //   shape: RoundedRectangleBorder(
-              //     borderRadius: BorderRadius.circular(50.0),
-              //     side: const BorderSide(color: Color(0xFFFF8800), width: 3),
-              //   ),
-              //   shadowColor: Colors.black,
-              // ),
             ),
           ),
         ),

@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:delivery_service/app/ui/home/home_ui.dart';
 import 'package:get/get.dart';
+import 'package:kpostal/kpostal.dart';
 
 const navBarHeight = 10.0;
 

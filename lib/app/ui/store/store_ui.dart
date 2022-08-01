@@ -1,6 +1,8 @@
 import 'dart:math';
 
+import 'package:delivery_service/app/controller/room/room_controller.dart';
 import 'package:get/get.dart';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -8,6 +10,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:badges/badges.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:intl/intl.dart';
 import 'package:step_progress_indicator/step_progress_indicator.dart';
 
 import 'package:delivery_service/app/controller/store/store_controller.dart';
@@ -16,7 +19,7 @@ import 'package:delivery_service/app/controller/store/store_controller.dart';
 class StoreUi extends GetView<StoreController> {
   StoreUi({Key? key}) : super(key: key);
 
-  final storeController = Get.put(StoreController());
+  final StoreController _storeController = Get.put(StoreController());
 
   @override
   Widget build(BuildContext context) {
@@ -27,12 +30,13 @@ class StoreUi extends GetView<StoreController> {
           backgroundColor: const Color(0xFFECECEC),
           body: CustomScrollView(
             physics: const BouncingScrollPhysics(),
-            controller: storeController.storeUiScrollController.value,
+            controller: _storeController.storeUIScrollController.value,
             slivers: <Widget>[
               SliverPersistentHeader(
                 floating: false,
                 pinned: true,
                 delegate: _SliverPersistentHeaderDelegate(
+                  controller: _storeController,
                   maxHeight: 700.h + AppBar().preferredSize.height,
                   minHeight: 200.h + AppBar().preferredSize.height,
                 ),
@@ -40,8 +44,8 @@ class StoreUi extends GetView<StoreController> {
               SliverList(
                 delegate: SliverChildListDelegate(
                   [
-                    const StoreTitleWidget(),
-                    const StoreDetailWidget(),
+                    StoreTitleWidget(),
+                    StoreDetailWidget(),
                     RoomListWidget(),
                   ],
                 ),
@@ -50,68 +54,23 @@ class StoreUi extends GetView<StoreController> {
                 floating: false,
                 pinned: true,
                 delegate: _SliverTabBarDelegate(
-                  TabBar(
-                    unselectedLabelColor: const Color(0xFFB8B8B8),
-                    labelPadding: EdgeInsets.symmetric(horizontal: 100.w),
-                    onTap: storeController.onCategorySelected,
-                    controller: storeController.tabController.value,
-                    labelColor: Colors.black,
-                    indicator: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(5),
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey,
-                          spreadRadius: 0.2,
-                          blurRadius: 1,
-                          offset: Offset(0.3, 0.3),
-                        ),
-                      ],
-                    ),
-                    isScrollable: true,
-                    tabs: storeController.tabs
-                        .map(
-                          (e) => Container(
-                            height: 130.h,
-                            padding: EdgeInsets.only(
-                              top: 30.h,
-                            ),
-                            child: Text(
-                              e.category.name,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 55.sp,
-                                fontFamily: 'Core_Gothic_D5',
-                              ),
-                            ),
-                          ),
-                        )
-                        .toList(),
-                  ),
+                  controller: _storeController,
                 ),
               ),
               SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
-                    final item = storeController.items[index];
+                    var item = _storeController.items[index];
 
-                    if (item.isCategory) {
-                      return MenuCategoryItem(category: item.category);
-                    } else if (item.product?.index == 20) {
-                      return MenuProductItem(
-                        product: item.product,
-                        isLast: true,
-                      );
+                    if (item.isMenuTab) {
+                      return MenuTabItem(menuTab: item.menuTab);
                     } else {
-                      return MenuProductItem(
-                        product: item.product,
-                        isLast: false,
+                      return MenutItem(
+                        menu: item.menu,
                       );
                     }
                   },
-                  childCount: storeController.items.length,
+                  childCount: _storeController.items.length,
                 ),
               ),
               SliverList(
@@ -123,7 +82,7 @@ class StoreUi extends GetView<StoreController> {
               ),
             ],
           ),
-          floatingActionButton: storeController.count.value >= 1
+          floatingActionButton: _storeController.count.value >= 1
               ? Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -131,7 +90,7 @@ class StoreUi extends GetView<StoreController> {
                     AnimatedOpacity(
                       duration: const Duration(
                           milliseconds: 100), //show/hide animation
-                      opacity: storeController.showbtn.value
+                      opacity: _storeController.showbtn.value
                           ? 1.0
                           : 0.0, //set obacity to 1 on visible, or hide
                       child: SizedBox(
@@ -144,7 +103,7 @@ class StoreUi extends GetView<StoreController> {
                             backgroundColor: Colors.transparent,
                             splashColor: Colors.transparent,
                             onPressed: () {
-                              storeController.storeUiScrollController.value
+                              _storeController.storeUIScrollController.value
                                   .animateTo(
                                       //go to top of scroll
                                       0, //scroll offset to go
@@ -167,14 +126,14 @@ class StoreUi extends GetView<StoreController> {
                     AnimatedOpacity(
                       duration: const Duration(
                           milliseconds: 100), //show/hide animation
-                      opacity: storeController.count.value >= 1 ? 1.0 : 0.0,
+                      opacity: _storeController.count.value >= 1 ? 1.0 : 0.0,
                       child: Badge(
                         badgeColor: Colors.white,
                         borderRadius: BorderRadius.circular(40),
                         badgeContent: Padding(
                           padding: const EdgeInsets.all(5.0),
                           child: Text(
-                            storeController.count.value.toString(),
+                            _storeController.count.value.toString(),
                             style: const TextStyle(color: Color(0xFFFF8800)),
                           ),
                         ),
@@ -188,8 +147,11 @@ class StoreUi extends GetView<StoreController> {
                               elevation: 0,
                               heroTag: "shoppingBasket",
                               backgroundColor: Colors.transparent,
-                              onPressed: () => Get.toNamed(
-                                  '/store=${storeController.storeIdx}/storeOrder'),
+                              onPressed: () {
+                                print(_storeController.storeIdx);
+                                Get.toNamed(
+                                    '/store=${_storeController.storeIdx}/order');
+                              },
                               tooltip: 'Increment',
                               child: Image.asset(
                                 "assets/icons/shoppingBasket.png",
@@ -204,7 +166,7 @@ class StoreUi extends GetView<StoreController> {
               : AnimatedOpacity(
                   duration:
                       const Duration(milliseconds: 100), //show/hide animation
-                  opacity: storeController.showbtn.value
+                  opacity: _storeController.showbtn.value
                       ? 1.0
                       : 0.0, //set obacity to 1 on visible, or hide
                   child: SizedBox(
@@ -217,7 +179,7 @@ class StoreUi extends GetView<StoreController> {
                         backgroundColor: Colors.transparent,
                         splashColor: Colors.transparent,
                         onPressed: () {
-                          storeController.storeUiScrollController.value
+                          _storeController.storeUIScrollController.value
                               .animateTo(
                                   //go to top of scroll
                                   0, //scroll offset to go
@@ -241,10 +203,12 @@ class StoreUi extends GetView<StoreController> {
 
 class _SliverPersistentHeaderDelegate extends SliverPersistentHeaderDelegate {
   _SliverPersistentHeaderDelegate({
+    required this.controller,
     required this.maxHeight,
     required this.minHeight,
   });
 
+  final StoreController controller;
   final double maxHeight;
   final double minHeight;
 
@@ -296,7 +260,7 @@ class _SliverPersistentHeaderDelegate extends SliverPersistentHeaderDelegate {
                   ),
                   Expanded(
                     child: Text(
-                      "교촌치킨 약수점",
+                      controller.store.value.name,
                       textAlign: TextAlign.start,
                       style: TextStyle(
                         color: Color.lerp(
@@ -353,13 +317,14 @@ class _SliverPersistentHeaderDelegate extends SliverPersistentHeaderDelegate {
 }
 
 class _SliverTabBarDelegate extends SliverPersistentHeaderDelegate {
-  _SliverTabBarDelegate(this._tabBar);
+  _SliverTabBarDelegate({
+    required this.controller,
+  });
 
-  final TabBar _tabBar;
+  final StoreController controller;
 
   @override
-  double get minExtent => 137.h;
-
+  double get minExtent => 127.h;
   @override
   double get maxExtent => 137.h;
 
@@ -367,120 +332,338 @@ class _SliverTabBarDelegate extends SliverPersistentHeaderDelegate {
   Widget build(
       BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
+      height: 137.h,
       decoration: BoxDecoration(
-          border: Border(top: BorderSide(color: Colors.grey.shade200)),
-          color: const Color(0xFFF8F8F8)),
-      child: _tabBar,
+        border: Border(top: BorderSide(color: Colors.grey.shade200)),
+        // color: const Color(0xFFF8F8F8)),
+        color: controller.tempColor.value,
+      ),
+      child: TabBar(
+        padding: EdgeInsets.only(top: 10.h, left: 50.w, right: 50.w),
+        unselectedLabelColor: const Color(0xFFB8B8B8),
+        labelPadding: EdgeInsets.symmetric(horizontal: 50.w),
+        onTap: controller.onCategorySelected,
+        controller: controller.storeUITabController.value,
+        labelColor: Colors.black,
+        indicator: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(5),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey,
+              spreadRadius: 0.2,
+              blurRadius: 1,
+              offset: Offset(0.3, 0.3),
+            ),
+          ],
+        ),
+        isScrollable: true,
+        tabs: controller.storeMenuTabs
+            .map(
+              (e) => Center(
+                child: Text(
+                  e.menuTab.name,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 55.sp,
+                    fontFamily: 'Core_Gothic_D5',
+                  ),
+                ),
+              ),
+            )
+            .toList(),
+      ),
     );
   }
 
   @override
   bool shouldRebuild(_SliverTabBarDelegate oldDelegate) {
-    return false;
+    return true;
   }
 }
 
-class StoreTitleWidget extends StatelessWidget {
-  const StoreTitleWidget({Key? key}) : super(key: key);
+class StoreTitleWidget extends GetView<StoreController> {
+  StoreTitleWidget({Key? key}) : super(key: key);
+
+  final StoreController _storeController = Get.put(StoreController());
 
   // final double expandedHeight;
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
-      ),
-      width: 1440.w,
-      height: 330.h,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-            "교촌치킨 약수점",
-            style: TextStyle(
-              color: const Color(0xFF333333),
-              fontSize: 80.sp,
-              fontFamily: 'Core_Gothic_D6',
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(
-            height: 20.h,
-          ),
-          InkWell(
-            onTap: () {},
-            child: SizedBox(
-              width: 327.w,
-              height: 69.h,
-              child: Row(
-                children: [
-                  Image.asset(
-                    "assets/icons/favorite.png",
-                    width: 50.w,
-                    height: 50.h,
-                  ),
-                  SizedBox(
-                    width: 20.w,
-                  ),
-                  Text(
-                    "4.5(159)",
-                    style: TextStyle(
-                      color: const Color(0xFF333333),
-                      fontSize: 50.sp,
-                      fontFamily: 'Core_Gothic_D5',
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 20.w,
-                  ),
-                  Image.asset(
-                    "assets/icons/details.png",
-                    width: 20.w,
-                    height: 40.h,
-                  ),
-                ],
+    return Obx(
+      () => Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
+        ),
+        width: 1440.w,
+        height: 330.h,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              _storeController.store.value.name,
+              style: TextStyle(
+                color: const Color(0xFF333333),
+                fontSize: 80.sp,
+                fontFamily: 'Core_Gothic_D6',
+                fontWeight: FontWeight.bold,
               ),
             ),
-          ),
-        ],
+            SizedBox(
+              height: 20.h,
+            ),
+            InkWell(
+              onTap: () {},
+              child: SizedBox(
+                width: 327.w,
+                height: 69.h,
+                child: Row(
+                  children: [
+                    Image.asset(
+                      "assets/icons/favorite.png",
+                      width: 50.w,
+                      height: 50.h,
+                    ),
+                    SizedBox(
+                      width: 20.w,
+                    ),
+                    Text(
+                      "4.5(159)",
+                      style: TextStyle(
+                        color: const Color(0xFF333333),
+                        fontSize: 50.sp,
+                        fontFamily: 'Core_Gothic_D5',
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 20.w,
+                    ),
+                    Image.asset(
+                      "assets/icons/details.png",
+                      width: 20.w,
+                      height: 40.h,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-class StoreDetailWidget extends StatelessWidget {
-  const StoreDetailWidget({
-    Key? key,
-  }) : super(key: key);
+class StoreDetailWidget extends GetView<StoreController> {
+  StoreDetailWidget({Key? key}) : super(key: key);
+
+  final StoreController _storeController = Get.put(StoreController());
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(
-          bottom: BorderSide(color: Colors.grey.shade200),
+    return Obx(
+      () => Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border(
+            bottom: BorderSide(color: Colors.grey.shade200),
+          ),
         ),
-      ),
-      width: 1440.w,
-      height: 464.h,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          InkWell(
-            onTap: () {},
-            child: SizedBox(
+        width: 1440.w,
+        height: 465.h,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            InkWell(
+              onTap: () {
+                var deliveryFee =
+                    json.decode(_storeController.store.value.deliveryFee);
+
+                print(deliveryFee.keys.toList().length);
+
+                Get.dialog(
+                  AlertDialog(
+                    title: Text(
+                      "배달비",
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                        fontSize: 60.sp,
+                        fontFamily: 'Core_Gothic_D5',
+                      ),
+                    ),
+                    titlePadding: EdgeInsets.only(left: 60.w, top: 50.h),
+                    content: SizedBox(
+                      width: 1000.w,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ListView.separated(
+                            reverse: true,
+                            shrinkWrap: true,
+                            itemCount: json
+                                .decode(
+                                    _storeController.store.value.deliveryFee)
+                                .values
+                                .toList()
+                                .length,
+                            itemBuilder: (BuildContext context, index) {
+                              var totalCost = json
+                                  .decode(
+                                      _storeController.store.value.deliveryFee)
+                                  .keys
+                                  .toList()[index]
+                                  .toString()
+                                  .split('~');
+
+                              var deliveryFee = json
+                                  .decode(
+                                      _storeController.store.value.deliveryFee)
+                                  .values
+                                  .toList()[index]
+                                  .toString();
+
+                              return Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    totalCost.length > 1
+                                        ? NumberFormat('###,###,###,###')
+                                                .format(int.parse(totalCost[0]))
+                                                .replaceAll(" ", "") +
+                                            "원 ~ " +
+                                            NumberFormat('###,###,###,###')
+                                                .format(int.parse(totalCost[1]))
+                                                .replaceAll(" ", "") +
+                                            "원"
+                                        : NumberFormat('###,###,###,###')
+                                                .format(int.parse(totalCost[0]))
+                                                .replaceAll(" ", "") +
+                                            "원 ~",
+                                    style: TextStyle(
+                                      color: const Color(0xFF333333),
+                                      fontSize: 50.sp,
+                                      fontFamily: 'Core_Gothic_D5',
+                                    ),
+                                  ),
+                                  Text(
+                                    NumberFormat('###,###,###,###')
+                                            .format(int.parse(deliveryFee))
+                                            .replaceAll(" ", "") +
+                                        "원",
+                                    style: TextStyle(
+                                      color: const Color(0xFFFF8800),
+                                      fontSize: 50.sp,
+                                      fontFamily: 'Core_Gothic_D5',
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                            separatorBuilder:
+                                (BuildContext context, int index) {
+                              return SizedBox(
+                                height: 40.h,
+                              );
+                            },
+                          ),
+                          SizedBox(height: 80.h),
+                          Container(
+                            height: 2.h,
+                            color: const Color(0xFFB8B8B8),
+                          ),
+                        ],
+                      ),
+                    ),
+                    contentPadding:
+                        EdgeInsets.only(left: 60.w, right: 60.w, top: 80.h),
+                    actions: [
+                      TextButton(
+                        child: Text(
+                          "확인",
+                          style: TextStyle(
+                            color: const Color(0xFFFF8800),
+                            fontSize: 60.sp,
+                            fontFamily: 'Core_Gothic_D5',
+                          ),
+                        ),
+                        onPressed: () => Get.back(),
+                      ),
+                    ],
+                    actionsAlignment: MainAxisAlignment.center,
+                    actionsPadding: EdgeInsets.zero,
+                  ),
+                );
+              },
+              child: SizedBox(
+                height: 60.h,
+                width: 1200.w,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      "배달비",
+                      textAlign: TextAlign.start,
+                      style: TextStyle(
+                        color: const Color(0xFFFF8800),
+                        fontSize: 50.sp,
+                        fontFamily: 'Core_Gothic_D5',
+                        fontWeight: FontWeight.w300,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 96.w,
+                    ),
+                    Text(
+                      // "2000원 ~",
+                      _storeController.store.value.deliveryFee != ""
+                          ? NumberFormat('###,###,###,###')
+                                  .format(json
+                                      .decode(_storeController
+                                          .store.value.deliveryFee)
+                                      .values
+                                      .toList()
+                                      .first)
+                                  .replaceAll(" ", "") +
+                              "원 ~"
+                          : "",
+                      textAlign: TextAlign.start,
+                      style: TextStyle(
+                        color: const Color(0xFF333333),
+                        fontSize: 50.sp,
+                        fontFamily: 'Core_Gothic_D5',
+                        fontWeight: FontWeight.w300,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 70.w,
+                    ),
+                    Image.asset(
+                      "assets/icons/details.png",
+                      width: 20.w,
+                      height: 40.h,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 40.h,
+            ),
+            SizedBox(
               height: 60.h,
               width: 1200.w,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    "배달비",
+                    "최소주문",
                     textAlign: TextAlign.start,
                     style: TextStyle(
                       color: const Color(0xFFFF8800),
@@ -490,10 +673,16 @@ class StoreDetailWidget extends StatelessWidget {
                     ),
                   ),
                   SizedBox(
-                    width: 96.w,
+                    width: 50.w,
                   ),
                   Text(
-                    "2000원 ~",
+                    _storeController.store.value.minimumOrder != ""
+                        ? NumberFormat('###,###,###,###')
+                                .format(int.parse(
+                                    _storeController.store.value.minimumOrder))
+                                .replaceAll(' ', '') +
+                            "원"
+                        : "",
                     textAlign: TextAlign.start,
                     style: TextStyle(
                       color: const Color(0xFF333333),
@@ -502,104 +691,23 @@ class StoreDetailWidget extends StatelessWidget {
                       fontWeight: FontWeight.w300,
                     ),
                   ),
-                  SizedBox(
-                    width: 70.w,
-                  ),
-                  Image.asset(
-                    "assets/icons/details.png",
-                    width: 20.w,
-                    height: 40.h,
-                  ),
                 ],
               ),
             ),
-          ),
-          SizedBox(
-            height: 40.h,
-          ),
-          SizedBox(
-            height: 60.h,
-            width: 1200.w,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  "최소주문",
-                  textAlign: TextAlign.start,
-                  style: TextStyle(
-                    color: const Color(0xFFFF8800),
-                    fontSize: 50.sp,
-                    fontFamily: 'Core_Gothic_D5',
-                    fontWeight: FontWeight.w300,
-                  ),
-                ),
-                SizedBox(
-                  width: 50.w,
-                ),
-                Text(
-                  "18000원",
-                  textAlign: TextAlign.start,
-                  style: TextStyle(
-                    color: const Color(0xFF333333),
-                    fontSize: 50.sp,
-                    fontFamily: 'Core_Gothic_D5',
-                    fontWeight: FontWeight.w300,
-                  ),
-                ),
-              ],
+            SizedBox(
+              height: 40.h,
             ),
-          ),
-          SizedBox(
-            height: 40.h,
-          ),
-          SizedBox(
-            height: 60.h,
-            width: 1200.w,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  "배달시간",
-                  textAlign: TextAlign.start,
-                  style: TextStyle(
-                    color: const Color(0xFFFF8800),
-                    fontSize: 50.sp,
-                    fontFamily: 'Core_Gothic_D5',
-                    fontWeight: FontWeight.w300,
-                  ),
-                ),
-                SizedBox(
-                  width: 50.w,
-                ),
-                Text(
-                  "21분 ~ 30분",
-                  textAlign: TextAlign.start,
-                  style: TextStyle(
-                    color: const Color(0xFF333333),
-                    fontSize: 50.sp,
-                    fontFamily: 'Core_Gothic_D5',
-                    fontWeight: FontWeight.w300,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(
-            height: 40.h,
-          ),
-          InkWell(
-            onTap: () {},
-            child: SizedBox(
+            SizedBox(
               height: 60.h,
               width: 1200.w,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    "매장정보",
+                    "배달시간",
                     textAlign: TextAlign.start,
                     style: TextStyle(
-                      color: const Color(0xFF8A8A8A),
+                      color: const Color(0xFFFF8800),
                       fontSize: 50.sp,
                       fontFamily: 'Core_Gothic_D5',
                       fontWeight: FontWeight.w300,
@@ -608,85 +716,187 @@ class StoreDetailWidget extends StatelessWidget {
                   SizedBox(
                     width: 50.w,
                   ),
-                  Image.asset(
-                    "assets/icons/details.png",
-                    width: 20.w,
-                    height: 40.h,
-                    color: const Color(0xFF8A8A8A),
+                  Text(
+                    // "21분 ~ 30분",
+                    _storeController.store.value.deliveryTime != ""
+                        ? _storeController.store.value.deliveryTime
+                                .replaceAll("~", " ~ ") +
+                            "분"
+                        : "",
+                    textAlign: TextAlign.start,
+                    style: TextStyle(
+                      color: const Color(0xFF333333),
+                      fontSize: 50.sp,
+                      fontFamily: 'Core_Gothic_D5',
+                      fontWeight: FontWeight.w300,
+                    ),
                   ),
                 ],
               ),
             ),
-          ),
-        ],
+            SizedBox(
+              height: 40.h,
+            ),
+            InkWell(
+              onTap: () {
+                Get.dialog(
+                  AlertDialog(
+                    title: Text(
+                      "매장정보",
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                        fontSize: 60.sp,
+                        fontFamily: 'Core_Gothic_D5',
+                      ),
+                    ),
+                    titlePadding: EdgeInsets.only(left: 60.w, top: 50.h),
+                    content: Container(
+                      width: 1000.w,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            _storeController.store.value.information,
+                            style: TextStyle(
+                              fontSize: 50.sp,
+                              fontFamily: 'Core_Gothic_D5',
+                            ),
+                          ),
+                          SizedBox(height: 80.h),
+                          Container(
+                            height: 2.h,
+                            color: const Color(0xFFB8B8B8),
+                          ),
+                        ],
+                      ),
+                    ),
+                    contentPadding:
+                        EdgeInsets.only(left: 60.w, right: 60.w, top: 80.h),
+                    actions: [
+                      TextButton(
+                        child: Text(
+                          "확인",
+                          style: TextStyle(
+                            color: const Color(0xFFFF8800),
+                            fontSize: 60.sp,
+                            fontFamily: 'Core_Gothic_D5',
+                          ),
+                        ),
+                        onPressed: () => Get.back(),
+                      ),
+                    ],
+                    actionsAlignment: MainAxisAlignment.center,
+                    actionsPadding: EdgeInsets.zero,
+                  ),
+                );
+              },
+              child: SizedBox(
+                height: 60.h,
+                width: 1200.w,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      "매장정보",
+                      textAlign: TextAlign.start,
+                      style: TextStyle(
+                        color: const Color(0xFF8A8A8A),
+                        fontSize: 50.sp,
+                        fontFamily: 'Core_Gothic_D5',
+                        fontWeight: FontWeight.w300,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 50.w,
+                    ),
+                    Image.asset(
+                      "assets/icons/details.png",
+                      width: 20.w,
+                      height: 40.h,
+                      color: const Color(0xFF8A8A8A),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-class RoomListWidget extends StatelessWidget {
+class RoomListWidget extends GetView<StoreController> {
   RoomListWidget({Key? key}) : super(key: key);
 
-  final StoreController _controller = Get.put(StoreController());
+  final RoomController roomController = Get.put(RoomController());
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      child: Column(
-        children: [
-          SizedBox(
-            height: 48.h,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(
-                width: 100.w,
-              ),
-              Text(
-                "너만 기다리고 있어! ",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 70.sp,
-                  fontFamily: 'Core_Gothic_D7',
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Image.asset(
-                "assets/icons/emoji.png",
-                width: 80.w,
-                height: 80.h,
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 50.h,
-          ),
-          CarouselSlider(
-            items: _controller.roomInfos.map(
-              (data) {
-                return Builder(
-                  builder: (BuildContext context) {
-                    return RoomCard(
-                      roomInfo: data,
-                    );
-                  },
-                );
-              },
-            ).toList(),
-            options: CarouselOptions(
-              height: 380.h,
-              enableInfiniteScroll: false,
-              enlargeCenterPage: false,
-              viewportFraction: 0.87,
+    return Obx(
+      () => Container(
+        height: 645.h,
+        color: Colors.white,
+        child: Column(
+          children: [
+            SizedBox(
+              height: 48.h,
             ),
-          ),
-          SizedBox(
-            height: 110.h,
-          ),
-        ],
+            SizedBox(
+              height: 97.h,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 100.w,
+                  ),
+                  Text(
+                    "너만 기다리고 있어! ",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 70.sp,
+                      fontFamily: 'Core_Gothic_D7',
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Image.asset(
+                    "assets/icons/emoji.png",
+                    width: 80.w,
+                    height: 80.h,
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 50.h,
+            ),
+            roomController.roomsInStore.length == 0
+                ? const Text("방 없다")
+                : CarouselSlider(
+                    items: roomController.roomsInStore.map(
+                      (data) {
+                        return Builder(
+                          builder: (BuildContext context) {
+                            return RoomCard(
+                              roomInfo: data,
+                            );
+                          },
+                        );
+                      },
+                    ).toList(),
+                    options: CarouselOptions(
+                      height: 350.h,
+                      enableInfiniteScroll: false,
+                      enlargeCenterPage: false,
+                      viewportFraction: 0.87,
+                    ),
+                  ),
+            SizedBox(
+              height: 100.h,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -694,17 +904,22 @@ class RoomListWidget extends StatelessWidget {
 
 // ignore: must_be_immutable
 class RoomCard extends StatelessWidget {
+  RoomCard({required this.roomInfo, Key? key}) : super(key: key);
+
   dynamic roomInfo;
 
-  RoomCard({required this.roomInfo, Key? key}) : super(key: key);
+  final RoomController roomController = Get.put(RoomController());
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => Get.toNamed("/room=1"),
+      onTap: () {
+        Get.toNamed("/room=${roomInfo.idx}");
+        roomController.handleRoomProvider();
+      },
       child: Container(
         margin: EdgeInsets.all(10.w),
-        height: 350.h,
+        // height: 0.h,
         width: 1200.w,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(5),
@@ -732,7 +947,8 @@ class RoomCard extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 child: Image.asset(
-                  roomInfo['img'],
+                  // roomInfo['img'],
+                  "assets/icons/noze.png",
                   fit: BoxFit.contain,
                 ),
               ),
@@ -744,7 +960,7 @@ class RoomCard extends StatelessWidget {
                   height: 50.h,
                 ),
                 Text(
-                  roomInfo['user'],
+                  roomInfo.memName,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.black,
@@ -767,13 +983,17 @@ class RoomCard extends StatelessWidget {
                 SizedBox(
                   height: 10.h,
                 ),
-                Text(
-                  roomInfo['address'],
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 40.sp,
-                    fontFamily: 'Core_Gothic_D5',
+                SizedBox(
+                  width: 420.w,
+                  child: Text(
+                    roomInfo.address,
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 40.sp,
+                      fontFamily: 'Core_Gothic_D5',
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ),
               ],
@@ -843,8 +1063,8 @@ class RoomCard extends StatelessWidget {
                   ),
                   child: StepProgressIndicator(
                     padding: 1,
-                    totalSteps: 4,
-                    currentStep: 3,
+                    totalSteps: roomInfo.maximumNum,
+                    currentStep: roomInfo.currentNum,
                     size: 40.h,
                     selectedColor: const Color(0xFFFF4E00),
                     unselectedColor: const Color(0xFFFFFFFF),
@@ -860,113 +1080,173 @@ class RoomCard extends StatelessWidget {
   }
 }
 
-class MenuCategoryItem extends StatelessWidget {
-  const MenuCategoryItem({Key? key, required this.category}) : super(key: key);
-  final StoreCategory? category;
+class MenuTabItem extends StatelessWidget {
+  const MenuTabItem({Key? key, required this.menuTab}) : super(key: key);
+  final StoreMenuTab menuTab;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
-      height: categoryHeight.value,
+      color: const Color(0xFFECECEC),
+      height: 20.h,
       alignment: Alignment.centerLeft,
-      child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Text(
-          category!.name,
-          style: TextStyle(
-            color: const Color(0xFF333333),
-            fontSize: 55.sp,
-            fontFamily: 'Core_Gothic_D5',
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
     );
   }
 }
 
-class MenuProductItem extends StatelessWidget {
-  MenuProductItem({Key? key, required this.product, required this.isLast})
-      : super(key: key);
+class MenutItem extends StatelessWidget {
+  MenutItem({Key? key, required this.menu}) : super(key: key);
 
   final storeController = Get.put(StoreController());
 
-  final StoreProduct? product;
-  final bool isLast;
+  final StoreMenu menu;
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        Get.toNamed(
-            '/store=${storeController.storeIdx}/storeMenuDetail=${product?.index}');
-        storeController.onInitStoreMenuDetailUI();
-      },
-      child: Container(
+    return Container(
+      alignment: Alignment.bottomCenter,
+      height: productHeight.value,
+      decoration: const BoxDecoration(
         color: Colors.white,
-        height: productHeight.value,
-        child: Padding(
-          padding: const EdgeInsets.all(7),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          product!.name,
-                          style: TextStyle(
-                            color: const Color(0xFF333333),
-                            fontSize: 60.sp,
-                            fontFamily: 'Core_Gothic_D5',
-                            fontWeight: FontWeight.bold,
-                          ),
+      ),
+      child: Container(
+        alignment: Alignment.topCenter,
+        width: 1240.w,
+        height: 373.h,
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+                color: const Color(0xFFB8B8B8),
+                width: menu.isLast == true ? 0 : 1),
+          ),
+        ),
+        child: InkWell(
+          onTap: () {
+            Get.toNamed(
+                '/store=${storeController.storeIdx}/storeMenuDetail=${menu.idx}');
+            storeController.handleMenuInitProvider();
+          },
+          child: SizedBox(
+            height: 323.h,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        menu.name,
+                        style: TextStyle(
+                          color: const Color(0xFF333333),
+                          fontSize: 60.sp,
+                          fontFamily: 'Core_Gothic_D5',
+                          // fontWeight: FontWeight,
                         ),
-                        Text(
-                          "\$${product!.price.toString()}",
-                          style: TextStyle(
-                            color: const Color(0xFF333333),
-                            fontSize: 50.sp,
-                            fontFamily: 'Core_Gothic_D5',
-                            fontWeight: FontWeight.bold,
-                          ),
+                      ),
+                      SizedBox(height: 15.h),
+                      Text(
+                        NumberFormat.currency(locale: "ko_KR", symbol: "")
+                                .format(menu.price) +
+                            "원",
+                        style: TextStyle(
+                          color: const Color(0xFF333333),
+                          fontSize: 50.sp,
+                          fontFamily: 'Core_Gothic_D5',
+                          // fontWeight: FontWeight.bold,
                         ),
-                        Text(
-                          product!.decsription,
-                          style: TextStyle(
-                            color: const Color(0xFF333333),
-                            fontSize: 45.sp,
-                            fontFamily: 'Core_Gothic_D4',
-                          ),
+                      ),
+                      SizedBox(height: 30.h),
+                      Text(
+                        menu.info,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: const Color(0xFFB8B8B8),
+                          fontSize: 45.sp,
+                          fontFamily: 'Core_Gothic_D4',
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Image.asset(
-                      "assets/icons/ch.png",
-                      width: 300.w,
-                      height: 300.h,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ],
-              ),
-              if (!isLast)
-                const Divider(
-                  thickness: 1,
                 ),
-            ],
+                SizedBox(width: 50.w),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(5),
+                  child: Image.asset(
+                    "assets/icons/ch.png",
+                    width: 300.w,
+                    height: 300.h,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
+
+      // Column(
+      //   children: [
+      //     Row(
+      //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      //       crossAxisAlignment: CrossAxisAlignment.center,
+      //       children: [
+      //         Expanded(
+      //           child: Column(
+      //             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      //             crossAxisAlignment: CrossAxisAlignment.start,
+      //             children: [
+      //               Text(
+      //                 menu.name,
+      //                 style: TextStyle(
+      //                   color: const Color(0xFF333333),
+      //                   fontSize: 60.sp,
+      //                   fontFamily: 'Core_Gothic_D5',
+      //                   fontWeight: FontWeight.bold,
+      //                 ),
+      //               ),
+      //               Text(
+      //                 NumberFormat.currency(locale: "ko_KR", symbol: "")
+      //                         .format(menu.price) +
+      //                     "원",
+      //                 style: TextStyle(
+      //                   color: const Color(0xFF333333),
+      //                   fontSize: 50.sp,
+      //                   fontFamily: 'Core_Gothic_D5',
+      //                   fontWeight: FontWeight.bold,
+      //                 ),
+      //               ),
+      //               Text(
+      //                 menu.info,
+      //                 overflow: TextOverflow.ellipsis,
+      //                 style: TextStyle(
+      //                   color: const Color(0xFF333333),
+      //                   fontSize: 45.sp,
+      //                   fontFamily: 'Core_Gothic_D4',
+      //                 ),
+      //               ),
+      //             ],
+      //           ),
+      //         ),
+      //         Padding(
+      //           padding: const EdgeInsets.all(8.0),
+      //           child: Image.asset(
+      //             "assets/icons/ch.png",
+      //             width: 300.w,
+      //             height: 300.h,
+      //             fit: BoxFit.cover,
+      //           ),
+      //         ),
+      //       ],
+      //     ),
+      //     if (!isLast)
+      //       const Divider(
+      //         thickness: 2,
+      //       ),
+      //   ],
+      // ),
     );
   }
 }

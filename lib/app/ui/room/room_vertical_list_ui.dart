@@ -4,12 +4,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:step_progress_indicator/step_progress_indicator.dart';
 
-import 'package:delivery_service/app/controller/home/home_controller.dart';
+import 'package:delivery_service/app/controller/room/room_controller.dart';
+import 'package:delivery_service/app/controller/store/store_controller.dart';
 
-class RoomVerticalListUi extends GetView<HomeController> {
+class RoomVerticalListUi extends GetView<RoomController> {
   RoomVerticalListUi({Key? key}) : super(key: key);
 
-  final HomeController _controller = Get.put(HomeController());
+  final RoomController _roomController = Get.put(RoomController());
 
   @override
   Widget build(BuildContext context) {
@@ -70,9 +71,9 @@ class RoomVerticalListUi extends GetView<HomeController> {
                                       ),
                                     ),
                                     value: Sort.popularity,
-                                    groupValue: _controller.sort.value,
+                                    groupValue: _roomController.sort.value,
                                     onChanged: (Sort? value) {
-                                      _controller.sort.value = value!;
+                                      _roomController.sort.value = value!;
                                       Get.back();
                                     },
                                     activeColor: const Color(0xFFFF8800),
@@ -90,9 +91,9 @@ class RoomVerticalListUi extends GetView<HomeController> {
                                       ),
                                     ),
                                     value: Sort.newOrder,
-                                    groupValue: _controller.sort.value,
+                                    groupValue: _roomController.sort.value,
                                     onChanged: (Sort? value) {
-                                      _controller.sort.value = value!;
+                                      _roomController.sort.value = value!;
                                       Get.back();
                                     },
                                     activeColor: const Color(0xFFFF8800),
@@ -110,9 +111,9 @@ class RoomVerticalListUi extends GetView<HomeController> {
                                       ),
                                     ),
                                     value: Sort.quickTimeOrder,
-                                    groupValue: _controller.sort.value,
+                                    groupValue: _roomController.sort.value,
                                     onChanged: (Sort? value) {
-                                      _controller.sort.value = value!;
+                                      _roomController.sort.value = value!;
                                       Get.back();
                                     },
                                     activeColor: const Color(0xFFFF8800),
@@ -143,9 +144,9 @@ class RoomVerticalListUi extends GetView<HomeController> {
                                       ),
                                     ),
                                     value: Sort.delieveryCostMuch,
-                                    groupValue: _controller.sort.value,
+                                    groupValue: _roomController.sort.value,
                                     onChanged: (Sort? value) {
-                                      _controller.sort.value = value!;
+                                      _roomController.sort.value = value!;
                                       Get.back();
                                     },
                                     activeColor: const Color(0xFFFF8800),
@@ -163,9 +164,9 @@ class RoomVerticalListUi extends GetView<HomeController> {
                                       ),
                                     ),
                                     value: Sort.delieveryCostLess,
-                                    groupValue: _controller.sort.value,
+                                    groupValue: _roomController.sort.value,
                                     onChanged: (Sort? value) {
-                                      _controller.sort.value = value!;
+                                      _roomController.sort.value = value!;
                                       Get.back();
                                     },
                                     activeColor: const Color(0xFFFF8800),
@@ -183,9 +184,9 @@ class RoomVerticalListUi extends GetView<HomeController> {
                                       ),
                                     ),
                                     value: Sort.numberOfPeople,
-                                    groupValue: _controller.sort.value,
+                                    groupValue: _roomController.sort.value,
                                     onChanged: (Sort? value) {
-                                      _controller.sort.value = value!;
+                                      _roomController.sort.value = value!;
                                       Get.back();
                                     },
                                     activeColor: const Color(0xFFFF8800),
@@ -206,9 +207,9 @@ class RoomVerticalListUi extends GetView<HomeController> {
             scrollDirection: Axis.vertical,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: _controller.rooms.length,
+            itemCount: _roomController.rooms.length,
             itemBuilder: (BuildContext context, index) => Align(
-                child: RoomCardWidget(roomInfo: _controller.rooms[index])),
+                child: RoomCardWidget(roomInfo: _roomController.rooms[index])),
             separatorBuilder: (BuildContext context, int index) => Divider(
               thickness: 1,
               indent: 100.w,
@@ -222,15 +223,22 @@ class RoomVerticalListUi extends GetView<HomeController> {
 }
 
 // ignore: must_be_immutable
-class RoomCardWidget extends GetView<HomeController> {
+class RoomCardWidget extends GetView<RoomController> {
   dynamic roomInfo;
 
   RoomCardWidget({required this.roomInfo, Key? key}) : super(key: key);
 
+  final storeController = Get.put(StoreController());
+  final roomController = Get.put(RoomController());
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => Get.toNamed("/store=1"),
+      onTap: () {
+        Get.toNamed("/store=" + roomInfo.storeIdx.toString());
+        storeController.handleStoreInitProvider();
+        roomController.handleRoomsInStoreProvider();
+      },
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 20.h, horizontal: 0),
         height: 400.h,
@@ -263,13 +271,17 @@ class RoomCardWidget extends GetView<HomeController> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Text(
-                        roomInfo.storeName,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 60.sp,
-                          fontFamily: 'Core_Gothic_D5',
+                      SizedBox(
+                        width: 550.w,
+                        child: Text(
+                          roomInfo.storeName,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 55.sp,
+                            fontFamily: 'Core_Gothic_D5',
+                          ),
                         ),
                       ),
                       Container(
@@ -324,7 +336,7 @@ class RoomCardWidget extends GetView<HomeController> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Text(
-                        roomInfo.userName,
+                        roomInfo.memName,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.black,

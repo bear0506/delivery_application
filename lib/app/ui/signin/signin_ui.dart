@@ -5,66 +5,77 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:delivery_service/app/core/values/colors.dart';
 
 import 'package:delivery_service/app/controller/signin/signin_controller.dart';
+import 'package:delivery_service/app/global_widgets/global_loader_widget.dart';
 
 class SignInUi extends GetView<SignInController> {
   const SignInUi({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    // => Obx(() =>
-    return Scaffold(
-      resizeToAvoidBottomInset: true,
-      extendBodyBehindAppBar: true,
-      extendBody: true,
-      appBar: AppbarWidget(
-        appBar: AppBar(),
-      ),
-      body: Stack(
-        children: [
-          SizedBox(
-            // width: Get.width,
-            child: Image.asset(
-              'assets/images/signin/background.png',
-              fit: BoxFit.cover,
+  Widget build(BuildContext context) => GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          controller.currentFocus = FocusScope.of(context);
+
+          if (!controller.currentFocus.hasPrimaryFocus &&
+              controller.currentFocus.focusedChild != null) {
+            print("asdfasfas");
+          }
+        },
+        child: Obx(
+          () => Scaffold(
+            resizeToAvoidBottomInset: true,
+            extendBodyBehindAppBar: true,
+            extendBody: true,
+            appBar: AppbarWidget(
+              appBar: AppBar(),
             ),
-          ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: SingleChildScrollView(
-              child: Container(
-                padding: const EdgeInsets.all(40),
-                height: Get.height - 1000.h,
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(30.0),
-                    topLeft: Radius.circular(30.0),
+            body: Stack(
+              children: [
+                SizedBox(
+                  // width: Get.width,
+                  child: Image.asset(
+                    'assets/images/signin/background.png',
+                    fit: BoxFit.cover,
                   ),
-                  color: Colors.white,
                 ),
-                child: Column(
-                  children: [
-                    const LogoWidget(),
-                    SizedBox(height: 250.h),
-                    const EmailWidget(),
-                    SizedBox(height: 120.h),
-                    const PasswordWidget(),
-                    SizedBox(height: 20.h),
-                    const FindWidget(),
-                    SizedBox(height: 330.h),
-                    const ElevatedButtonWidget(),
-                    SizedBox(height: 50.h),
-                    const SignUpTextButtonWidget(),
-                  ],
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: SingleChildScrollView(
+                    child: Container(
+                      padding: const EdgeInsets.all(40),
+                      height: Get.height - 1000.h,
+                      decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(30.0),
+                          topLeft: Radius.circular(30.0),
+                        ),
+                        color: Colors.white,
+                      ),
+                      child: Column(
+                        children: [
+                          const LogoWidget(),
+                          SizedBox(height: 250.h),
+                          const EmailWidget(),
+                          SizedBox(height: 120.h),
+                          const PasswordWidget(),
+                          SizedBox(height: 20.h),
+                          const FindWidget(),
+                          SizedBox(height: 330.h),
+                          const ElevatedButtonWidget(),
+                          SizedBox(height: 50.h),
+                          const SignUpTextButtonWidget(),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
-              ),
+                GlobalCustomLoaderWidget(
+                    isLoaderisible: controller.isLoaderVisible.value),
+              ],
             ),
           ),
-          // GlobalCustomLoaderWidget(
-          //     isLoaderisible: controller.isLoaderVisible.value),
-        ],
-      ),
-    );
-  }
+        ),
+      );
 }
 
 class LogoWidget extends StatelessWidget {
@@ -204,25 +215,31 @@ class ElevatedButtonWidget extends GetView<SignInController> {
         width: 800.w,
         height: 200.h,
         child: ElevatedButton(
-          child: Text(
-            "로그인",
-            style: TextStyle(
-              fontFamily: 'Core_Gothic_D5',
-              color: const Color(0xFFFFFFFF),
-              fontSize: 70.sp,
+            child: Text(
+              "로그인",
+              style: TextStyle(
+                fontFamily: 'Core_Gothic_D5',
+                color: const Color(0xFFFFFFFF),
+                fontSize: 70.sp,
+              ),
             ),
-          ),
-          style: ElevatedButton.styleFrom(
-            primary: kPrimaryColor,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(50.0),
-              side: const BorderSide(color: kPrimaryColor, width: 2),
+            style: ElevatedButton.styleFrom(
+              primary: kPrimaryColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(50.0),
+                side: const BorderSide(color: kPrimaryColor, width: 2),
+              ),
+              shadowColor: Colors.black,
             ),
-            shadowColor: Colors.black,
-          ),
-          onPressed: () => controller.handleSignInProvider(),
-          // onPressed: () => {},
-        ),
+            onPressed: () {
+              // FocusManager.instance.primaryFocus?.unfocus();
+              FocusScope.of(context).unfocus();
+              Future.delayed(const Duration(milliseconds: 500), () {
+                controller.handleSignInProvider();
+              });
+            }
+            // onPressed: () => {},
+            ),
       );
 }
 
@@ -231,7 +248,6 @@ class SignUpTextButtonWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SizedBox(
-        height: 32,
         child: TextButton(
           child: const Text(
             "배달띱이 처음이신가요?",

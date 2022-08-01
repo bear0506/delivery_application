@@ -14,10 +14,7 @@ class SignInProvider {
       return handler.next(e);
     }));
 
-    logger.d("$SERVER_IP/signin");
-
     try {
-      logger.d("1111");
       Response<dynamic> response = await dio.post(
         "$SERVER_IP/signin",
         options: Options(
@@ -29,9 +26,6 @@ class SignInProvider {
         ),
         data: requestModel.toJson(),
       );
-
-      logger.d("2222");
-
 
       if (response.statusCode == 200) {
         logger.d(response.data);

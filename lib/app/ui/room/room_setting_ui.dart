@@ -96,7 +96,7 @@ class RoomSettingUi extends GetView<RoomController> {
           ),
         ),
       ),
-      bottomNavigationBar: const BottomOutlinedButtonWidget(),
+      bottomNavigationBar: BottomOutlinedButtonWidget(),
     );
   }
 }
@@ -575,7 +575,9 @@ class _PeopleNumberSettingState extends State<PeopleNumberSetting> {
 }
 
 class BottomOutlinedButtonWidget extends StatelessWidget {
-  const BottomOutlinedButtonWidget({Key? key}) : super(key: key);
+  BottomOutlinedButtonWidget({Key? key}) : super(key: key);
+
+  final roomController = Get.put(RoomController());
 
   @override
   Widget build(BuildContext context) {
@@ -589,7 +591,9 @@ class BottomOutlinedButtonWidget extends StatelessWidget {
         width: 1240.w,
         height: 200.h,
         child: OutlinedButton(
-          onPressed: () {},
+          onPressed: () {
+            Get.toNamed('/store=${roomController.storeIdx}/roomResult');
+          },
           style: OutlinedButton.styleFrom(
             side: const BorderSide(color: Color(0xFFFF8800), width: 1),
             backgroundColor: const Color(0xFFFF8800),

@@ -1,3 +1,4 @@
+import 'package:delivery_service/app/controller/store/store_controller.dart';
 import 'package:get/get.dart';
 
 import 'package:flutter/material.dart';
@@ -17,42 +18,42 @@ class StoreCategoryListUi extends GetView<HomeController> {
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              StoreCategory("assets/icons/all.png", "전체"),
-              StoreCategory("assets/icons/korean.png", "한식"),
-              StoreCategory("assets/icons/snackbar.png", "분식"),
-              StoreCategory("assets/icons/chicken.png", "치킨"),
-              StoreCategory("assets/icons/pizza.png", "피자"),
+            children: [
+              StoreCategory("assets/icons/all.png", "전체", 0),
+              StoreCategory("assets/icons/korean.png", "한식", 1),
+              StoreCategory("assets/icons/snackbar.png", "분식", 2),
+              StoreCategory("assets/icons/chicken.png", "치킨", 3),
+              StoreCategory("assets/icons/pizza.png", "피자", 4),
             ],
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              StoreCategory("assets/icons/porkcutlets.png", "돈가스"),
-              StoreCategory("assets/icons/porkfeet.png", "족/보"),
-              StoreCategory("assets/icons/steambath.png", "찜/탕"),
-              StoreCategory("assets/icons/grilled.png", "구이"),
-              StoreCategory("assets/icons/chinese.png", "중식"),
+            children: [
+              StoreCategory("assets/icons/porkcutlets.png", "돈가스", 5),
+              StoreCategory("assets/icons/porkfeet.png", "족/보", 6),
+              StoreCategory("assets/icons/steambath.png", "찜/탕", 7),
+              StoreCategory("assets/icons/grilled.png", "구이", 8),
+              StoreCategory("assets/icons/chinese.png", "중식", 9),
             ],
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              StoreCategory("assets/icons/japanese.png", "일식"),
-              StoreCategory("assets/icons/sashimiseafood.png", "회/해물"),
-              StoreCategory("assets/icons/western.png", "양식"),
-              StoreCategory("assets/icons/cafe.png", "카페"),
-              StoreCategory("assets/icons/dessert.png", "디저트"),
+            children: [
+              StoreCategory("assets/icons/japanese.png", "일식", 10),
+              StoreCategory("assets/icons/sashimiseafood.png", "회/해물", 11),
+              StoreCategory("assets/icons/western.png", "양식", 12),
+              StoreCategory("assets/icons/cafe.png", "카페", 13),
+              StoreCategory("assets/icons/dessert.png", "디저트", 14),
             ],
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              StoreCategory("assets/icons/asian.png", "아시안"),
-              StoreCategory("assets/icons/sandwich.png", "샌드위치"),
-              StoreCategory("assets/icons/burger.png", "버거"),
-              StoreCategory("assets/icons/mexican.png", "멕시칸"),
-              StoreCategory("assets/icons/bento.png", "도시락"),
+            children: [
+              StoreCategory("assets/icons/asian.png", "아시안", 15),
+              StoreCategory("assets/icons/sandwich.png", "샌드위치", 16),
+              StoreCategory("assets/icons/burger.png", "버거", 17),
+              StoreCategory("assets/icons/mexican.png", "멕시칸", 18),
+              StoreCategory("assets/icons/bento.png", "도시락", 19),
             ],
           ),
         ],
@@ -64,13 +65,20 @@ class StoreCategoryListUi extends GetView<HomeController> {
 class StoreCategory extends GetView<HomeController> {
   final String iconAsset;
   final String name;
+  final int index;
 
-  const StoreCategory(this.iconAsset, this.name, {Key? key}) : super(key: key);
+  StoreCategory(this.iconAsset, this.name, this.index, {Key? key})
+      : super(key: key);
+
+  final StoreController _storeController = Get.put(StoreController());
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => Get.toNamed("/home/storeList=1"),
+      onTap: () {
+        Get.toNamed("/home/storeList");
+        _storeController.storeListUITabController.value.index = index;
+      },
       borderRadius: BorderRadius.circular(20),
       child: Padding(
         padding: const EdgeInsets.all(10),

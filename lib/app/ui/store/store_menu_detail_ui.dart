@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:delivery_service/app/core/values/colors.dart';
 
 import 'package:delivery_service/app/controller/store/store_controller.dart';
+import 'package:intl/intl.dart';
 
 class StoreMenuDetailUi extends GetView<StoreController> {
   StoreMenuDetailUi({Key? key}) : super(key: key);
@@ -50,8 +51,7 @@ class StoreMenuDetailUi extends GetView<StoreController> {
                     ),
                     Expanded(
                       child: Text(
-                        storeController
-                            .storeTempMenus[Get.parameters["menuIdx"]]!.name,
+                        storeController.currentMenu.value.name,
                         textAlign: TextAlign.start,
                         style: TextStyle(
                           color: Color.lerp(
@@ -95,9 +95,9 @@ class StoreMenuDetailUi extends GetView<StoreController> {
             child: SingleChildScrollView(
               physics: const NeverScrollableScrollPhysics(),
               child: Column(
-                children: const [
+                children: [
                   MenuTitle(),
-                  Divider(
+                  const Divider(
                     color: Color(0xFFECECEC),
                     thickness: 5,
                   ),
@@ -113,233 +113,251 @@ class StoreMenuDetailUi extends GetView<StoreController> {
   }
 }
 
-class MenuTitle extends StatefulWidget {
-  const MenuTitle({
+class MenuTitle extends GetView<StoreController> {
+  MenuTitle({
     Key? key,
   }) : super(key: key);
 
-  @override
-  State<MenuTitle> createState() => _MenuTitleState();
-}
-
-int n = 0;
-
-class _MenuTitleState extends State<MenuTitle> {
-  void add() {
-    setState(() {
-      n++;
-    });
-  }
-
-  void minus() {
-    if (n > 0) {
-      setState(() {
-        n--;
-      });
-    }
-  }
-
-  final storeController = Get.put(StoreController());
+  final StoreController storeController = Get.put(StoreController());
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      height: 630.h,
-      child: Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: 100.w,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  height: 80.h,
-                ),
-                Text(
-                  storeController
-                      .storeTempMenus[Get.parameters["menuIdx"]]!.name,
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 80.sp,
-                    fontFamily: 'Core_Gothic_D5',
+    return Obx(
+      () => Container(
+        color: Colors.white,
+        height: 630.h,
+        child: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: 100.w,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    height: 80.h,
                   ),
-                ),
-                SizedBox(
-                  height: 40.h,
-                ),
-                Text(
-                  storeController
-                      .storeTempMenus[Get.parameters["menuIdx"]]!.decsription,
-                  style: TextStyle(
-                    color: const Color(0xFFB8B8B8),
-                    fontSize: 60.sp,
-                    fontFamily: 'Core_Gothic_D4',
+                  Text(
+                    storeController.currentMenu.value.name,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 80.sp,
+                      fontFamily: 'Core_Gothic_D5',
+                    ),
                   ),
-                ),
-                SizedBox(
-                  height: 100.h,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      "${storeController.storeTempMenus[Get.parameters["menuIdx"]]!.price}원",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 80.sp,
-                        fontFamily: 'Core_Gothic_D5',
+                  SizedBox(
+                    height: 40.h,
+                  ),
+                  Text(
+                    storeController.currentMenu.value.info,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: const Color(0xFFB8B8B8),
+                      fontSize: 60.sp,
+                      fontFamily: 'Core_Gothic_D4',
+                    ),
+                  ),
+                  SizedBox(
+                    height: 100.h,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        NumberFormat('###,###,###,###')
+                                .format(storeController.menuPrice.value)
+                                .replaceAll(" ", "") +
+                            "원",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 80.sp,
+                          fontFamily: 'Core_Gothic_D5',
+                        ),
                       ),
-                    ),
-                    Row(
-                      children: [
-                        SizedBox(
-                          width: 100.w,
-                          height: 100.h,
-                          child: FloatingActionButton(
-                            backgroundColor: const Color(0xFFEFEFEF),
-                            splashColor: Colors.transparent,
-                            elevation: 0,
-                            onPressed: minus,
-                            heroTag: "minus",
-                            child: Image.asset(
-                              "assets/icons/minus.png",
-                              width: 50.w,
-                              height: 50.h,
+                      Row(
+                        children: [
+                          SizedBox(
+                            width: 100.w,
+                            height: 100.h,
+                            child: FloatingActionButton(
+                              backgroundColor: const Color(0xFFEFEFEF),
+                              splashColor: Colors.transparent,
+                              elevation: 0,
+                              onPressed: () {
+                                storeController.onClickMenuCountMinus();
+                              },
+                              heroTag: "minus",
+                              child: Image.asset(
+                                "assets/icons/minus.png",
+                                width: 50.w,
+                                height: 50.h,
+                              ),
                             ),
                           ),
-                        ),
-                        SizedBox(
-                          width: 60.w,
-                        ),
-                        Text(
-                          "$n",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 80.sp,
-                            fontFamily: 'Core_Gothic_D5',
+                          SizedBox(
+                            width: 60.w,
                           ),
-                        ),
-                        SizedBox(
-                          width: 60.w,
-                        ),
-                        SizedBox(
-                          width: 100.w,
-                          height: 100.h,
-                          child: FloatingActionButton(
-                            backgroundColor: const Color(0xFFEFEFEF),
-                            splashColor: Colors.transparent,
-                            elevation: 0,
-                            onPressed: add,
-                            heroTag: "plus",
-                            child: Image.asset(
-                              "assets/icons/plus.png",
-                              width: 50.w,
-                              height: 50.h,
+                          Text(
+                            // storeController.menuCount.value.toString(),
+                            storeController.currentMenu.value.count.toString(),
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 80.sp,
+                              fontFamily: 'Core_Gothic_D5',
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
+                          SizedBox(
+                            width: 60.w,
+                          ),
+                          SizedBox(
+                            width: 100.w,
+                            height: 100.h,
+                            child: FloatingActionButton(
+                              backgroundColor: const Color(0xFFEFEFEF),
+                              splashColor: Colors.transparent,
+                              elevation: 0,
+                              onPressed: () {
+                                storeController.onClickMenuCountPlus();
+                              },
+                              heroTag: "plus",
+                              child: Image.asset(
+                                "assets/icons/plus.png",
+                                width: 50.w,
+                                height: 50.h,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
 
 class SideMenu extends GetView<StoreController> {
-  const SideMenu({Key? key}) : super(key: key);
+  SideMenu({Key? key}) : super(key: key);
+
+  final StoreController storeController = Get.put(StoreController());
 
   @override
   Widget build(BuildContext context) => Obx(
         () => Padding(
-          padding: EdgeInsets.only(
-            left: 90.w,
-            right: 100.w,
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                height: 100.h,
-              ),
-              Padding(
-                padding: EdgeInsets.only(
-                  left: 40.w,
-                ),
-                child: Text(
-                  "추가메뉴",
-                  style: TextStyle(
-                    color: const Color(0xFF333333),
-                    fontSize: 80.sp,
-                    fontFamily: 'Core_Gothic_D5',
-                  ),
-                ),
-              ),
-              ListView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                // itemCount: controller.isCheckbox.length,
-                itemCount: controller.storeTempMenus[Get.parameters["menuIdx"]]!
-                    .additionalProducts.length,
-                itemBuilder: (BuildContext context, int index) => Obx(
-                  () => Theme(
-                    data: ThemeData(unselectedWidgetColor: kPrimaryColor),
-                    child: CheckboxListTile(
-                      focusNode: index == 0
-                          ? controller.menusCheckBoxFocusNode
-                          : controller.privacyCheckBoxFocusNode,
-                      controlAffinity: ListTileControlAffinity.leading,
-                      contentPadding: EdgeInsets.zero,
-                      title: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            controller
-                                .storeTempMenus[Get.parameters["menuIdx"]]!
-                                .additionalProducts[index]
-                                .name,
-                            style: TextStyle(
-                              color: const Color(0xFF333333),
-                              fontSize: 60.sp,
-                              fontFamily: 'Core_Gothic_D5',
-                            ),
-                          ),
-                          Text(
-                            "+${controller.storeTempMenus[Get.parameters["menuIdx"]]!.additionalProducts[index].price}원",
-                            style: TextStyle(
-                              color: const Color(0xFFB8B8B8),
-                              fontSize: 60.sp,
-                              fontFamily: 'Core_Gothic_D5',
-                            ),
-                          ),
-                        ],
+          padding: EdgeInsets.symmetric(horizontal: 100.w),
+          child: SizedBox(
+            width: 1440.w,
+            child: ListView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: storeController.currentMenu.value.menuOptionTab.length,
+              itemBuilder: (BuildContext context, int index) {
+                var menuOptionTab =
+                    storeController.currentMenu.value.menuOptionTab[index];
+
+                return Column(
+                  // mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 30.h),
+                      child: Text(
+                        menuOptionTab.name,
+                        style: TextStyle(
+                          color: const Color(0xFF333333),
+                          fontSize: 65.sp,
+                          fontFamily: 'Core_Gothic_D5',
+                        ),
                       ),
-                      value: controller
-                          .storeTempMenus[Get.parameters["menuIdx"]]!
-                          .additionalProducts[index]
-                          .isChecked
-                          .value,
-                      activeColor: kPrimaryColor,
-                      onChanged: (bool? value) {
-                        controller.storeTempMenus[Get.parameters["menuIdx"]]!
-                            .additionalProducts[index].isChecked.value = value!;
+                    ),
+                    ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: menuOptionTab.menuOption.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        var menuOption = menuOptionTab.menuOption[index];
+
+                        return Container(
+                          width: 1440.w,
+                          child: InkWell(
+                            onTap: () {
+                              menuOption.check.value = !menuOption.check.value;
+                              storeController.onChangeMenuPrice();
+                            },
+                            child: Obx(
+                              () => Container(
+                                // color: Colors.amber,
+                                child: Row(
+                                  children: [
+                                    Theme(
+                                      data: ThemeData(
+                                        unselectedWidgetColor:
+                                            Color(0xFFFF8800),
+                                      ),
+                                      child: Checkbox(
+                                        // checkColor: Color(0xFFFF8800),
+                                        checkColor: Colors.white,
+                                        activeColor: Color(0xFFFF8800),
+                                        value: menuOption.check.value,
+                                        // value: tempCheck,
+                                        onChanged: (bool? value) {
+                                          print(value);
+                                        },
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        // crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            menuOption.name,
+                                            style: TextStyle(
+                                              color: const Color(0xFF333333),
+                                              fontSize: 50.sp,
+                                              fontFamily: 'Core_Gothic_D5',
+                                            ),
+                                          ),
+                                          Text(
+                                            "+ ${NumberFormat('###,###,###,###').format(menuOption.price).replaceAll(" ", "")}원",
+                                            style: TextStyle(
+                                              color: const Color(0xFFB8B8B8),
+                                              fontSize: 50.sp,
+                                              fontFamily: 'Core_Gothic_D5',
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
                       },
                     ),
-                  ),
-                ),
-              ),
-            ],
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 50.h),
+                      child: Container(
+                        color: Color(0xFFECECEC),
+                        width: 1240.w,
+                        height: 5.h,
+                      ),
+                    )
+                  ],
+                );
+              },
+            ),
           ),
         ),
       );
@@ -353,18 +371,16 @@ class BottomOutlinedButtonWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(
-        bottom: 150.h,
-        left: 100.w,
-        right: 100.w,
-      ),
+      padding: EdgeInsets.symmetric(horizontal: 100.w, vertical: 50.h),
       child: SizedBox(
         width: 1240.w,
         height: 200.h,
         child: OutlinedButton(
           // onPressed: () => Get.toNamed(
           //     '/store=${storeController.storeIdx}/storeMenuDetail=${Get.parameters["menuIdx"]}/storeOrder'),
-          onPressed: () => Get.back(),
+          onPressed: () {
+            storeController.handleCartUpdateProvider();
+          },
           style: OutlinedButton.styleFrom(
             side: const BorderSide(color: Color(0xFFFF8800), width: 1),
             backgroundColor: const Color(0xFFFF8800),

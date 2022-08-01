@@ -49,7 +49,7 @@ class SignUpInfoUi extends GetView<SignUpController> {
                               ],
                             ),
                           ),
-                          const BottomOutlinedButtonWidget(),
+                          const BottomSheetElevatedButton(),
                         ],
                       ),
                     ),
@@ -325,63 +325,67 @@ class EmailWidget extends GetView<SignUpController> {
   // );
 }
 
-class BottomOutlinedButtonWidget extends GetView<SignUpController> {
-  const BottomOutlinedButtonWidget({Key? key}) : super(key: key);
+// class BottomOutlinedButtonWidget extends GetView<SignUpController> {
+//   const BottomOutlinedButtonWidget({Key? key}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) => Obx(
-        () => Align(
-          alignment: Alignment.bottomCenter,
-          child: SizedBox(
-            // padding: const EdgeInsets.fromLTRB(40, 0, 40, 20),
-            width: 800.w,
-            height: 200.h,
-            child: OutlinedButton(
-              focusNode: controller.infoOutlinedButtonFocusNode,
-              onPressed: () => controller.handleInfoProvider(),
-              child: Text(
-                "다음",
-                style: controller.infoOutlinedButtonTextStyle(),
-              ),
-              style: controller.infoOutlinedButtonStyle(),
-            ),
-          ),
-        ),
-      );
-}
+//   @override
+//   Widget build(BuildContext context) => Obx(
+//         () => Align(
+//           alignment: Alignment.bottomCenter,
+//           child: Container(
+//             padding: EdgeInsets.only(bottom: 250.h),
+//             width: 800.w,
+//             height: 200.h,
+//             child: ElevatedButton(
+//               focusNode: controller.infoOutlinedButtonFocusNode,
+//               onPressed: () => controller.handleInfoProvider(),
+//               child: Text(
+//                 "다음",
+//                 style: controller.infoOutlinedButtonTextStyle(),
+//               ),
+//               style: controller.infoOutlinedButtonStyle(),
+//             ),
+//           ),
+//         ),
+//       );
+// }
 
-class BottomSheetElevatedButton extends StatelessWidget {
+class BottomSheetElevatedButton extends GetView<SignUpController> {
   const BottomSheetElevatedButton({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: Container(
-        padding: EdgeInsets.only(
-          bottom: 250.h,
-        ),
-        width: 800.w,
-        height: 450.h,
-        child: ElevatedButton(
-          onPressed: () =>
-              Get.toNamed("/signup/password", preventDuplicates: false),
-          child: Text(
-            "다음",
-            style: TextStyle(
-              color: const Color(0xFFFF8800),
-              fontSize: 70.sp,
-              fontFamily: 'Core_Gothic_D5',
-            ),
+    return Obx(
+      () => Align(
+        alignment: Alignment.bottomCenter,
+        child: Container(
+          padding: EdgeInsets.only(
+            bottom: 250.h,
           ),
-          style: ElevatedButton.styleFrom(
-            primary: Colors.white,
-            onPrimary: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(50.0),
-              side: const BorderSide(color: Color(0xFFFF8800), width: 3),
+          width: 800.w,
+          height: 450.h,
+          child: ElevatedButton(
+            onPressed: () => controller.handleInfoProvider(),
+            // Get.toNamed("/signup/password", preventDuplicates: false),
+            child: Text(
+              "다음",
+              // style: TextStyle(
+              //   color: const Color(0xFFFF8800),
+              //   fontSize: 70.sp,
+              //   fontFamily: 'Core_Gothic_D5',
+              // ),
+              style: controller.infoOutlinedButtonTextStyle(),
             ),
-            shadowColor: Colors.black,
+            // style: ElevatedButton.styleFrom(
+            //   primary: Colors.white,
+            //   onPrimary: Colors.white,
+            //   shape: RoundedRectangleBorder(
+            //     borderRadius: BorderRadius.circular(50.0),
+            //     side: const BorderSide(color: Color(0xFFFF8800), width: 3),
+            //   ),
+            //   shadowColor: Colors.black,
+            // ),
+            style: controller.infoOutlinedButtonStyle(),
           ),
         ),
       ),

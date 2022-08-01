@@ -2,7 +2,10 @@ import 'package:get/get.dart';
 import 'dart:convert';
 import 'package:delivery_service/app/data/provider/home/home_provider.dart';
 import 'package:delivery_service/app/data/model/home/home_model.dart';
-// import 'package:delivery_service/app/controller/mypage/mypage_controller.dart';
+
+import 'package:delivery_service/app/controller/room/room_controller.dart';
+import 'package:delivery_service/app/data/model/room/room_model.dart';
+
 // import 'package:delivery_service/app/data/model/wishlist/wishlist_model.dart';
 import 'package:delivery_service/main.dart';
 
@@ -42,33 +45,49 @@ class HomeController extends GetxController {
   Rx<FoodCategory> foodCategory = FoodCategory.all.obs;
   Rx<Sort> sort = Sort.popularity.obs;
 
-  late RxList<RoomResponseModel> rooms = <RoomResponseModel>[].obs;
-  late RxList<StoreResponseModel> store = <StoreResponseModel>[].obs;
+  // late RxList<RoomResponseModel> rooms = <RoomResponseModel>[].obs;
+
+  // late RxList<StoreResponseModel> store = <StoreResponseModel>[].obs;
 
   RxBool modalVisibility = false.obs;
 
-  // 조회
-  Future<void> handleInitProvider() async {
-    try {
-      await HomeInitProvider().dio().then((value) {
-        if (value.status == "success") {
-          print("Success!");
+  late Rx<RoomResponseModel> currentRoom = RoomResponseModel(
+          idx: -1,
+          memIdx: 0,
+          memName: "",
+          storeIdx: 0,
+          storeName: "",
+          address: "",
+          lat: "",
+          lng: "",
+          timeLimit: "",
+          currentNum: 0,
+          maximumNum: 0,
+          deliveryTime: "",
+          deliveryFee: 0,
+          active: false)
+      .obs;
 
-          rooms.addAll(value.rooms);
-          rooms.refresh();
-        } else {
-          print("else");
-        }
-      });
-    } catch (e) {
-      logger.d(e);
-    } finally {
-      Future.delayed(
-          const Duration(milliseconds: 500),
-          // ignore: avoid_print
-          () => print("Delay~"));
-    }
-  }
+  // // 조회
+  // Future<void> handleInitProvider() async {
+  //   try {
+  //     await HomeInitProvider().dio().then((value) {
+  //       if (value.status == "success") {
+  //         rooms.addAll(value.rooms);
+  //         rooms.refresh();
+  //       } else {
+  //         print("else");
+  //       }
+  //     });
+  //   } catch (e) {
+  //     logger.d(e);
+  //   } finally {
+  //     Future.delayed(
+  //         const Duration(milliseconds: 500),
+  //         // ignore: avoid_print
+  //         () {});
+  //   }
+  // }
 
   RxList roomInfos = [
     jsonDecode(
@@ -79,31 +98,12 @@ class HomeController extends GetxController {
         '{"idx":3,"name":"샐러디 동국대점","img":"assets/icons/3.png","user":"왕뚱뚱보"}')
   ].obs;
 
-  RxList roomVerticalInfos = [
-    jsonDecode(
-        '{"idx":1,"name":"연어롭다 연남점1","img":"assets/icons/c.png","user":"SexyBBoy","deliveryFee":"2,000원","time":"09:27","distance":"0.7km","capacity":"3"}'),
-    jsonDecode(
-        '{"idx":2,"name":"연어롭다 연남점2","img":"assets/icons/c.png","user":"SexyBBoy","deliveryFee":"2,000원","time":"09:27","distance":"0.7km","capacity":"3"}'),
-    jsonDecode(
-        '{"idx":3,"name":"연어롭다 연남점3","img":"assets/icons/c.png","user":"SexyBBoy","deliveryFee":"2,000원","time":"09:27","distance":"0.7km","capacity":"3"}'),
-    jsonDecode(
-        '{"idx":4,"name":"연어롭다 연남점4","img":"assets/icons/c.png","user":"SexyBBoy","deliveryFee":"2,000원","time":"09:27","distance":"0.7km","capacity":"3"}'),
-    jsonDecode(
-        '{"idx":5,"name":"연어롭다 연남점5","img":"assets/icons/c.png","user":"SexyBBoy","deliveryFee":"2,000원","time":"09:27","distance":"0.7km","capacity":"3"}'),
-    jsonDecode(
-        '{"idx":6,"name":"연어롭다 연남점6","img":"assets/icons/c.png","user":"SexyBBoy","deliveryFee":"2,000원","time":"09:27","distance":"0.7km","capacity":"3"}'),
-    jsonDecode(
-        '{"idx":7,"name":"연어롭다 연남점7","img":"assets/icons/c.png","user":"SexyBBoy","deliveryFee":"2,000원","time":"09:27","distance":"0.7km","capacity":"3"}'),
-    jsonDecode(
-        '{"idx":8,"name":"연어롭다 연남점8","img":"assets/icons/c.png","user":"SexyBBoy","deliveryFee":"2,000원","time":"09:27","distance":"0.7km","capacity":"3"}'),
-    jsonDecode(
-        '{"idx":9,"name":"연어롭다 연남점9","img":"assets/icons/c.png","user":"SexyBBoy","deliveryFee":"2,000원","time":"09:27","distance":"0.7km","capacity":"3"}'),
-    jsonDecode(
-        '{"idx":10,"name":"연어롭다 연남점10","img":"assets/icons/c.png","user":"SexyBBoy","deliveryFee":"2,000원","time":"09:27","distance":"0.7km","capacity":"3"}'),
-  ].obs;
-
   void TurnOnMapModal(int index) {
-    print(rooms[index].storeName);
+    RoomController roomController = Get.put(RoomController());
+
+    // print(roomController.rooms[index]);
+
+    currentRoom.value = roomController.rooms[index];
 
     modalVisibility.value = true;
   }
@@ -117,7 +117,7 @@ class HomeController extends GetxController {
   @override
   // ignore: unnecessary_overrides
   void onInit() async {
-    await handleInitProvider();
+    // await handleInitProvider();
 
     super.onInit();
   }

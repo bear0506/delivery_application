@@ -11,13 +11,27 @@ class SignInController extends GetxController {
   final emailController = TextEditingController().obs;
   final passwordController = TextEditingController().obs;
 
+  late FocusScopeNode currentFocus = FocusScopeNode();
+  late FocusNode emailFocusNode = FocusNode();
+  late FocusNode passwordFocusNode = FocusNode();
+
   // 로더
   RxBool isLoaderVisible = false.obs;
   // 비밀번호 폼 필드 보기/숨기기
   RxBool isPasswordVisible = true.obs;
   // 비밀번호 정규식
   static RegExp pwRegExp =
-  RegExp(r"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{6,}$");
+      RegExp(r"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{6,}$");
+
+  void handleEmailOnFieldSubmitted() =>
+      EmailValidator.validate(emailController.value.text)
+          ? passwordFocusNode.requestFocus()
+          : emailFocusNode.requestFocus();
+
+  void handlePasswordOnFieldSubmitted() =>
+      pwRegExp.hasMatch(passwordController.value.text)
+          ? handleSignInProvider()
+          : passwordFocusNode.requestFocus();
 
   // 폼 텍스트 벨리데이션 체크
   bool handleValidator() {
@@ -54,8 +68,8 @@ class SignInController extends GetxController {
   // 로그인
   Future<void> handleSignInProvider() async {
     try {
-      logger.d(emailController.value.text);
-      logger.d(passwordController.value.text);
+      // logger.d(emailController.value.text);
+      // logger.d(passwordController.value.text);
 
       if (handleValidator()) {
         Rx<SignInRequestModel> requestModel = SignInRequestModel(
@@ -73,12 +87,7 @@ class SignInController extends GetxController {
         await SignInProvider().dio(requestModel: requestModel).then((value) {
           if (value.status == "success") {
             GetStorage().write("token", value.accessToken);
-
-
-
             Get.offAllNamed("/main");
-
-
           } else {
             logger.d(value.message);
             GlobalToastWidget(message: value.message);
@@ -148,6 +157,11 @@ class SignInController extends GetxController {
   @override
   // ignore: unnecessary_overrides
   void onClose() {
+    FocusManager.instance.primaryFocus?.unfocus();
+
+    emailFocusNode.dispose();
+    passwordFocusNode.dispose();
+
     super.onClose();
   }
 

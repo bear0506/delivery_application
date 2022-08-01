@@ -33,8 +33,7 @@ class MapInitProvider {
 
       if (response.statusCode == 200) {
         //logger.d(response.data);
-        return RoomBaseResponseModel.fromJson(response.data);
-        // 아 여기서 이것만 보내줌녀 안되고 저거 map list도 보내줘야함
+        return RoomsBaseResponseModel.fromJson(response.data);
       } else {
         throw Exception('faild to load request');
       }

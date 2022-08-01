@@ -116,7 +116,7 @@ class OutlinedButtonWidget extends GetView<SuccessController> {
                   Get.offAllNamed("/signin");
                   break;
                 default:
-                  Get.offAllNamed("/home");
+                  Get.offAllNamed("/main");
               }
             },
             style: OutlinedButton.styleFrom(

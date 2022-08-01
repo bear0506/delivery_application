@@ -239,18 +239,20 @@ class BottomSheetOutlinedButton extends GetView<SignUpController> {
   Widget build(BuildContext context) => Obx(
         () => Align(
           alignment: Alignment.bottomCenter,
-          child: SizedBox(
-            // padding: EdgeInsets.only(bottom: 250.h,),
-            width: 800.w,
-            height: 200.h,
-            child: OutlinedButton(
-              focusNode: controller.termsOutlinedButtonFocusNode,
-              onPressed: () => controller.outlinedButtonOnPressed(),
-              child: Text(
-                "다음",
-                style: controller.outlinedButtonTextStyle(),
+          child: Padding(
+            padding: EdgeInsets.only(bottom: 250.h),
+            child: SizedBox(
+              width: 800.w,
+              height: 200.h,
+              child: OutlinedButton(
+                focusNode: controller.termsOutlinedButtonFocusNode,
+                onPressed: () => controller.outlinedButtonOnPressed(),
+                child: Text(
+                  "다음",
+                  style: controller.outlinedButtonTextStyle(),
+                ),
+                style: controller.outlinedButtonStyle(),
               ),
-              style: controller.outlinedButtonStyle(),
             ),
           ),
         ),
