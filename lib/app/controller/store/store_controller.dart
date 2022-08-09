@@ -207,7 +207,8 @@ class StoreController extends GetxController with GetTickerProviderStateMixin {
   }
 
   // 주문 상세 추가
-  Rx<OrderDetailAddRequestModel> orderDetailAddRequestModel = OrderDetailAddRequestModel(
+  Rx<OrderDetailAddRequestModel> orderDetailAddRequestModel =
+      OrderDetailAddRequestModel(
     orderIdx: 0,
     menuIdx: 0,
     menuOptions: "",
@@ -215,13 +216,12 @@ class StoreController extends GetxController with GetTickerProviderStateMixin {
     price: 0,
   ).obs;
 
-  void handleOrderDetailAddRequestModel({
-    required int orderIdx,
-    required int menuIdx,
-    required String menuOptions,
-    required int count,
-    required int price
-  }) {
+  void handleOrderDetailAddRequestModel(
+      {required int orderIdx,
+      required int menuIdx,
+      required String menuOptions,
+      required int count,
+      required int price}) {
     orderDetailAddRequestModel.update((_) {
       _?.orderIdx = orderIdx;
       _?.menuIdx = menuIdx;
@@ -230,6 +230,19 @@ class StoreController extends GetxController with GetTickerProviderStateMixin {
       _?.price = price;
     });
   }
+
+  // // 장바구니 삭제
+  // Rx<OrderDeleteRequestModel> orderDeleteRequestModel = OrderDeleteRequestModel(
+  //   orderIdx: 0,
+  // ).obs;
+
+  // void handleOrderDeleteRequestModel({
+  //   required int orderIdx,
+  // }) {
+  //   orderDeleteRequestModel.update((_) {
+  //     _?.orderIdx = orderIdx;
+  //   });
+  // }
 
   // 전체 카테고리 조회
   Future<void> handleCategoryAllProvider() async {
@@ -350,6 +363,7 @@ class StoreController extends GetxController with GetTickerProviderStateMixin {
 
           if (value.message == "ADD") {
             print("아직 장바구니 없음");
+
             handleOrderAddProvider();
           } else if (value.message == "UPDATE") {
             print("같은 가게 메뉴 있음");
@@ -357,6 +371,69 @@ class StoreController extends GetxController with GetTickerProviderStateMixin {
             handleOrderDetailAddProvider(value.orderIdx);
           } else if (value.message == "DELETE") {
             print("다른 가게 메뉴 있음");
+
+            Get.dialog(
+              AlertDialog(
+                title: Text(
+                  "장바구니에는 같은 가게의 메뉴만 담을 수 있습니다.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 60.sp,
+                    fontFamily: 'Core_Gothic_D5',
+                  ),
+                ),
+                titlePadding:
+                    EdgeInsets.symmetric(horizontal: 80.w, vertical: 100.h),
+                content: SizedBox(
+                  width: 1000.w,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        "선택하신 메뉴를 장바구니에 담을 경우 이전에 담은 메뉴가 삭제됩니다.",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: const Color(0xFFB8B8B8),
+                          fontSize: 50.sp,
+                          fontFamily: 'Core_Gothic_D3',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                contentPadding:
+                    EdgeInsets.only(left: 90.w, right: 90.w, bottom: 50.h),
+                actions: [
+                  TextButton(
+                    child: Text(
+                      "확인",
+                      style: TextStyle(
+                        color: const Color(0xFFFF8800),
+                        fontSize: 60.sp,
+                        fontFamily: 'Core_Gothic_D5',
+                      ),
+                    ),
+                    onPressed: () {
+                      handleOrderDeleteProvider(value.orderIdx);
+                      Get.back();
+                    },
+                  ),
+                  TextButton(
+                    child: Text(
+                      "취소",
+                      style: TextStyle(
+                        color: const Color(0xFFFF8800),
+                        fontSize: 60.sp,
+                        fontFamily: 'Core_Gothic_D5',
+                      ),
+                    ),
+                    onPressed: () => Get.back(),
+                  ),
+                ],
+                actionsAlignment: MainAxisAlignment.center,
+                actionsPadding: EdgeInsets.zero,
+              ),
+            );
           }
 
           // print(currentMenu.value.menuOptionTab);
@@ -386,6 +463,8 @@ class StoreController extends GetxController with GetTickerProviderStateMixin {
           .then((value) {
         if (value.status == "success") {
           print("성공!");
+
+          handleOrderDetailAddProvider(value.orderIdx);
         } else {
           print("else");
         }
@@ -395,7 +474,7 @@ class StoreController extends GetxController with GetTickerProviderStateMixin {
     }
   }
 
-  //장바구니 메뉴 추가 -> 여기부터 작업
+  //장바구니 메뉴 추가
   Future<void> handleOrderDetailAddProvider(int orderIdx) async {
     try {
       handleOrderDetailAddRequestModel(
@@ -413,6 +492,8 @@ class StoreController extends GetxController with GetTickerProviderStateMixin {
           .then((value) {
         if (value.status == "success") {
           print("성공!!");
+
+          Get.back();
         } else {
           print("else");
         }
@@ -421,6 +502,59 @@ class StoreController extends GetxController with GetTickerProviderStateMixin {
       logger.d(e);
     }
   }
+
+  //장바구니 삭제
+  Future<void> handleOrderDeleteProvider(int orderIdx) async {
+    try {
+      await OrderDeleteProvider().dio(idx: orderIdx).then((value) {
+        if (value.status == "success") {
+          print("기존 장바구니 삭제 성공");
+        } else {
+          print("기존 장바구니 삭제 실패");
+        }
+      });
+    } catch (e) {
+      logger.d(e);
+    }
+  }
+
+  //장바구니 업데이트
+  Future<void> handleOrderUpdateProvider(int orderIdx) async {
+    try {
+      await CartUpdateProvider().dio(idx: orderIdx).then((value) {
+        if (value.status == "success") {
+          print("기존 장바구니 삭제 성공");
+        } else {
+          print("기존 장바구니 삭제 실패");
+        }
+      });
+    } catch (e) {
+      logger.d(e);
+    }
+  }
+
+  // //장바구니 메뉴 전체 삭제
+  // Future<void> handleOrderDetailDeleteAllProvider(int orderIdx) async {
+  //   try {
+  //     handleOrderDetailDeleteAllRequestModel(
+  //       orderIdx: orderIdx,
+  //     );
+
+  //     print("전체삭제");
+
+  //     await OrderDetailDeleteAllProvider()
+  //         .dio(requestModel: orderDetailDeleteAllRequestModel)
+  //         .then((value) {
+  //       if (value.status == "success") {
+  //         print("성공!!");
+  //       } else {
+  //         print("else");
+  //       }
+  //     });
+  //   } catch (e) {
+  //     logger.d(e);
+  //   }
+  // }
 
   int calculateDeliveryFee(String deliveryFee, int menuPrice) {
     dynamic keys = json.decode(store.value.deliveryFee).keys.toList();

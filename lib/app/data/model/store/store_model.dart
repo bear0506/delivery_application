@@ -330,6 +330,22 @@ class OrderAddRequestModel {
   }
 }
 
+// class OrderDeleteRequestModel {
+//   late int orderIdx;
+
+//   OrderDeleteRequestModel({
+//     required this.orderIdx,
+//   });
+
+//   Map<String, dynamic> toJson() {
+//     Map<String, dynamic> map = {
+//       "order_idx": orderIdx,
+//     };
+
+//     return map;
+//   }
+// }
+
 class OrderDetailAddRequestModel {
   late int orderIdx;
   late int menuIdx;
@@ -337,13 +353,12 @@ class OrderDetailAddRequestModel {
   late int count;
   late int price;
 
-  OrderDetailAddRequestModel({
-    required this.orderIdx,
-    required this.menuIdx,
-    required this.menuOptions,
-    required this.count,
-    required this.price
-  });
+  OrderDetailAddRequestModel(
+      {required this.orderIdx,
+      required this.menuIdx,
+      required this.menuOptions,
+      required this.count,
+      required this.price});
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {

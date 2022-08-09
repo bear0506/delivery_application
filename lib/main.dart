@@ -12,9 +12,9 @@ import 'app/routes/pages.dart';
 // ignore: constant_identifier_names
 
 // AOS
-// const SERVER_IP = 'http://10.0.2.2:8000/v1/app';
-// IOS
-const SERVER_IP = 'http://127.0.0.1:8000/v1/app';
+const SERVER_IP = 'http://10.0.2.2:8000/v1/app';
+// // IOS
+// const SERVER_IP = 'http://127.0.0.1:8000/v1/app';
 
 Logger logger = Logger();
 
