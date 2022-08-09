@@ -267,11 +267,13 @@ class CartCheckResponseModel {
   final String? status;
   final String? error;
   final dynamic message;
+  final dynamic orderIdx;
 
   CartCheckResponseModel({
     this.status,
     this.error,
     this.message,
+    this.orderIdx,
   });
 
   factory CartCheckResponseModel.formJson(Map<String, dynamic> json) =>
@@ -279,12 +281,14 @@ class CartCheckResponseModel {
         status: json["status"] ?? "",
         error: json["error"] ?? "",
         message: json["message"] ?? "",
+        orderIdx: json["orderIdx"] ?? "",
       );
 
   Map<String, dynamic> toJson() => {
         "status": status,
         "error": error,
         "message": message,
+        "orderIdx": orderIdx,
       };
 }
 
@@ -320,6 +324,34 @@ class OrderAddRequestModel {
       "store_idx": storeIdx,
       "price": price,
       "delivery_fee": deliveryFee,
+    };
+
+    return map;
+  }
+}
+
+class OrderDetailAddRequestModel {
+  late int orderIdx;
+  late int menuIdx;
+  late String menuOptions;
+  late int count;
+  late int price;
+
+  OrderDetailAddRequestModel({
+    required this.orderIdx,
+    required this.menuIdx,
+    required this.menuOptions,
+    required this.count,
+    required this.price
+  });
+
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {
+      "order_idx": orderIdx,
+      "menu_idx": menuIdx,
+      "menu_options": menuOptions,
+      "count": count,
+      "price": price,
     };
 
     return map;

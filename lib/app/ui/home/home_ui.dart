@@ -147,9 +147,10 @@ class DrawerWidgetHeader extends GetView<HomeController> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         image: DecorationImage(
-                            image: NetworkImage(
-                                mainController.currentMember.value.photo),
-                            fit: BoxFit.cover),
+                          image: NetworkImage(
+                              mainController.currentMember.value.photo),
+                          fit: BoxFit.cover
+                        ),
                       ),
                     ),
                     Container(

@@ -172,6 +172,7 @@ class StoreController extends GetxController with GetTickerProviderStateMixin {
 
   late RxInt menuCount;
   RxInt menuPrice = 0.obs;
+  RxList<int> menuOptions = <int>[].obs;
 
   // 리퀘스트 모델(데이터 넘기기)
   Rx<CartCheckRequestModel> cartCheckRequestModel = CartCheckRequestModel(
@@ -186,6 +187,7 @@ class StoreController extends GetxController with GetTickerProviderStateMixin {
     });
   }
 
+  // 주문 추가
   Rx<OrderAddRequestModel> orderAddRequestModel = OrderAddRequestModel(
     storeIdx: 0,
     price: 0,
@@ -201,6 +203,31 @@ class StoreController extends GetxController with GetTickerProviderStateMixin {
       _?.storeIdx = storeIdx;
       _?.price = price;
       _?.deliveryFee = deliveryFee;
+    });
+  }
+
+  // 주문 상세 추가
+  Rx<OrderDetailAddRequestModel> orderDetailAddRequestModel = OrderDetailAddRequestModel(
+    orderIdx: 0,
+    menuIdx: 0,
+    menuOptions: "",
+    count: 0,
+    price: 0,
+  ).obs;
+
+  void handleOrderDetailAddRequestModel({
+    required int orderIdx,
+    required int menuIdx,
+    required String menuOptions,
+    required int count,
+    required int price
+  }) {
+    orderDetailAddRequestModel.update((_) {
+      _?.orderIdx = orderIdx;
+      _?.menuIdx = menuIdx;
+      _?.menuOptions = menuOptions;
+      _?.count = count;
+      _?.price = price;
     });
   }
 
@@ -322,9 +349,12 @@ class StoreController extends GetxController with GetTickerProviderStateMixin {
           // print(value.message);
 
           if (value.message == "ADD") {
+            print("아직 장바구니 없음");
             handleOrderAddProvider();
           } else if (value.message == "UPDATE") {
             print("같은 가게 메뉴 있음");
+
+            handleOrderDetailAddProvider(value.orderIdx);
           } else if (value.message == "DELETE") {
             print("다른 가게 메뉴 있음");
           }
@@ -366,17 +396,20 @@ class StoreController extends GetxController with GetTickerProviderStateMixin {
   }
 
   //장바구니 메뉴 추가 -> 여기부터 작업
-  Future<void> handleOrderDetailAddProvider() async {
+  Future<void> handleOrderDetailAddProvider(int orderIdx) async {
     try {
-      handleOrderAddRequestModel(
-        storeIdx: int.parse(Get.parameters["storeIdx"].obs.string),
+      handleOrderDetailAddRequestModel(
+        orderIdx: orderIdx,
+        menuIdx: currentMenu.value.idx,
+        menuOptions: menuOptions.join(","),
+        count: currentMenu.value.count.value,
         price: menuPrice.value,
-        deliveryFee:
-            calculateDeliveryFee(store.value.deliveryFee, menuPrice.value),
       );
 
-      await OrderAddProvider()
-          .dio(requestModel: orderAddRequestModel)
+      print(menuPrice.value);
+
+      await OrderDetailAddProvider()
+          .dio(requestModel: orderDetailAddRequestModel)
           .then((value) {
         if (value.status == "success") {
           print("성공!!");
@@ -644,6 +677,8 @@ class StoreController extends GetxController with GetTickerProviderStateMixin {
   }
 
   void onChangeMenuPrice() {
+    menuOptions.clear();
+
     menuPrice.value = currentMenu.value.price;
 
     for (int i = 0; i < currentMenu.value.menuOptionTab.length; i++) {
@@ -654,6 +689,7 @@ class StoreController extends GetxController with GetTickerProviderStateMixin {
 
         if (option.check.value == true) {
           menuPrice.value += option.price;
+          menuOptions.add(option.idx);
         }
       }
     }

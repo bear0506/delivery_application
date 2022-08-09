@@ -23,7 +23,7 @@ class MainController extends GetxController {
 
   // 스토리지에서 토큰 체크
   Future<void> handleInit() async {
-    print(GetStorage().read("token"));
+    //print(GetStorage().read("token"));
 
     if (GetStorage().read("token") == null) {
       // handleGetTo(status: false);

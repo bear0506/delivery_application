@@ -51,10 +51,17 @@
         <key>io.flutter.embedded_views_preview</key> <true/>
 
 	<!-- kpostal -->
-   <key>NSAppTransportSecurity</key>
+    <key>NSAppTransportSecurity</key>
     <dict>
         <key>NSAllowsArbitraryLoads</key>
         <true/>
     </dict>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+
+	<key>com.apple.security.network.client</key>
+    <true/>
 </dict>
 </plist>

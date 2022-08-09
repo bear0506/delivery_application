@@ -109,8 +109,6 @@ class HomeController extends GetxController {
   }
 
   void TurnOffMapModal() {
-    print("TurnOffMapModal");
-
     modalVisibility.value = false;
   }
 
