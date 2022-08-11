@@ -3,7 +3,6 @@ import 'package:get_storage/get_storage.dart';
 import 'package:delivery_service/app/data/model/order/order_model.dart';
 import "package:delivery_service/main.dart";
 
-
 class CartInitProvider {
   dio() async {
     final Dio dio = Dio();

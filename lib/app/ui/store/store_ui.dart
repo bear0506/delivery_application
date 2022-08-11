@@ -150,10 +150,10 @@ class StoreUi extends GetView<StoreController> {
                               heroTag: "shoppingBasket",
                               backgroundColor: Colors.transparent,
                               onPressed: () {
-                                print(_storeController.storeIdx);
+                                orderController.handleCartInitProvider();
+
                                 Get.toNamed(
                                     '/store=${_storeController.storeIdx}/order');
-                                orderController.handleCartInitProvider();
                               },
                               tooltip: 'Increment',
                               child: Image.asset(

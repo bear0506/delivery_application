@@ -1,9 +1,13 @@
+import 'dart:convert';
+
 import 'package:get/get.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:delivery_service/app/controller/order/order_controller.dart';
+import 'package:delivery_service/app/data/model/order/order_model.dart';
+
 import 'package:delivery_service/app/ui/order/order_list_item_data.dart';
 
 class OrderUi extends GetView<OrderController> {
@@ -11,15 +15,15 @@ class OrderUi extends GetView<OrderController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: NestedScrollView(
-        physics: const ClampingScrollPhysics(),
-        controller: controller.scrollController.value,
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-          return <Widget>[
-            Obx(
-              () => SliverAppBar(
+    return Obx(
+      () => Scaffold(
+        backgroundColor: Colors.white,
+        body: NestedScrollView(
+          physics: const ClampingScrollPhysics(),
+          controller: controller.scrollController.value,
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return <Widget>[
+              SliverAppBar(
                 elevation: 0,
                 // expandedHeight: 200.h,
                 // collapsedHeight: 200.h,
@@ -40,8 +44,8 @@ class OrderUi extends GetView<OrderController> {
                         icon: Image.asset(
                           "assets/icons/x.png",
                           color: const Color(0xFF333333),
-                          width: 60.w,
-                          height: 60.h,
+                          width: 50.w,
+                          height: 50.h,
                         ),
                         onPressed: () => Get.back(),
                       ),
@@ -63,48 +67,47 @@ class OrderUi extends GetView<OrderController> {
                   ),
                 ),
               ),
+            ];
+          },
+          body: Theme(
+            data: Theme.of(context).copyWith(
+              colorScheme: ColorScheme.fromSwatch(
+                accentColor: Colors.transparent,
+              ),
             ),
-          ];
-        },
-        body: Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.fromSwatch(
-              accentColor: Colors.transparent,
-            ),
-          ),
-          child: NotificationListener<OverscrollIndicatorNotification>(
-            onNotification: (OverscrollIndicatorNotification? overscroll) {
-              overscroll!.disallowIndicator();
-              return true;
-            },
-            child: SingleChildScrollView(
-              physics: const NeverScrollableScrollPhysics(),
-              child: Column(
-                children: [
-                  SetAddress(),
-                  Container(
-                    color: Color(0xFFECECEC),
-                    height: 20.h,
-                  ),
-                  // OrderList(),
-                  CartListWidget(),
-                  Container(
-                    color: Color(0xFFECECEC),
-                    height: 20.h,
-                  ),
-                  TotalPrice(),
-                  Container(
-                    color: Color(0xFFECECEC),
-                    height: 20.h,
-                  ),
-                  Notice(),
-                ],
+            child: NotificationListener<OverscrollIndicatorNotification>(
+              onNotification: (OverscrollIndicatorNotification? overscroll) {
+                overscroll!.disallowIndicator();
+                return true;
+              },
+              child: SingleChildScrollView(
+                physics: const NeverScrollableScrollPhysics(),
+                child: Column(
+                  children: [
+                    SetAddress(),
+                    Container(
+                      color: Color(0xFFECECEC),
+                      height: 20.h,
+                    ),
+                    CartListWidget(),
+                    Container(
+                      color: Color(0xFFECECEC),
+                      height: 20.h,
+                    ),
+                    TotalPrice(),
+                    Container(
+                      color: Color(0xFFECECEC),
+                      height: 20.h,
+                    ),
+                    Notice(),
+                  ],
+                ),
               ),
             ),
           ),
         ),
+        bottomNavigationBar: BottomOutlinedButtonWidget(),
       ),
-      bottomNavigationBar: BottomOutlinedButtonWidget(),
     );
   }
 }
@@ -175,81 +178,178 @@ class CartListWidget extends GetView<OrderController> {
   final listKey = GlobalKey<AnimatedListState>();
   final List<ListItem> items = List.from(listItems);
 
-  void removeItem(int index) {
-    final removedItem = items[index];
+  // void removeItem(int index) {
+  //   final removedItem = items[index];
 
-    items.removeAt(index);
-    listKey.currentState!.removeItem(
-      index,
-          (context, animation) => ListItemWidget(
-        item: removedItem,
-        animation: animation,
-        onClicked: () {},
-      ),
-      duration: const Duration(
-        milliseconds: 200,
-      ),
-    );
-  }
+  //   items.removeAt(index);
+  //   listKey.currentState!.removeItem(
+  //     index,
+  //     (context, animation) => ListItemWidget(
+  //       item: removedItem,
+  //       animation: animation,
+  //       onClicked: () {},
+  //     ),
+  //     duration: const Duration(
+  //       milliseconds: 200,
+  //     ),
+  //   );
+  // }
 
-  void insertItem() {
-    final newIndex = items.length;
-    final newItem = (List.of(listItems)..shuffle()).first;
+  // void insertItem() {
+  //   final newIndex = items.length;
+  //   final newItem = (List.of(listItems)..shuffle()).first;
 
-    items.insert(newIndex, newItem);
-    listKey.currentState!.insertItem(
-      newIndex,
-      duration: const Duration(
-        milliseconds: 200,
-      ),
-    );
-  }
+  //   items.insert(newIndex, newItem);
+  //   listKey.currentState!.insertItem(
+  //     newIndex,
+  //     duration: const Duration(
+  //       milliseconds: 200,
+  //     ),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      constraints: const BoxConstraints(
-        maxHeight: double.infinity,
-      ),
-      padding: EdgeInsets.only(left: 100.w, right: 100.w, top: 70.h),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          AnimatedList(
-            physics: const NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            key: listKey,
-            initialItemCount: items.length,
-            itemBuilder: (context, index, animation) => ListItemWidget(
-              item: items[index],
-              animation: animation,
-              onClicked: () => removeItem(index),
-            ),
-          ),
-          TextButton(
-            onPressed: () => insertItem(),
-            style: TextButton.styleFrom(
-              splashFactory: NoSplash.splashFactory,
-            ),
-            child: Text(
-              "+ 메뉴 추가하기",
-              style: TextStyle(
-                color: const Color(0xFFFF8800),
-                fontSize: 50.sp,
-                fontFamily: 'Core_Gothic_D5',
+    print(controller.cartMenus.length);
+    return Obx(
+      () => Container(
+        constraints: const BoxConstraints(
+          maxHeight: double.infinity,
+        ),
+        padding: EdgeInsets.only(left: 100.w, right: 100.w, top: 70.h),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            AnimatedList(
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              // key: listKey,
+              initialItemCount: controller.cartMenus.length,
+              itemBuilder: (context, index, animation) => SizeTransition(
+                sizeFactor: animation,
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          jsonDecode(controller.cartMenus[index].menu)['name'],
+                          style: TextStyle(
+                            color: const Color(0xFF333333),
+                            fontSize: 60.sp,
+                            fontFamily: 'Core_Gothic_D5',
+                          ),
+                        ),
+                        SizedBox(
+                          width: 30.w,
+                          height: 30.h,
+                          child: IconButton(
+                            constraints: BoxConstraints(),
+                            padding: EdgeInsets.zero,
+                            splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            onPressed: () {},
+                            icon: Image.asset(
+                              "assets/icons/x2.png",
+                              // width: 30.w,
+                              // height: 30.h,
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                    SizedBox(height: 45.h),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          controller.cartMenus[index].price.toString() + "원",
+                          style: TextStyle(
+                            color: const Color(0xFF333333),
+                            fontSize: 60.sp,
+                            fontFamily: 'Core_Gothic_D5',
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: 80.w,
+                              height: 80.h,
+                              child: IconButton(
+                                padding: EdgeInsets.zero,
+                                splashColor: Colors.transparent,
+                                highlightColor: Colors.transparent,
+                                onPressed: () {},
+                                icon: Image.asset("assets/icons/minus1.png"),
+                              ),
+                            ),
+                            Container(
+                              margin: EdgeInsets.symmetric(horizontal: 60.w),
+                              child: Text(
+                                "1",
+                                style: TextStyle(
+                                  color: const Color(0xFF333333),
+                                  fontSize: 60.sp,
+                                  fontFamily: 'Core_Gothic_D5',
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 80.w,
+                              height: 80.h,
+                              child: IconButton(
+                                padding: EdgeInsets.zero,
+                                splashColor: Colors.transparent,
+                                highlightColor: Colors.transparent,
+                                onPressed: () {},
+                                icon: Image.asset("assets/icons/plus1.png"),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 60.h),
+                    Container(
+                      color: Color(0xFFECECEC),
+                      height: 2.h,
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+            TextButton(
+              onPressed: () {
+                // insertItem();
+                controller.handleCartInitProvider();
+                print(controller.cartMenus.length);
+              },
+              style: TextButton.styleFrom(
+                splashFactory: NoSplash.splashFactory,
+              ),
+              child: Text(
+                "+ 메뉴 추가하기",
+                style: TextStyle(
+                  color: const Color(0xFFFF8800),
+                  fontSize: 50.sp,
+                  fontFamily: 'Core_Gothic_D5',
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-
-class ListItemWidget extends GetView<OrderController> {
-  final ListItem item;
+class ListItemWidget extends StatelessWidget {
+  final OrderDetailResponseModel item;
   final Animation<double> animation;
   final VoidCallback? onClicked;
 
@@ -271,7 +371,7 @@ class ListItemWidget extends GetView<OrderController> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                this.item.title,
+                jsonDecode(this.item.menu)['name'],
                 style: TextStyle(
                   color: const Color(0xFF333333),
                   fontSize: 60.sp,
@@ -302,7 +402,7 @@ class ListItemWidget extends GetView<OrderController> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                this.item.price,
+                this.item.price.toString() + "원",
                 style: TextStyle(
                   color: const Color(0xFF333333),
                   fontSize: 60.sp,
@@ -360,7 +460,6 @@ class ListItemWidget extends GetView<OrderController> {
     );
   }
 }
-
 
 class TotalPrice extends StatefulWidget {
   const TotalPrice({Key? key}) : super(key: key);

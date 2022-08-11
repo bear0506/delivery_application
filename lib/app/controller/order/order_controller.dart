@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:delivery_service/main.dart';
 
 import 'package:delivery_service/app/data/provider/order/order_provider.dart';
-
+import 'package:delivery_service/app/data/model/order/order_model.dart';
 
 class OrderController extends GetxController with GetTickerProviderStateMixin {
   late Rx<dynamic> storeIdx = Get.parameters["storeIdx"].obs;
@@ -14,16 +14,25 @@ class OrderController extends GetxController with GetTickerProviderStateMixin {
 
   RxBool temp = true.obs;
 
+  Rx<Color> tempColor = const Color(0xFFECECEC).obs;
+
+  late RxList<OrderDetailResponseModel> cartMenus =
+      <OrderDetailResponseModel>[].obs;
+
   // 전체 조회
   Future<void> handleCartInitProvider() async {
     try {
       await CartInitProvider().dio().then((value) {
         if (value.status == "success") {
-          print("good");
-          // rooms.addAll(value.rooms);
-          // rooms.refresh();
+          print("장바구니 조회 성공");
+
+          cartMenus.assignAll(value.orderDetails);
+          cartMenus.refresh();
+          update();
+
+          print(cartMenus.length);
         } else {
-          print("else");
+          print("장바구니 조회 실패");
         }
       });
     } catch (e) {
@@ -32,7 +41,7 @@ class OrderController extends GetxController with GetTickerProviderStateMixin {
       Future.delayed(
           const Duration(milliseconds: 500),
           // ignore: avoid_print
-              () {});
+          () {});
     }
   }
 
