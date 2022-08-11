@@ -415,7 +415,6 @@ class StoreController extends GetxController with GetTickerProviderStateMixin {
                     ),
                     onPressed: () {
                       handleOrderDeleteProvider(value.orderIdx);
-                      Get.back();
                     },
                   ),
                   TextButton(
@@ -462,11 +461,11 @@ class StoreController extends GetxController with GetTickerProviderStateMixin {
           .dio(requestModel: orderAddRequestModel)
           .then((value) {
         if (value.status == "success") {
-          print("성공!");
+          print("주문 추가 성공");
 
           handleOrderDetailAddProvider(value.orderIdx);
         } else {
-          print("else");
+          print("주문 추가 실패");
         }
       });
     } catch (e) {
@@ -485,17 +484,15 @@ class StoreController extends GetxController with GetTickerProviderStateMixin {
         price: menuPrice.value,
       );
 
-      print(menuPrice.value);
-
       await OrderDetailAddProvider()
           .dio(requestModel: orderDetailAddRequestModel)
           .then((value) {
         if (value.status == "success") {
-          print("성공!!");
+          print("Order Detail 추가 성공");
 
-          Get.back();
+          handleOrderUpdateProvider(orderIdx);
         } else {
-          print("else");
+          print("Order Detail 추가 실패");
         }
       });
     } catch (e) {
@@ -509,6 +506,9 @@ class StoreController extends GetxController with GetTickerProviderStateMixin {
       await OrderDeleteProvider().dio(idx: orderIdx).then((value) {
         if (value.status == "success") {
           print("기존 장바구니 삭제 성공");
+
+          handleOrderAddProvider();
+          Get.back();
         } else {
           print("기존 장바구니 삭제 실패");
         }
@@ -523,9 +523,11 @@ class StoreController extends GetxController with GetTickerProviderStateMixin {
     try {
       await CartUpdateProvider().dio(idx: orderIdx).then((value) {
         if (value.status == "success") {
-          print("기존 장바구니 삭제 성공");
+          print("주문 업데이트 성공");
+
+          Get.back();
         } else {
-          print("기존 장바구니 삭제 실패");
+          print("주문 업데이트 실패");
         }
       });
     } catch (e) {

@@ -14,12 +14,14 @@ import 'package:intl/intl.dart';
 import 'package:step_progress_indicator/step_progress_indicator.dart';
 
 import 'package:delivery_service/app/controller/store/store_controller.dart';
+import 'package:delivery_service/app/controller/order/order_controller.dart';
 // import 'package:delivery_service/app/ui/store/store_data.dart';
 
 class StoreUi extends GetView<StoreController> {
   StoreUi({Key? key}) : super(key: key);
 
   final StoreController _storeController = Get.put(StoreController());
+  final OrderController orderController = Get.put(OrderController());
 
   @override
   Widget build(BuildContext context) {
@@ -151,6 +153,7 @@ class StoreUi extends GetView<StoreController> {
                                 print(_storeController.storeIdx);
                                 Get.toNamed(
                                     '/store=${_storeController.storeIdx}/order');
+                                orderController.handleCartInitProvider();
                               },
                               tooltip: 'Increment',
                               child: Image.asset(

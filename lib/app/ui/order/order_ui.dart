@@ -21,11 +21,11 @@ class OrderUi extends GetView<OrderController> {
             Obx(
               () => SliverAppBar(
                 elevation: 0,
-                expandedHeight: 200.h,
-                collapsedHeight: 200.h,
+                // expandedHeight: 200.h,
+                // collapsedHeight: 200.h,
                 automaticallyImplyLeading: false,
                 titleSpacing: 0,
-                backgroundColor: Colors.white,
+                backgroundColor: Colors.amber,
                 pinned: controller.temp.value,
                 title: Padding(
                   padding: EdgeInsets.only(
@@ -33,8 +33,8 @@ class OrderUi extends GetView<OrderController> {
                     top: 50.h,
                   ),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                    // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    // crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       IconButton(
                         icon: Image.asset(
@@ -80,21 +80,22 @@ class OrderUi extends GetView<OrderController> {
             child: SingleChildScrollView(
               physics: const NeverScrollableScrollPhysics(),
               child: Column(
-                children: const [
+                children: [
                   SetAddress(),
-                  Divider(
+                  Container(
                     color: Color(0xFFECECEC),
-                    thickness: 5,
+                    height: 20.h,
                   ),
-                  OrderList(),
-                  Divider(
+                  // OrderList(),
+                  CartListWidget(),
+                  Container(
                     color: Color(0xFFECECEC),
-                    thickness: 5,
+                    height: 20.h,
                   ),
                   TotalPrice(),
-                  Divider(
+                  Container(
                     color: Color(0xFFECECEC),
-                    thickness: 5,
+                    height: 20.h,
                   ),
                   Notice(),
                 ],
@@ -113,72 +114,64 @@ class SetAddress extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 310.h,
-      color: Colors.white,
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: 100.w,
-          vertical: 40.h,
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "배달 주소",
-              style: TextStyle(
-                color: const Color(0xFFB8B8B8),
-                fontSize: 50.sp,
-                fontFamily: 'Core_Gothic_D4',
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: 100.w,
+        vertical: 60.h,
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "배달 주소",
+            style: TextStyle(
+              color: const Color(0xFFB8B8B8),
+              fontSize: 50.sp,
+              fontFamily: 'Core_Gothic_D4',
+            ),
+          ),
+          SizedBox(
+            height: 45.h,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                "서울 중구 퇴계로36길 2 910호",
+                style: TextStyle(
+                  color: const Color(0xFF333333),
+                  fontSize: 60.sp,
+                  fontFamily: 'Core_Gothic_D5',
+                ),
               ),
-            ),
-            SizedBox(
-              height: 10.h,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  "서울 중구 퇴계로36길 2 910호",
+              TextButton(
+                onPressed: () {},
+                style: TextButton.styleFrom(
+                  splashFactory: NoSplash.splashFactory,
+                  minimumSize: Size.zero,
+                  padding: EdgeInsets.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: Text(
+                  "변경",
                   style: TextStyle(
-                    color: const Color(0xFF333333),
-                    fontSize: 60.sp,
+                    color: const Color(0xFFFF8800),
+                    fontSize: 50.sp,
                     fontFamily: 'Core_Gothic_D5',
                   ),
                 ),
-                TextButton(
-                  onPressed: () {},
-                  style: TextButton.styleFrom(
-                    splashFactory: NoSplash.splashFactory,
-                  ),
-                  child: Text(
-                    "변경",
-                    style: TextStyle(
-                      color: const Color(0xFFFF8800),
-                      fontSize: 50.sp,
-                      fontFamily: 'Core_Gothic_D5',
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
 }
 
-class OrderList extends StatefulWidget {
-  const OrderList({Key? key}) : super(key: key);
-
-  @override
-  State<OrderList> createState() => _OrderListState();
-}
-
-class _OrderListState extends State<OrderList> {
+class CartListWidget extends GetView<OrderController> {
   final listKey = GlobalKey<AnimatedListState>();
   final List<ListItem> items = List.from(listItems);
 
@@ -188,7 +181,7 @@ class _OrderListState extends State<OrderList> {
     items.removeAt(index);
     listKey.currentState!.removeItem(
       index,
-      (context, animation) => ListItemWidget(
+          (context, animation) => ListItemWidget(
         item: removedItem,
         animation: animation,
         onClicked: () {},
@@ -218,6 +211,7 @@ class _OrderListState extends State<OrderList> {
       constraints: const BoxConstraints(
         maxHeight: double.infinity,
       ),
+      padding: EdgeInsets.only(left: 100.w, right: 100.w, top: 70.h),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -253,7 +247,8 @@ class _OrderListState extends State<OrderList> {
   }
 }
 
-class ListItemWidget extends StatefulWidget {
+
+class ListItemWidget extends GetView<OrderController> {
   final ListItem item;
   final Animation<double> animation;
   final VoidCallback? onClicked;
@@ -266,131 +261,106 @@ class ListItemWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<ListItemWidget> createState() => _ListItemWidgetState();
-}
-
-class _ListItemWidgetState extends State<ListItemWidget> {
-  int n = 1;
-
-  void add() {
-    setState(() {
-      n++;
-    });
-  }
-
-  void minus() {
-    if (n > 1) {
-      setState(() {
-        n--;
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) => SizeTransition(
-        sizeFactor: widget.animation,
-        child: SizedBox(
-          height: 360.h,
-          child: Padding(
-            padding: EdgeInsets.only(
-              left: 100.w,
-              right: 100.w,
-            ),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      widget.item.title,
-                      style: TextStyle(
-                        color: const Color(0xFF333333),
-                        fontSize: 60.sp,
-                        fontFamily: 'Core_Gothic_D5',
-                      ),
-                    ),
-                    IconButton(
+  Widget build(BuildContext context) {
+    return SizeTransition(
+      sizeFactor: this.animation,
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                this.item.title,
+                style: TextStyle(
+                  color: const Color(0xFF333333),
+                  fontSize: 60.sp,
+                  fontFamily: 'Core_Gothic_D5',
+                ),
+              ),
+              SizedBox(
+                width: 30.w,
+                height: 30.h,
+                child: IconButton(
+                  constraints: BoxConstraints(),
+                  padding: EdgeInsets.zero,
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                  onPressed: this.onClicked,
+                  icon: Image.asset(
+                    "assets/icons/x2.png",
+                    // width: 30.w,
+                    // height: 30.h,
+                  ),
+                ),
+              )
+            ],
+          ),
+          SizedBox(height: 45.h),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                this.item.price,
+                style: TextStyle(
+                  color: const Color(0xFF333333),
+                  fontSize: 60.sp,
+                  fontFamily: 'Core_Gothic_D5',
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 80.w,
+                    height: 80.h,
+                    child: IconButton(
+                      padding: EdgeInsets.zero,
                       splashColor: Colors.transparent,
                       highlightColor: Colors.transparent,
-                      onPressed: widget.onClicked,
-                      icon: Image.asset(
-                        "assets/icons/x2.png",
-                        width: 30.w,
-                        height: 30.h,
-                      ),
-                    )
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      widget.item.price,
+                      onPressed: () {},
+                      icon: Image.asset("assets/icons/minus1.png"),
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 60.w),
+                    child: Text(
+                      "1",
                       style: TextStyle(
                         color: const Color(0xFF333333),
                         fontSize: 60.sp,
                         fontFamily: 'Core_Gothic_D5',
                       ),
                     ),
-                    SizedBox(
-                      width: 380.w,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            width: 120.w,
-                            height: 120.h,
-                            child: IconButton(
-                              splashColor: Colors.transparent,
-                              highlightColor: Colors.transparent,
-                              onPressed: minus,
-                              icon: Image.asset(
-                                "assets/icons/minus1.png",
-                                width: 80.w,
-                                height: 80.h,
-                              ),
-                            ),
-                          ),
-                          Text(
-                            "$n",
-                            style: TextStyle(
-                              color: const Color(0xFF333333),
-                              fontSize: 60.sp,
-                              fontFamily: 'Core_Gothic_D5',
-                            ),
-                          ),
-                          SizedBox(
-                            width: 120.w,
-                            height: 120.h,
-                            child: IconButton(
-                              splashColor: Colors.transparent,
-                              highlightColor: Colors.transparent,
-                              onPressed: add,
-                              icon: Image.asset(
-                                "assets/icons/plus1.png",
-                                width: 80.w,
-                                height: 80.h,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                  ),
+                  SizedBox(
+                    width: 80.w,
+                    height: 80.h,
+                    child: IconButton(
+                      padding: EdgeInsets.zero,
+                      splashColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
+                      onPressed: () {},
+                      icon: Image.asset("assets/icons/plus1.png"),
                     ),
-                  ],
-                ),
-                const Divider(
-                  color: Color(0xFFECECEC),
-                  thickness: 1,
-                )
-              ],
-            ),
+                  ),
+                ],
+              ),
+            ],
           ),
-        ),
-      );
+          SizedBox(height: 60.h),
+          Container(
+            color: Color(0xFFECECEC),
+            height: 2.h,
+          ),
+        ],
+      ),
+    );
+  }
 }
+
 
 class TotalPrice extends StatefulWidget {
   const TotalPrice({Key? key}) : super(key: key);

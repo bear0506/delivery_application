@@ -2,12 +2,39 @@ import 'package:get/get.dart';
 
 import 'package:flutter/material.dart';
 
+import 'package:delivery_service/main.dart';
+
+import 'package:delivery_service/app/data/provider/order/order_provider.dart';
+
+
 class OrderController extends GetxController with GetTickerProviderStateMixin {
   late Rx<dynamic> storeIdx = Get.parameters["storeIdx"].obs;
 
   Rx<ScrollController> scrollController = ScrollController().obs;
 
   RxBool temp = true.obs;
+
+  // 전체 조회
+  Future<void> handleCartInitProvider() async {
+    try {
+      await CartInitProvider().dio().then((value) {
+        if (value.status == "success") {
+          print("good");
+          // rooms.addAll(value.rooms);
+          // rooms.refresh();
+        } else {
+          print("else");
+        }
+      });
+    } catch (e) {
+      logger.d(e);
+    } finally {
+      Future.delayed(
+          const Duration(milliseconds: 500),
+          // ignore: avoid_print
+              () {});
+    }
+  }
 
   @override
   // ignore: unnecessary_overrides

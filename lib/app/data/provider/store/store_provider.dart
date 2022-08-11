@@ -352,7 +352,6 @@ class CartUpdateProvider {
       );
 
       if (response.statusCode == 200) {
-        logger.d(response.data);
         return CartCheckResponseModel.formJson(response.data);
       } else {
         throw Exception('faild to load request');
