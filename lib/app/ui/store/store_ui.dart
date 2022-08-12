@@ -20,7 +20,7 @@ import 'package:delivery_service/app/controller/order/order_controller.dart';
 class StoreUi extends GetView<StoreController> {
   StoreUi({Key? key}) : super(key: key);
 
-  final StoreController _storeController = Get.put(StoreController());
+  final StoreController storeController = Get.put(StoreController());
   final OrderController orderController = Get.put(OrderController());
 
   @override
@@ -32,13 +32,13 @@ class StoreUi extends GetView<StoreController> {
           backgroundColor: const Color(0xFFECECEC),
           body: CustomScrollView(
             physics: const BouncingScrollPhysics(),
-            controller: _storeController.storeUIScrollController.value,
+            controller: storeController.storeUIScrollController.value,
             slivers: <Widget>[
               SliverPersistentHeader(
                 floating: false,
                 pinned: true,
                 delegate: _SliverPersistentHeaderDelegate(
-                  controller: _storeController,
+                  controller: storeController,
                   maxHeight: 700.h + AppBar().preferredSize.height,
                   minHeight: 200.h + AppBar().preferredSize.height,
                 ),
@@ -56,13 +56,13 @@ class StoreUi extends GetView<StoreController> {
                 floating: false,
                 pinned: true,
                 delegate: _SliverTabBarDelegate(
-                  controller: _storeController,
+                  controller: storeController,
                 ),
               ),
               SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
-                    var item = _storeController.items[index];
+                    var item = storeController.items[index];
 
                     if (item.isMenuTab) {
                       return MenuTabItem(menuTab: item.menuTab);
@@ -72,7 +72,7 @@ class StoreUi extends GetView<StoreController> {
                       );
                     }
                   },
-                  childCount: _storeController.items.length,
+                  childCount: storeController.items.length,
                 ),
               ),
               SliverList(
@@ -84,7 +84,7 @@ class StoreUi extends GetView<StoreController> {
               ),
             ],
           ),
-          floatingActionButton: _storeController.count.value >= 1
+          floatingActionButton: orderController.cartItemCount.value >= 1
               ? Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -92,7 +92,7 @@ class StoreUi extends GetView<StoreController> {
                     AnimatedOpacity(
                       duration: const Duration(
                           milliseconds: 100), //show/hide animation
-                      opacity: _storeController.showbtn.value
+                      opacity: storeController.showbtn.value
                           ? 1.0
                           : 0.0, //set obacity to 1 on visible, or hide
                       child: SizedBox(
@@ -105,7 +105,7 @@ class StoreUi extends GetView<StoreController> {
                             backgroundColor: Colors.transparent,
                             splashColor: Colors.transparent,
                             onPressed: () {
-                              _storeController.storeUIScrollController.value
+                              storeController.storeUIScrollController.value
                                   .animateTo(
                                       //go to top of scroll
                                       0, //scroll offset to go
@@ -128,14 +128,16 @@ class StoreUi extends GetView<StoreController> {
                     AnimatedOpacity(
                       duration: const Duration(
                           milliseconds: 100), //show/hide animation
-                      opacity: _storeController.count.value >= 1 ? 1.0 : 0.0,
+                      // opacity: storeController.count.value >= 1 ? 1.0 : 0.0,
+                      opacity:
+                          orderController.cartItemCount.value >= 1 ? 1.0 : 0.0,
                       child: Badge(
                         badgeColor: Colors.white,
                         borderRadius: BorderRadius.circular(40),
                         badgeContent: Padding(
                           padding: const EdgeInsets.all(5.0),
                           child: Text(
-                            _storeController.count.value.toString(),
+                            orderController.cartItemCount.value.toString(),
                             style: const TextStyle(color: Color(0xFFFF8800)),
                           ),
                         ),
@@ -150,10 +152,9 @@ class StoreUi extends GetView<StoreController> {
                               heroTag: "shoppingBasket",
                               backgroundColor: Colors.transparent,
                               onPressed: () {
-                                orderController.handleCartInitProvider();
-
+                                // orderController.handleCartInitProvider();
                                 Get.toNamed(
-                                    '/store=${_storeController.storeIdx}/order');
+                                    '/store=${storeController.storeIdx}/order');
                               },
                               tooltip: 'Increment',
                               child: Image.asset(
@@ -169,7 +170,7 @@ class StoreUi extends GetView<StoreController> {
               : AnimatedOpacity(
                   duration:
                       const Duration(milliseconds: 100), //show/hide animation
-                  opacity: _storeController.showbtn.value
+                  opacity: storeController.showbtn.value
                       ? 1.0
                       : 0.0, //set obacity to 1 on visible, or hide
                   child: SizedBox(
@@ -182,7 +183,7 @@ class StoreUi extends GetView<StoreController> {
                         backgroundColor: Colors.transparent,
                         splashColor: Colors.transparent,
                         onPressed: () {
-                          _storeController.storeUIScrollController.value
+                          storeController.storeUIScrollController.value
                               .animateTo(
                                   //go to top of scroll
                                   0, //scroll offset to go

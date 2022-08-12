@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:delivery_service/app/core/values/colors.dart';
 
 import 'package:delivery_service/app/controller/store/store_controller.dart';
+import 'package:delivery_service/app/controller/order/order_controller.dart';
 import 'package:intl/intl.dart';
 
 class StoreMenuDetailUi extends GetView<StoreController> {
@@ -376,10 +377,8 @@ class BottomOutlinedButtonWidget extends StatelessWidget {
         width: 1240.w,
         height: 200.h,
         child: OutlinedButton(
-          // onPressed: () => Get.toNamed(
-          //     '/store=${storeController.storeIdx}/storeMenuDetail=${Get.parameters["menuIdx"]}/storeOrder'),
           onPressed: () {
-            storeController.handleCartUpdateProvider();
+            Get.put(OrderController()).handleCartCheckProvider();
           },
           style: OutlinedButton.styleFrom(
             side: const BorderSide(color: Color(0xFFFF8800), width: 1),

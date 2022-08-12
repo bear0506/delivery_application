@@ -7,8 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:delivery_service/app/controller/order/order_controller.dart';
 import 'package:delivery_service/app/data/model/order/order_model.dart';
-
-import 'package:delivery_service/app/ui/order/order_list_item_data.dart';
+import 'package:intl/intl.dart';
 
 class OrderUi extends GetView<OrderController> {
   const OrderUi({Key? key}) : super(key: key);
@@ -94,7 +93,8 @@ class OrderUi extends GetView<OrderController> {
                       color: Color(0xFFECECEC),
                       height: 20.h,
                     ),
-                    TotalPrice(),
+                    // TotalPrice(),
+                    CartPriceWidget(),
                     Container(
                       color: Color(0xFFECECEC),
                       height: 20.h,
@@ -175,9 +175,6 @@ class SetAddress extends StatelessWidget {
 }
 
 class CartListWidget extends GetView<OrderController> {
-  final listKey = GlobalKey<AnimatedListState>();
-  final List<ListItem> items = List.from(listItems);
-
   // void removeItem(int index) {
   //   final removedItem = items[index];
 
@@ -195,39 +192,23 @@ class CartListWidget extends GetView<OrderController> {
   //   );
   // }
 
-  // void insertItem() {
-  //   final newIndex = items.length;
-  //   final newItem = (List.of(listItems)..shuffle()).first;
-
-  //   items.insert(newIndex, newItem);
-  //   listKey.currentState!.insertItem(
-  //     newIndex,
-  //     duration: const Duration(
-  //       milliseconds: 200,
-  //     ),
-  //   );
-  // }
-
   @override
   Widget build(BuildContext context) {
-    print(controller.cartMenus.length);
     return Obx(
       () => Container(
         constraints: const BoxConstraints(
           maxHeight: double.infinity,
         ),
-        padding: EdgeInsets.only(left: 100.w, right: 100.w, top: 70.h),
+        padding: EdgeInsets.only(left: 100.w, right: 100.w, top: 30.h),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            AnimatedList(
+            ListView.separated(
               physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
-              // key: listKey,
-              initialItemCount: controller.cartMenus.length,
-              itemBuilder: (context, index, animation) => SizeTransition(
-                sizeFactor: animation,
+              itemCount: controller.cartMenus.length,
+              itemBuilder: (context, index) => Container(
                 child: Column(
                   children: [
                     Row(
@@ -243,30 +224,61 @@ class CartListWidget extends GetView<OrderController> {
                           ),
                         ),
                         SizedBox(
-                          width: 30.w,
-                          height: 30.h,
+                          width: 45.w,
+                          height: 45.h,
                           child: IconButton(
                             constraints: BoxConstraints(),
                             padding: EdgeInsets.zero,
                             splashColor: Colors.transparent,
                             highlightColor: Colors.transparent,
-                            onPressed: () {},
+                            onPressed: () {
+                              controller.handleOrderDetailDeleteProvider(
+                                controller.cartMenus[index].orderIdx,
+                                controller.cartMenus[index].idx,
+                              );
+                            },
                             icon: Image.asset(
                               "assets/icons/x2.png",
-                              // width: 30.w,
-                              // height: 30.h,
                             ),
                           ),
                         )
                       ],
                     ),
-                    SizedBox(height: 45.h),
+                    SizedBox(height: 25.h),
+                    ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: jsonDecode(
+                              controller.cartMenus[index].menu)['menu_option']
+                          .length,
+                      itemBuilder: (context, index2) => Container(
+                        child: Padding(
+                          padding: EdgeInsets.only(left: 20.w),
+                          child: Container(
+                            margin: EdgeInsets.symmetric(vertical: 5.h),
+                            child: Text(
+                              "- " +
+                                  jsonDecode(controller.cartMenus[index].menu)[
+                                      'menu_option'][index2],
+                              style: TextStyle(
+                                color: const Color(0xFFB8B8B8),
+                                fontSize: 45.sp,
+                                fontFamily: 'Core_Gothic_D4',
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 30.h),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          controller.cartMenus[index].price.toString() + "원",
+                          NumberFormat.currency(locale: "ko_KR", symbol: "")
+                                  .format(controller.cartMenus[index].price) +
+                              "원",
                           style: TextStyle(
                             color: const Color(0xFF333333),
                             fontSize: 60.sp,
@@ -291,7 +303,7 @@ class CartListWidget extends GetView<OrderController> {
                             Container(
                               margin: EdgeInsets.symmetric(horizontal: 60.w),
                               child: Text(
-                                "1",
+                                controller.cartMenus[index].count.toString(),
                                 style: TextStyle(
                                   color: const Color(0xFF333333),
                                   fontSize: 60.sp,
@@ -314,30 +326,40 @@ class CartListWidget extends GetView<OrderController> {
                         ),
                       ],
                     ),
-                    SizedBox(height: 60.h),
-                    Container(
-                      color: Color(0xFFECECEC),
-                      height: 2.h,
-                    ),
                   ],
                 ),
               ),
-            ),
-            TextButton(
-              onPressed: () {
-                // insertItem();
-                controller.handleCartInitProvider();
-                print(controller.cartMenus.length);
+              separatorBuilder: (BuildContext context, int index) {
+                return Container(
+                  margin: EdgeInsets.symmetric(vertical: 60.h),
+                  color: Color(0xFFECECEC),
+                  height: 2.h,
+                );
               },
-              style: TextButton.styleFrom(
-                splashFactory: NoSplash.splashFactory,
-              ),
-              child: Text(
-                "+ 메뉴 추가하기",
-                style: TextStyle(
-                  color: const Color(0xFFFF8800),
-                  fontSize: 50.sp,
-                  fontFamily: 'Core_Gothic_D5',
+            ),
+            Container(
+              margin: EdgeInsets.only(top: 60.h),
+              color: Color(0xFFECECEC),
+              height: 2.h,
+            ),
+            Container(
+              margin: EdgeInsets.symmetric(vertical: 30.h),
+              child: TextButton(
+                onPressed: () {
+                  // insertItem();
+                  Get.back();
+                },
+                style: TextButton.styleFrom(
+                  splashFactory: NoSplash.splashFactory,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: Text(
+                  "+ 메뉴 추가하기",
+                  style: TextStyle(
+                    color: const Color(0xFFFF8800),
+                    fontSize: 50.sp,
+                    fontFamily: 'Core_Gothic_D5',
+                  ),
                 ),
               ),
             ),
@@ -461,105 +483,107 @@ class ListItemWidget extends StatelessWidget {
   }
 }
 
-class TotalPrice extends StatefulWidget {
-  const TotalPrice({Key? key}) : super(key: key);
-
+class CartPriceWidget extends GetView<OrderController> {
   @override
-  State<TotalPrice> createState() => _TotalPriceState();
-}
-
-class _TotalPriceState extends State<TotalPrice> {
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: 100.w,
-        vertical: 60.h,
-      ),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                "주문금액",
-                style: TextStyle(
-                  color: const Color(0xFF333333),
-                  fontSize: 60.sp,
-                  fontFamily: 'Core_Gothic_D5',
+  Widget build(Object context) {
+    return Obx(
+      () => Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: 100.w,
+          vertical: 60.h,
+        ),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  "주문금액",
+                  style: TextStyle(
+                    color: const Color(0xFF333333),
+                    fontSize: 60.sp,
+                    fontFamily: 'Core_Gothic_D5',
+                  ),
                 ),
-              ),
-              Text(
-                "56,000원",
-                style: TextStyle(
-                  color: const Color(0xFF333333),
-                  fontSize: 60.sp,
-                  fontFamily: 'Core_Gothic_D5',
+                Text(
+                  NumberFormat.currency(locale: "ko_KR", symbol: "")
+                          .format(controller.cartOrder.value.price) +
+                      "원",
+                  style: TextStyle(
+                    color: const Color(0xFF333333),
+                    fontSize: 60.sp,
+                    fontFamily: 'Core_Gothic_D5',
+                  ),
                 ),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 50.h,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                "배달비",
-                style: TextStyle(
-                  color: const Color(0xFF333333),
-                  fontSize: 60.sp,
-                  fontFamily: 'Core_Gothic_D5',
+              ],
+            ),
+            SizedBox(
+              height: 50.h,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  "배달비",
+                  style: TextStyle(
+                    color: const Color(0xFF333333),
+                    fontSize: 60.sp,
+                    fontFamily: 'Core_Gothic_D5',
+                  ),
                 ),
-              ),
-              Text(
-                "2,000원",
-                style: TextStyle(
-                  color: const Color(0xFF333333),
-                  fontSize: 60.sp,
-                  fontFamily: 'Core_Gothic_D5',
+                Text(
+                  NumberFormat.currency(locale: "ko_KR", symbol: "")
+                          .format(controller.cartOrder.value.deliveryFee) +
+                      "원",
+                  style: TextStyle(
+                    color: const Color(0xFF333333),
+                    fontSize: 60.sp,
+                    fontFamily: 'Core_Gothic_D5',
+                  ),
                 ),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 20.h,
-          ),
-          const Divider(
-            color: Color(0xFFECECEC),
-            thickness: 1,
-          ),
-          SizedBox(
-            height: 20.h,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                "총 금액",
-                style: TextStyle(
-                  color: const Color(0xFF333333),
-                  fontSize: 60.sp,
-                  fontFamily: 'Core_Gothic_D6',
-                  fontWeight: FontWeight.bold,
+              ],
+            ),
+            SizedBox(
+              height: 20.h,
+            ),
+            const Divider(
+              color: Color(0xFFECECEC),
+              thickness: 1,
+            ),
+            SizedBox(
+              height: 20.h,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  "총 금액",
+                  style: TextStyle(
+                    color: const Color(0xFF333333),
+                    fontSize: 60.sp,
+                    fontFamily: 'Core_Gothic_D6',
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              Text(
-                "58,000원",
-                style: TextStyle(
-                  color: const Color(0xFF333333),
-                  fontSize: 60.sp,
-                  fontFamily: 'Core_Gothic_D6',
-                  fontWeight: FontWeight.bold,
+                Text(
+                  NumberFormat.currency(locale: "ko_KR", symbol: "").format(
+                          controller.cartOrder.value.price +
+                              controller.cartOrder.value.deliveryFee) +
+                      "원",
+                  style: TextStyle(
+                    color: const Color(0xFF333333),
+                    fontSize: 60.sp,
+                    fontFamily: 'Core_Gothic_D6',
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-            ],
-          )
-        ],
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
