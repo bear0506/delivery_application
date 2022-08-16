@@ -398,6 +398,10 @@ import 'package:delivery_service/app/ui/room/room_ui.dart';
 import 'package:delivery_service/app/ui/room/room_result_ui.dart';
 import 'package:delivery_service/app/binding/room/room_binding.dart';
 
+import 'package:delivery_service/app/ui/address/address_ui.dart';
+import 'package:delivery_service/app/ui/address/address_detail_ui.dart';
+import 'package:delivery_service/app/binding/address/address_binding.dart';
+
 import 'package:delivery_service/app/routes/route.dart';
 
 class Pages {
@@ -575,6 +579,19 @@ class Pages {
       name: Routes.room,
       page: () => RoomUi(),
       binding: RoomBinding(),
+    ),
+    GetPage(
+      title: "배달주소 정보",
+      name: Routes.address,
+      page: () => AddressUi(),
+      binding: AddressBinding(),
+    ),
+    GetPage(
+      title: "배달 상세주소 입력",
+      name: Routes.addressDetail,
+      page: () => AddressDetailUi(),
+      binding: AddressBinding(),
+      transition: Transition.rightToLeft,
     ),
     // GetPage(
     //   title: "이메일 및 비밀번호 찾기 화면",

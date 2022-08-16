@@ -147,10 +147,9 @@ class DrawerWidgetHeader extends GetView<HomeController> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         image: DecorationImage(
-                          image: NetworkImage(
-                              mainController.currentMember.value.photo),
-                          fit: BoxFit.cover
-                        ),
+                            image: NetworkImage(
+                                mainController.currentMember.value.photo),
+                            fit: BoxFit.cover),
                       ),
                     ),
                     Container(
@@ -637,15 +636,16 @@ class AppbarWidget extends GetView<HomeController>
                 height: 75.h,
               ),
               InkWell(
-                onTap: () => Get.to(
-                  () => KpostalView(
-                    callback: (Kpostal result) {
-                      print(result.address);
-                      print(result.latitude.toString());
-                      print(result.longitude.toString());
-                    },
-                  ),
-                ),
+                // onTap: () => Get.to(
+                //   () => KpostalView(
+                //     callback: (Kpostal result) {
+                //       print(result.address);
+                //       print(result.latitude.toString());
+                //       print(result.longitude.toString());
+                //     },
+                //   ),
+                // ),
+                onTap: () => Get.toNamed("/address"),
                 child: Container(
                   decoration: BoxDecoration(
                       color: Colors.white,

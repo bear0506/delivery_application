@@ -101,6 +101,9 @@ abstract class Routes {
 
   static const room = "/room=:roomIdx";
 
+  static const address = "/address";
+  static const addressDetail = "/address/detail";
+
   static const house = "/house/:param";
   static const houseMutualTrade = "/house/trade/mutual/:param";
   static const houseSingle = "/house/trade/single/:param";
