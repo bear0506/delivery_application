@@ -23,8 +23,8 @@ class RoomUi extends GetView<RoomController> {
             Obx(
               () => SliverAppBar(
                 elevation: 0,
-                expandedHeight: 200.h,
-                collapsedHeight: 200.h,
+                // expandedHeight: 200.h,
+                // collapsedHeight: 200.h,
                 automaticallyImplyLeading: false,
                 titleSpacing: 0,
                 backgroundColor: Colors.white,
@@ -41,7 +41,7 @@ class RoomUi extends GetView<RoomController> {
                       IconButton(
                         icon: Image.asset(
                           "assets/icons/back2.png",
-                          color: const Color(0xFF333333),
+                          // color: const Color(0xFF333333),
                           width: 80.w,
                           height: 60.h,
                         ),

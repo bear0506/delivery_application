@@ -480,134 +480,128 @@ class StoreDetailWidget extends GetView<StoreController> {
         ),
         width: 1440.w,
         height: 465.h,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            InkWell(
-              onTap: () {
-                var deliveryFee =
-                    json.decode(_storeController.store.value.deliveryFee);
-
-                print(deliveryFee.keys.toList().length);
-
-                Get.dialog(
-                  AlertDialog(
-                    title: Text(
-                      "배달비",
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        fontSize: 60.sp,
-                        fontFamily: 'Core_Gothic_D5',
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 100.w),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              InkWell(
+                onTap: () {
+                  Get.dialog(
+                    AlertDialog(
+                      title: Text(
+                        "배달비",
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                          fontSize: 60.sp,
+                          fontFamily: 'Core_Gothic_D5',
+                        ),
                       ),
-                    ),
-                    titlePadding: EdgeInsets.only(left: 60.w, top: 50.h),
-                    content: SizedBox(
-                      width: 1000.w,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          ListView.separated(
-                            reverse: true,
-                            shrinkWrap: true,
-                            itemCount: json
-                                .decode(
-                                    _storeController.store.value.deliveryFee)
-                                .values
-                                .toList()
-                                .length,
-                            itemBuilder: (BuildContext context, index) {
-                              var totalCost = json
-                                  .decode(
-                                      _storeController.store.value.deliveryFee)
-                                  .keys
-                                  .toList()[index]
-                                  .toString()
-                                  .split('~');
-
-                              var deliveryFee = json
+                      titlePadding: EdgeInsets.only(left: 60.w, top: 50.h),
+                      content: SizedBox(
+                        width: 1000.w,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            ListView.separated(
+                              reverse: true,
+                              shrinkWrap: true,
+                              itemCount: json
                                   .decode(
                                       _storeController.store.value.deliveryFee)
                                   .values
-                                  .toList()[index]
-                                  .toString();
+                                  .toList()
+                                  .length,
+                              itemBuilder: (BuildContext context, index) {
+                                var totalCost = json
+                                    .decode(
+                                        _storeController.store.value.deliveryFee)
+                                    .keys
+                                    .toList()[index]
+                                    .toString()
+                                    .split('~');
 
-                              return Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    totalCost.length > 1
-                                        ? NumberFormat('###,###,###,###')
-                                                .format(int.parse(totalCost[0]))
-                                                .replaceAll(" ", "") +
-                                            "원 ~ " +
-                                            NumberFormat('###,###,###,###')
-                                                .format(int.parse(totalCost[1]))
-                                                .replaceAll(" ", "") +
-                                            "원"
-                                        : NumberFormat('###,###,###,###')
-                                                .format(int.parse(totalCost[0]))
-                                                .replaceAll(" ", "") +
-                                            "원 ~",
-                                    style: TextStyle(
-                                      color: const Color(0xFF333333),
-                                      fontSize: 50.sp,
-                                      fontFamily: 'Core_Gothic_D5',
+                                var deliveryFee = json
+                                    .decode(
+                                        _storeController.store.value.deliveryFee)
+                                    .values
+                                    .toList()[index]
+                                    .toString();
+
+                                return Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      totalCost.length > 1
+                                          ? NumberFormat('###,###,###,###')
+                                                  .format(int.parse(totalCost[0]))
+                                                  .replaceAll(" ", "") +
+                                              "원 ~ " +
+                                              NumberFormat('###,###,###,###')
+                                                  .format(int.parse(totalCost[1]))
+                                                  .replaceAll(" ", "") +
+                                              "원"
+                                          : NumberFormat('###,###,###,###')
+                                                  .format(int.parse(totalCost[0]))
+                                                  .replaceAll(" ", "") +
+                                              "원 ~",
+                                      style: TextStyle(
+                                        color: const Color(0xFF333333),
+                                        fontSize: 50.sp,
+                                        fontFamily: 'Core_Gothic_D5',
+                                      ),
                                     ),
-                                  ),
-                                  Text(
-                                    NumberFormat('###,###,###,###')
-                                            .format(int.parse(deliveryFee))
-                                            .replaceAll(" ", "") +
-                                        "원",
-                                    style: TextStyle(
-                                      color: const Color(0xFFFF8800),
-                                      fontSize: 50.sp,
-                                      fontFamily: 'Core_Gothic_D5',
+                                    Text(
+                                      NumberFormat('###,###,###,###')
+                                              .format(int.parse(deliveryFee))
+                                              .replaceAll(" ", "") +
+                                          "원",
+                                      style: TextStyle(
+                                        color: const Color(0xFFFF8800),
+                                        fontSize: 50.sp,
+                                        fontFamily: 'Core_Gothic_D5',
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              );
-                            },
-                            separatorBuilder:
-                                (BuildContext context, int index) {
-                              return SizedBox(
-                                height: 40.h,
-                              );
-                            },
-                          ),
-                          SizedBox(height: 80.h),
-                          Container(
-                            height: 2.h,
-                            color: const Color(0xFFB8B8B8),
-                          ),
-                        ],
-                      ),
-                    ),
-                    contentPadding:
-                        EdgeInsets.only(left: 60.w, right: 60.w, top: 80.h),
-                    actions: [
-                      TextButton(
-                        child: Text(
-                          "확인",
-                          style: TextStyle(
-                            color: const Color(0xFFFF8800),
-                            fontSize: 60.sp,
-                            fontFamily: 'Core_Gothic_D5',
-                          ),
+                                  ],
+                                );
+                              },
+                              separatorBuilder:
+                                  (BuildContext context, int index) {
+                                return SizedBox(
+                                  height: 40.h,
+                                );
+                              },
+                            ),
+                            SizedBox(height: 80.h),
+                            Container(
+                              height: 2.h,
+                              color: const Color(0xFFB8B8B8),
+                            ),
+                          ],
                         ),
-                        onPressed: () => Get.back(),
                       ),
-                    ],
-                    actionsAlignment: MainAxisAlignment.center,
-                    actionsPadding: EdgeInsets.zero,
-                  ),
-                );
-              },
-              child: SizedBox(
-                height: 60.h,
-                width: 1200.w,
+                      contentPadding:
+                          EdgeInsets.only(left: 60.w, right: 60.w, top: 80.h),
+                      actions: [
+                        TextButton(
+                          child: Text(
+                            "확인",
+                            style: TextStyle(
+                              color: const Color(0xFFFF8800),
+                              fontSize: 60.sp,
+                              fontFamily: 'Core_Gothic_D5',
+                            ),
+                          ),
+                          onPressed: () => Get.back(),
+                        ),
+                      ],
+                      actionsAlignment: MainAxisAlignment.center,
+                      actionsPadding: EdgeInsets.zero,
+                    ),
+                  );
+                },
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -625,7 +619,6 @@ class StoreDetailWidget extends GetView<StoreController> {
                       width: 96.w,
                     ),
                     Text(
-                      // "2000원 ~",
                       _storeController.store.value.deliveryFee != ""
                           ? NumberFormat('###,###,###,###')
                                   .format(json
@@ -656,14 +649,10 @@ class StoreDetailWidget extends GetView<StoreController> {
                   ],
                 ),
               ),
-            ),
-            SizedBox(
-              height: 40.h,
-            ),
-            SizedBox(
-              height: 60.h,
-              width: 1200.w,
-              child: Row(
+              SizedBox(
+                height: 40.h,
+              ),
+              Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
@@ -697,14 +686,10 @@ class StoreDetailWidget extends GetView<StoreController> {
                   ),
                 ],
               ),
-            ),
-            SizedBox(
-              height: 40.h,
-            ),
-            SizedBox(
-              height: 60.h,
-              width: 1200.w,
-              child: Row(
+              SizedBox(
+                height: 40.h,
+              ),
+              Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
@@ -737,66 +722,62 @@ class StoreDetailWidget extends GetView<StoreController> {
                   ),
                 ],
               ),
-            ),
-            SizedBox(
-              height: 40.h,
-            ),
-            InkWell(
-              onTap: () {
-                Get.dialog(
-                  AlertDialog(
-                    title: Text(
-                      "매장정보",
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        fontSize: 60.sp,
-                        fontFamily: 'Core_Gothic_D5',
+              SizedBox(
+                height: 40.h,
+              ),
+              InkWell(
+                onTap: () {
+                  Get.dialog(
+                    AlertDialog(
+                      title: Text(
+                        "매장정보",
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                          fontSize: 60.sp,
+                          fontFamily: 'Core_Gothic_D5',
+                        ),
                       ),
-                    ),
-                    titlePadding: EdgeInsets.only(left: 60.w, top: 50.h),
-                    content: Container(
-                      width: 1000.w,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            _storeController.store.value.information,
+                      titlePadding: EdgeInsets.only(left: 60.w, top: 50.h),
+                      content: Container(
+                        width: 1000.w,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              _storeController.store.value.information,
+                              style: TextStyle(
+                                fontSize: 50.sp,
+                                fontFamily: 'Core_Gothic_D5',
+                              ),
+                            ),
+                            SizedBox(height: 80.h),
+                            Container(
+                              height: 2.h,
+                              color: const Color(0xFFB8B8B8),
+                            ),
+                          ],
+                        ),
+                      ),
+                      contentPadding:
+                          EdgeInsets.only(left: 60.w, right: 60.w, top: 80.h),
+                      actions: [
+                        TextButton(
+                          child: Text(
+                            "확인",
                             style: TextStyle(
-                              fontSize: 50.sp,
+                              color: const Color(0xFFFF8800),
+                              fontSize: 60.sp,
                               fontFamily: 'Core_Gothic_D5',
                             ),
                           ),
-                          SizedBox(height: 80.h),
-                          Container(
-                            height: 2.h,
-                            color: const Color(0xFFB8B8B8),
-                          ),
-                        ],
-                      ),
-                    ),
-                    contentPadding:
-                        EdgeInsets.only(left: 60.w, right: 60.w, top: 80.h),
-                    actions: [
-                      TextButton(
-                        child: Text(
-                          "확인",
-                          style: TextStyle(
-                            color: const Color(0xFFFF8800),
-                            fontSize: 60.sp,
-                            fontFamily: 'Core_Gothic_D5',
-                          ),
+                          onPressed: () => Get.back(),
                         ),
-                        onPressed: () => Get.back(),
-                      ),
-                    ],
-                    actionsAlignment: MainAxisAlignment.center,
-                    actionsPadding: EdgeInsets.zero,
-                  ),
-                );
-              },
-              child: SizedBox(
-                height: 60.h,
-                width: 1200.w,
+                      ],
+                      actionsAlignment: MainAxisAlignment.center,
+                      actionsPadding: EdgeInsets.zero,
+                    ),
+                  );
+                },
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -822,8 +803,8 @@ class StoreDetailWidget extends GetView<StoreController> {
                   ],
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

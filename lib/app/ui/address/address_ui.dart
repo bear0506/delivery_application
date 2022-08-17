@@ -12,18 +12,18 @@ class AddressUi extends GetView<AddressController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: NestedScrollView(
-        physics: const ClampingScrollPhysics(),
-        controller: controller.scrollController.value,
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-          return <Widget>[
-            Obx(
-              () => SliverAppBar(
+    return Obx(
+      () => Scaffold(
+        backgroundColor: Colors.white,
+        body: NestedScrollView(
+          physics: NeverScrollableScrollPhysics(),
+          controller: controller.scrollController.value,
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return <Widget>[
+              SliverAppBar(
                 elevation: 0,
-                expandedHeight: 200.h,
-                collapsedHeight: 200.h,
+                // expandedHeight: 200.h,
+                // collapsedHeight: 100.h,
                 automaticallyImplyLeading: false,
                 titleSpacing: 0,
                 backgroundColor: Colors.white,
@@ -40,9 +40,8 @@ class AddressUi extends GetView<AddressController> {
                       IconButton(
                         icon: Image.asset(
                           "assets/icons/x.png",
-                          color: const Color(0xFF333333),
-                          width: 80.w,
-                          height: 60.h,
+                          width: 50.w,
+                          height: 50.h,
                         ),
                         onPressed: () => Get.back(),
                       ),
@@ -65,81 +64,82 @@ class AddressUi extends GetView<AddressController> {
                   ),
                 ),
               ),
+            ];
+          },
+          body: Theme(
+            data: Theme.of(context).copyWith(
+              colorScheme: ColorScheme.fromSwatch(
+                accentColor: Colors.transparent,
+              ),
             ),
-          ];
-        },
-        body: Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.fromSwatch(
-              accentColor: Colors.transparent,
-            ),
-          ),
-          child: NotificationListener<OverscrollIndicatorNotification>(
-            onNotification: (OverscrollIndicatorNotification? overscroll) {
-              overscroll!.disallowIndicator();
-              return true;
-            },
-            child: SingleChildScrollView(
-              physics: const NeverScrollableScrollPhysics(),
+            child: NotificationListener<OverscrollIndicatorNotification>(
+              onNotification: (OverscrollIndicatorNotification? overscroll) {
+                overscroll!.disallowIndicator();
+                return true;
+              },
               child: Column(
                 children: [
                   // TimeInformation(),
                   // StoreInformation(),
-                  Column(
-                    children: [
-                      SizedBox(height: 30.h),
-                      Container(
-                        padding: EdgeInsets.symmetric(horizontal: 50.w),
-                        width: 1240.w,
-                        height: 140.h,
-                        decoration: BoxDecoration(
-                          color: Color(0xFFE0E0E0),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: InkWell(
-                          onTap: () {
-                            Get.toNamed("/address/detail");
+                  SizedBox(height: 30.h),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 50.w),
+                    width: 1240.w,
+                    height: 140.h,
+                    decoration: BoxDecoration(
+                      color: Color(0xFFE0E0E0),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: InkWell(
+                      onTap: () {
+                        // Get.toNamed("/address/detail");
+                        Get.toNamed("/address/detail");
 
-                            Get.to(
-                              () => KpostalView(
-                                title: "주소 검색",
-                                callback: (Kpostal result) {
-                                  print(result.address);
-                                  print(result.latitude.toString());
-                                  print(result.longitude.toString());
-                                  // Get.back();
-                                  // Get.toNamed("/address/detail");
-                                  // Get.toNamed("/address/detail");
-                                },
-                              ),
-                              // transition: Transition.rightToLeftWithFade,
-                            );
-                          },
-                          // onTap: () => Get.toNamed("/address/detail"),
-                          child: Row(
-                            children: [
-                              Image.asset(
-                                "assets/icons/search.png",
-                                color: const Color(0xFF333333),
-                                width: 60.w,
-                                height: 60.h,
-                              ),
-                              SizedBox(width: 50.w),
-                              Text(
-                                "지번, 도로명, 건물명으로 검색",
-                                style: TextStyle(
-                                  color: const Color(0xFFA1A1A1),
-                                  fontSize: 55.sp,
-                                  fontFamily: 'Core_Gothic_D5',
-                                ),
-                              ),
-                            ],
+                        Get.toNamed("/address/search");
+
+                        // Get.to(
+                        //       () => KpostalView(
+                        //     title: "주소 검색",
+                        //     callback: (Kpostal result) {
+                        //       // print(result);
+                        //       Get.toNamed("/address/detail");
+                        //       Get.toNamed("/address/detail");
+                        //
+                        //       print(result.address);
+                        //       print(result.latitude.toString());
+                        //       print(result.longitude.toString());
+                        //
+                        //       controller.tempAddress.value = result.address;
+                        //       // Get.back();
+                        //       // Get.toNamed("/address/detail");
+                        //       // Get.toNamed("/address/detail");
+                        //     },
+                        //   ),
+                        //   // transition: Transition.rightToLeftWithFade,
+                        // );
+                      },
+                      // onTap: () => Get.toNamed("/address/detail"),
+                      child: Row(
+                        children: [
+                          Image.asset(
+                            "assets/icons/search.png",
+                            width: 60.w,
+                            height: 60.h,
                           ),
-                        ),
+                          SizedBox(width: 50.w),
+                          Text(
+                            "지번, 도로명, 건물명으로 검색",
+                            style: TextStyle(
+                              color: const Color(0xFFA1A1A1),
+                              fontSize: 55.sp,
+                              fontFamily: 'Core_Gothic_D5',
+                            ),
+                          ),
+                        ],
                       ),
-                      SizedBox(height: 60.h),
-                    ],
+                    ),
                   ),
+                  SizedBox(height: 60.h),
                   Container(
                     height: 20.h,
                     color: Color(0xFFECECEC),
@@ -149,8 +149,8 @@ class AddressUi extends GetView<AddressController> {
             ),
           ),
         ),
+        // bottomNavigationBar: const BottomOutlinedButtonWidget(),
       ),
-      // bottomNavigationBar: const BottomOutlinedButtonWidget(),
     );
   }
 }

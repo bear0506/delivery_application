@@ -103,6 +103,7 @@ abstract class Routes {
 
   static const address = "/address";
   static const addressDetail = "/address/detail";
+  static const addressSearch = "/address/search";
 
   static const house = "/house/:param";
   static const houseMutualTrade = "/house/trade/mutual/:param";

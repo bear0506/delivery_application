@@ -400,6 +400,7 @@ import 'package:delivery_service/app/binding/room/room_binding.dart';
 
 import 'package:delivery_service/app/ui/address/address_ui.dart';
 import 'package:delivery_service/app/ui/address/address_detail_ui.dart';
+import 'package:delivery_service/app/ui/address/address_search_ui.dart';
 import 'package:delivery_service/app/binding/address/address_binding.dart';
 
 import 'package:delivery_service/app/routes/route.dart';
@@ -590,6 +591,13 @@ class Pages {
       title: "배달 상세주소 입력",
       name: Routes.addressDetail,
       page: () => AddressDetailUi(),
+      binding: AddressBinding(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      title: "배달주소 검색",
+      name: Routes.addressSearch,
+      page: () => AddressSearchUi(),
       binding: AddressBinding(),
       transition: Transition.rightToLeft,
     ),
