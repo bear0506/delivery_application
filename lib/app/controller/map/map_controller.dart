@@ -22,6 +22,9 @@ class MapController extends GetxController {
 
   RxString kakaoMapKey = 'f764cf6bd69b199f8d3676d70ae1f777'.obs;
 
+  RxDouble mapLat = 37.560202.obs;
+  RxDouble mapLng = 126.993718.obs;
+
   // 조회
   Future<void> handleRoomAllProvider() async {
     try {
@@ -30,7 +33,8 @@ class MapController extends GetxController {
           roomsMap.addAll(value.roomsMap);
           roomsMap.refresh();
 
-          webViewController.value.runJavascript('''
+          webViewController.value.runJavascript(
+              '''
               var mapMarkers = '${jsonEncode(roomsMap)}';
               mapMarkers = JSON.parse(mapMarkers);
 
@@ -62,6 +66,22 @@ class MapController extends GetxController {
           // ignore: avoid_print
           () {});
     }
+  }
+
+  void setMapLatLng(double Lat, double Lng) {
+    mapLat.value = Lat;
+    mapLng.value = Lng;
+
+    String mapLatLng = "new kakao.maps.LatLng(" +
+        mapLat.toString() +
+        ", " +
+        mapLng.toString() +
+        ")";
+
+    webViewController.value
+        .runJavascript('''
+        map.setCenter($mapLatLng);
+      ''');
   }
 
   @override

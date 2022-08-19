@@ -1,3 +1,4 @@
+import 'package:delivery_service/app/controller/address/address_controller.dart';
 import 'package:delivery_service/app/controller/main/main_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -398,308 +399,310 @@ class AppbarWidget extends GetView<HomeController>
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-      backgroundColor: Colors.transparent,
-      automaticallyImplyLeading: false,
-      elevation: 0,
-      flexibleSpace: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: <Color>[Colors.white, Colors.white.withOpacity(0)],
+    return Obx(
+      () => AppBar(
+        backgroundColor: Colors.transparent,
+        automaticallyImplyLeading: false,
+        elevation: 0,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: <Color>[Colors.white, Colors.white.withOpacity(0)],
+            ),
           ),
-        ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              SizedBox(height: 50.h),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      Scaffold.of(context).openDrawer();
-                    },
-                    child: Image.asset(
-                      'assets/icons/menuBar.png',
-                      width: 60.w,
-                      height: 35.h,
+          child: SafeArea(
+            child: Column(
+              children: [
+                SizedBox(height: 50.h),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        Scaffold.of(context).openDrawer();
+                      },
+                      child: Image.asset(
+                        'assets/icons/menuBar.png',
+                        width: 60.w,
+                        height: 35.h,
+                      ),
+                      style: ButtonStyle(
+                        shape: MaterialStateProperty.all(const CircleBorder()),
+                        backgroundColor:
+                            MaterialStateProperty.all(Colors.white),
+                        fixedSize:
+                            MaterialStateProperty.all(Size(134.w, 134.h)),
+                        shadowColor:
+                            MaterialStateProperty.all<Color>(Colors.black),
+                      ),
                     ),
-                    style: ButtonStyle(
-                      shape: MaterialStateProperty.all(const CircleBorder()),
-                      backgroundColor: MaterialStateProperty.all(Colors.white),
-                      fixedSize: MaterialStateProperty.all(Size(134.w, 134.h)),
-                      shadowColor:
-                          MaterialStateProperty.all<Color>(Colors.black),
+                    Text(
+                      '배달띱',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: const Color(0xFFFF8800),
+                        fontFamily: 'Jalnan',
+                        fontSize: 90.sp,
+                      ),
                     ),
-                  ),
-                  Text(
-                    '배달띱',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: const Color(0xFFFF8800),
-                      fontFamily: 'Jalnan',
-                      fontSize: 90.sp,
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      showDialog(
-                        barrierLabel: "Label",
-                        barrierDismissible: true,
-                        barrierColor: Colors.black.withOpacity(0.5),
-                        context: context,
-                        builder: (BuildContext context) {
-                          return Column(
-                            children: [
-                              Align(
-                                alignment: Alignment.topRight,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    Get.back();
-                                  },
-                                  child: Image.asset(
-                                    'assets/icons/category.png',
-                                    width: 60.w,
-                                    height: 58.h,
-                                  ),
-                                  style: ButtonStyle(
-                                    shape: MaterialStateProperty.all(
-                                      const CircleBorder(),
+                    ElevatedButton(
+                      onPressed: () {
+                        showDialog(
+                          barrierLabel: "Label",
+                          barrierDismissible: true,
+                          barrierColor: Colors.black.withOpacity(0.5),
+                          context: context,
+                          builder: (BuildContext context) {
+                            return Column(
+                              children: [
+                                Align(
+                                  alignment: Alignment.topRight,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      Get.back();
+                                    },
+                                    child: Image.asset(
+                                      'assets/icons/category.png',
+                                      width: 60.w,
+                                      height: 58.h,
                                     ),
-                                    backgroundColor: MaterialStateProperty.all(
-                                      Colors.white,
-                                    ),
-                                    fixedSize: MaterialStateProperty.all(
-                                      Size(134.w, 134.h),
-                                    ),
-                                    shadowColor:
-                                        MaterialStateProperty.all<Color>(
-                                      Colors.black,
+                                    style: ButtonStyle(
+                                      shape: MaterialStateProperty.all(
+                                        const CircleBorder(),
+                                      ),
+                                      backgroundColor:
+                                          MaterialStateProperty.all(
+                                        Colors.white,
+                                      ),
+                                      fixedSize: MaterialStateProperty.all(
+                                        Size(134.w, 134.h),
+                                      ),
+                                      shadowColor:
+                                          MaterialStateProperty.all<Color>(
+                                        Colors.black,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              AlertDialog(
-                                contentPadding:
-                                    EdgeInsets.fromLTRB(30.w, 40.h, 30.w, 40.h),
-                                content: Container(
-                                  width: MediaQuery.of(context).size.width,
-                                  height: 600.h,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(5),
-                                  ),
-                                  child: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceAround,
-                                        children: [
-                                          CategoryRadio(
-                                            category: FoodCategory.all,
-                                            tagName: "전체",
-                                          ),
-                                          CategoryRadio(
-                                            category: FoodCategory.korean,
-                                            tagName: "한식",
-                                          ),
-                                          CategoryRadio(
-                                            category: FoodCategory.snackbar,
-                                            tagName: "분식",
-                                          ),
-                                          CategoryRadio(
-                                            category: FoodCategory.chicken,
-                                            tagName: "치킨",
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceAround,
-                                        children: [
-                                          CategoryRadio(
-                                            category: FoodCategory.pizza,
-                                            tagName: "피자",
-                                          ),
-                                          CategoryRadio(
-                                            category: FoodCategory.porkcutlets,
-                                            tagName: "돈까스",
-                                          ),
-                                          CategoryRadio(
-                                            category: FoodCategory.porkfeet,
-                                            tagName: "족발",
-                                          ),
-                                          CategoryRadio(
-                                            category: FoodCategory.steambath,
-                                            tagName: "찜/탕",
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceAround,
-                                        children: [
-                                          CategoryRadio(
-                                            category: FoodCategory.grilled,
-                                            tagName: "구이",
-                                          ),
-                                          CategoryRadio(
-                                            category: FoodCategory.chinese,
-                                            tagName: "중식",
-                                          ),
-                                          CategoryRadio(
-                                            category: FoodCategory.japanese,
-                                            tagName: "일식",
-                                          ),
-                                          CategoryRadio(
-                                            category:
-                                                FoodCategory.sashimiSeafood,
-                                            tagName: "회/해물",
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceAround,
-                                        children: [
-                                          CategoryRadio(
-                                            category: FoodCategory.western,
-                                            tagName: "양식",
-                                          ),
-                                          CategoryRadio(
-                                            category: FoodCategory.cafe,
-                                            tagName: "카페",
-                                          ),
-                                          CategoryRadio(
-                                            category: FoodCategory.dessert,
-                                            tagName: "디저트",
-                                          ),
-                                          CategoryRadio(
-                                            category: FoodCategory.asian,
-                                            tagName: "아시안",
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceAround,
-                                        children: [
-                                          CategoryRadio(
-                                            category: FoodCategory.sandwich,
-                                            tagName: "샌드위치",
-                                          ),
-                                          CategoryRadio(
-                                            category: FoodCategory.burger,
-                                            tagName: "버거",
-                                          ),
-                                          CategoryRadio(
-                                            category: FoodCategory.mexican,
-                                            tagName: "멕시칸",
-                                          ),
-                                          CategoryRadio(
-                                            category: FoodCategory.bento,
-                                            tagName: "도시락",
-                                          ),
-                                        ],
-                                      ),
-                                    ],
+                                AlertDialog(
+                                  contentPadding: EdgeInsets.fromLTRB(
+                                      30.w, 40.h, 30.w, 40.h),
+                                  content: Container(
+                                    width: MediaQuery.of(context).size.width,
+                                    height: 600.h,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceAround,
+                                          children: [
+                                            CategoryRadio(
+                                              category: FoodCategory.all,
+                                              tagName: "전체",
+                                            ),
+                                            CategoryRadio(
+                                              category: FoodCategory.korean,
+                                              tagName: "한식",
+                                            ),
+                                            CategoryRadio(
+                                              category: FoodCategory.snackbar,
+                                              tagName: "분식",
+                                            ),
+                                            CategoryRadio(
+                                              category: FoodCategory.chicken,
+                                              tagName: "치킨",
+                                            ),
+                                          ],
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceAround,
+                                          children: [
+                                            CategoryRadio(
+                                              category: FoodCategory.pizza,
+                                              tagName: "피자",
+                                            ),
+                                            CategoryRadio(
+                                              category:
+                                                  FoodCategory.porkcutlets,
+                                              tagName: "돈까스",
+                                            ),
+                                            CategoryRadio(
+                                              category: FoodCategory.porkfeet,
+                                              tagName: "족발",
+                                            ),
+                                            CategoryRadio(
+                                              category: FoodCategory.steambath,
+                                              tagName: "찜/탕",
+                                            ),
+                                          ],
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceAround,
+                                          children: [
+                                            CategoryRadio(
+                                              category: FoodCategory.grilled,
+                                              tagName: "구이",
+                                            ),
+                                            CategoryRadio(
+                                              category: FoodCategory.chinese,
+                                              tagName: "중식",
+                                            ),
+                                            CategoryRadio(
+                                              category: FoodCategory.japanese,
+                                              tagName: "일식",
+                                            ),
+                                            CategoryRadio(
+                                              category:
+                                                  FoodCategory.sashimiSeafood,
+                                              tagName: "회/해물",
+                                            ),
+                                          ],
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceAround,
+                                          children: [
+                                            CategoryRadio(
+                                              category: FoodCategory.western,
+                                              tagName: "양식",
+                                            ),
+                                            CategoryRadio(
+                                              category: FoodCategory.cafe,
+                                              tagName: "카페",
+                                            ),
+                                            CategoryRadio(
+                                              category: FoodCategory.dessert,
+                                              tagName: "디저트",
+                                            ),
+                                            CategoryRadio(
+                                              category: FoodCategory.asian,
+                                              tagName: "아시안",
+                                            ),
+                                          ],
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceAround,
+                                          children: [
+                                            CategoryRadio(
+                                              category: FoodCategory.sandwich,
+                                              tagName: "샌드위치",
+                                            ),
+                                            CategoryRadio(
+                                              category: FoodCategory.burger,
+                                              tagName: "버거",
+                                            ),
+                                            CategoryRadio(
+                                              category: FoodCategory.mexican,
+                                              tagName: "멕시칸",
+                                            ),
+                                            CategoryRadio(
+                                              category: FoodCategory.bento,
+                                              tagName: "도시락",
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    },
-                    child: Image.asset(
-                      'assets/icons/category.png',
-                      width: 60.w,
-                      height: 58.h,
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      child: Image.asset(
+                        'assets/icons/category.png',
+                        width: 60.w,
+                        height: 58.h,
+                      ),
+                      style: ButtonStyle(
+                        shape: MaterialStateProperty.all(const CircleBorder()),
+                        backgroundColor:
+                            MaterialStateProperty.all(Colors.white),
+                        fixedSize:
+                            MaterialStateProperty.all(Size(134.w, 134.h)),
+                        shadowColor:
+                            MaterialStateProperty.all<Color>(Colors.black),
+                      ),
                     ),
-                    style: ButtonStyle(
-                      shape: MaterialStateProperty.all(const CircleBorder()),
-                      backgroundColor: MaterialStateProperty.all(Colors.white),
-                      fixedSize: MaterialStateProperty.all(Size(134.w, 134.h)),
-                      shadowColor:
-                          MaterialStateProperty.all<Color>(Colors.black),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 75.h,
-              ),
-              InkWell(
-                // onTap: () => Get.to(
-                //   () => KpostalView(
-                //     callback: (Kpostal result) {
-                //       print(result.address);
-                //       print(result.latitude.toString());
-                //       print(result.longitude.toString());
-                //     },
-                //   ),
-                // ),
-                onTap: () => Get.toNamed("/address"),
-                child: Container(
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(36),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.grey,
-                          spreadRadius: 1,
-                          blurRadius: 3,
-                          offset: Offset(0.3, 0.3),
-                        ),
-                      ]),
-                  width: 1340.w,
-                  height: 160.h,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 60.w),
-                        child: Text(
-                          "배달주소",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: const Color(0xFFFF8800),
-                            fontSize: 55.sp,
-                            fontFamily: 'Core_Gothic_D5',
-                            fontWeight: FontWeight.w700,
+                  ],
+                ),
+                SizedBox(
+                  height: 75.h,
+                ),
+                InkWell(
+                  onTap: () => Get.toNamed("/address"),
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(36),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.grey,
+                            spreadRadius: 1,
+                            blurRadius: 3,
+                            offset: Offset(0.3, 0.3),
+                          ),
+                        ]),
+                    width: 1340.w,
+                    height: 160.h,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 60.w),
+                          child: Text(
+                            "배달주소",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: const Color(0xFFFF8800),
+                              fontSize: 55.sp,
+                              fontFamily: 'Core_Gothic_D5',
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                         ),
-                      ),
-                      Expanded(
-                        child: Text(
-                          "서울 중구 퇴계로 36길 2, 910호",
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                            color: const Color(0xFF333333),
-                            fontSize: 45.sp,
-                            fontFamily: 'Core_Gothic_D5',
-                            fontWeight: FontWeight.w400,
+                        Expanded(
+                          child: Text(
+                            Get.put(AddressController())
+                                .currentAddress
+                                .value
+                                .address,
+                            textAlign: TextAlign.left,
+                            style: TextStyle(
+                              color: const Color(0xFF333333),
+                              fontSize: 45.sp,
+                              fontFamily: 'Core_Gothic_D5',
+                              fontWeight: FontWeight.w400,
+                            ),
                           ),
                         ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.all(60.w),
-                        child: Image.asset(
-                          'assets/icons/arrow.png',
-                          width: 50.w,
+                        Padding(
+                          padding: EdgeInsets.all(60.w),
+                          child: Image.asset(
+                            'assets/icons/arrow.png',
+                            width: 50.w,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

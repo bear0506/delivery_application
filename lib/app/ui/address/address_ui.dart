@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
 import 'package:flutter/material.dart';
@@ -15,141 +16,175 @@ class AddressUi extends GetView<AddressController> {
     return Obx(
       () => Scaffold(
         backgroundColor: Colors.white,
-        body: NestedScrollView(
-          physics: NeverScrollableScrollPhysics(),
-          controller: controller.scrollController.value,
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            return <Widget>[
-              SliverAppBar(
-                elevation: 0,
-                // expandedHeight: 200.h,
-                // collapsedHeight: 100.h,
-                automaticallyImplyLeading: false,
-                titleSpacing: 0,
-                backgroundColor: Colors.white,
-                pinned: true,
-                title: Padding(
-                  padding: EdgeInsets.only(
-                    left: 50.w,
-                    top: 50.h,
+        appBar: AppBar(
+          elevation: 0,
+          backgroundColor: Colors.white,
+          automaticallyImplyLeading: false,
+          titleSpacing: 0,
+          title: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20.w),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                IconButton(
+                  icon: Image.asset(
+                    "assets/icons/x.png",
+                    width: 50.w,
+                    height: 50.h,
                   ),
+                  onPressed: () => Get.back(),
+                ),
+                Text(
+                  controller.temp1.value,
+                  textAlign: TextAlign.start,
+                  style: TextStyle(
+                    color: const Color(0xFF333333),
+                    fontSize: 60.sp,
+                    fontFamily: 'Core_Gothic_D6',
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        body: NotificationListener<OverscrollIndicatorNotification>(
+          onNotification: (OverscrollIndicatorNotification? overscroll) {
+            overscroll!.disallowIndicator();
+            return true;
+          },
+          child: Column(
+            children: [
+              SizedBox(height: 30.h),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 50.w),
+                width: 1240.w,
+                height: 140.h,
+                decoration: BoxDecoration(
+                  color: Color(0xFFE0E0E0),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: InkWell(
+                  onTap: () {
+                    Get.toNamed("/address/detail");
+                    Get.toNamed("/address/search");
+                  },
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      IconButton(
-                        icon: Image.asset(
-                          "assets/icons/x.png",
-                          width: 50.w,
-                          height: 50.h,
-                        ),
-                        onPressed: () => Get.back(),
+                      Image.asset(
+                        "assets/icons/search.png",
+                        width: 60.w,
+                        height: 60.h,
                       ),
-                      SizedBox(
-                        width: 20.w,
-                      ),
-                      Expanded(
-                        child: Text(
-                          controller.temp.value,
-                          textAlign: TextAlign.start,
-                          style: TextStyle(
-                            color: const Color(0xFF333333),
-                            fontSize: 60.sp,
-                            fontFamily: 'Core_Gothic_D6',
-                            fontWeight: FontWeight.bold,
-                          ),
+                      SizedBox(width: 50.w),
+                      Text(
+                        "지번, 도로명, 건물명으로 검색",
+                        style: TextStyle(
+                          color: const Color(0xFFA1A1A1),
+                          fontSize: 55.sp,
+                          fontFamily: 'Core_Gothic_D5',
                         ),
                       ),
                     ],
                   ),
                 ),
               ),
-            ];
-          },
-          body: Theme(
-            data: Theme.of(context).copyWith(
-              colorScheme: ColorScheme.fromSwatch(
-                accentColor: Colors.transparent,
+              SizedBox(height: 60.h),
+              Container(
+                height: 20.h,
+                color: Color(0xFFECECEC),
               ),
-            ),
-            child: NotificationListener<OverscrollIndicatorNotification>(
-              onNotification: (OverscrollIndicatorNotification? overscroll) {
-                overscroll!.disallowIndicator();
-                return true;
-              },
-              child: Column(
-                children: [
-                  // TimeInformation(),
-                  // StoreInformation(),
-                  SizedBox(height: 30.h),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 50.w),
-                    width: 1240.w,
-                    height: 140.h,
-                    decoration: BoxDecoration(
-                      color: Color(0xFFE0E0E0),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: InkWell(
+              SingleChildScrollView(
+                child: ListView.separated(
+                  padding: EdgeInsets.symmetric(
+                    vertical: 50.h,
+                    horizontal: 100.w,
+                  ),
+                  shrinkWrap: true,
+                  controller: controller.listScrollController.value,
+                  itemBuilder: (BuildContext context, int index) {
+                    return InkWell(
                       onTap: () {
-                        // Get.toNamed("/address/detail");
-                        Get.toNamed("/address/detail");
-
-                        Get.toNamed("/address/search");
-
-                        // Get.to(
-                        //       () => KpostalView(
-                        //     title: "주소 검색",
-                        //     callback: (Kpostal result) {
-                        //       // print(result);
-                        //       Get.toNamed("/address/detail");
-                        //       Get.toNamed("/address/detail");
-                        //
-                        //       print(result.address);
-                        //       print(result.latitude.toString());
-                        //       print(result.longitude.toString());
-                        //
-                        //       controller.tempAddress.value = result.address;
-                        //       // Get.back();
-                        //       // Get.toNamed("/address/detail");
-                        //       // Get.toNamed("/address/detail");
-                        //     },
-                        //   ),
-                        //   // transition: Transition.rightToLeftWithFade,
-                        // );
+                        controller.handleAddressSelectProvider(
+                            controller.addresses[index].idx);
                       },
-                      // onTap: () => Get.toNamed("/address/detail"),
                       child: Row(
                         children: [
-                          Image.asset(
-                            "assets/icons/search.png",
-                            width: 60.w,
-                            height: 60.h,
+                          Container(
+                            width: 250.w,
+                            child: Text(
+                              controller.addresses[index].name,
+                              style: TextStyle(
+                                color: const Color(0xFF333333),
+                                fontSize: 55.sp,
+                                fontFamily: 'Core_Gothic_D5',
+                              ),
+                            ),
                           ),
                           SizedBox(width: 50.w),
-                          Text(
-                            "지번, 도로명, 건물명으로 검색",
-                            style: TextStyle(
-                              color: const Color(0xFFA1A1A1),
-                              fontSize: 55.sp,
-                              fontFamily: 'Core_Gothic_D5',
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  controller.addresses[index].address,
+                                  style: TextStyle(
+                                    color: const Color(0xFF333333),
+                                    fontSize: 45.sp,
+                                    fontFamily: 'Core_Gothic_D5',
+                                  ),
+                                ),
+                                SizedBox(height: 10.h),
+                                Text(
+                                  controller.addresses[index].detail,
+                                  style: TextStyle(
+                                    color: const Color(0xFF333333),
+                                    fontSize: 45.sp,
+                                    fontFamily: 'Core_Gothic_D5',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          controller.addresses[index].active == true
+                              ? Icon(
+                                  CupertinoIcons.check_mark_circled,
+                                  color: Color(0xFFFF8800),
+                                  size: 65.w,
+                                )
+                              : SizedBox(),
+                          SizedBox(width: 50.w),
+                          InkWell(
+                            onTap: () {
+                              controller.handleAddressDeleteProvider(
+                                  controller.addresses[index].idx);
+                            },
+                            child: Icon(
+                              CupertinoIcons.delete,
+                              size: 65.w,
                             ),
                           ),
                         ],
                       ),
-                    ),
-                  ),
-                  SizedBox(height: 60.h),
-                  Container(
-                    height: 20.h,
-                    color: Color(0xFFECECEC),
-                  ),
-                ],
+                    );
+                  },
+                  separatorBuilder: (BuildContext context, int index) {
+                    return Padding(
+                      padding: EdgeInsets.symmetric(
+                        vertical: 20.h,
+                      ),
+                      child: const Divider(
+                        color: Color(0xFFECECEC),
+                        thickness: 2,
+                      ),
+                    );
+                  },
+                  itemCount: controller.addresses.length,
+                ),
               ),
-            ),
+            ],
           ),
         ),
-        // bottomNavigationBar: const BottomOutlinedButtonWidget(),
       ),
     );
   }

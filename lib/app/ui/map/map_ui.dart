@@ -24,13 +24,14 @@ class MapUi extends GetView<MapController> {
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         kakaoMapKey: mapController.kakaoMapKey.value,
-        lat: 37.560202,
-        lng: 126.993718,
+        lat: controller.mapLat.value,
+        lng: controller.mapLng.value,
         showMapTypeControl: false,
         showZoomControl: false,
         markerImageURL:
             'https://t1.daumcdn.net/localimg/localimages/07/2012/img/marker_p.png',
-        customScript: '''
+        customScript:
+            '''
 
                     kakao.maps.event.addListener(map, 'click', function() {
                       onTapMap.postMessage("Close!");

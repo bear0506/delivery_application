@@ -592,14 +592,12 @@ class Pages {
       name: Routes.addressDetail,
       page: () => AddressDetailUi(),
       binding: AddressBinding(),
-      transition: Transition.rightToLeft,
     ),
     GetPage(
       title: "배달주소 검색",
       name: Routes.addressSearch,
       page: () => AddressSearchUi(),
       binding: AddressBinding(),
-      transition: Transition.rightToLeft,
     ),
     // GetPage(
     //   title: "이메일 및 비밀번호 찾기 화면",

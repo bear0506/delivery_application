@@ -31,7 +31,8 @@ class AddressSearchUi extends GetView<AddressController> {
                   width: 50.w,
                   height: 50.h,
                 ),
-                onPressed: () => Get.until((route) => Get.currentRoute == "/address"),
+                onPressed: () =>
+                    Get.until((route) => Get.currentRoute == "/address"),
               ),
               Text(
                 controller.temp2.value,
@@ -52,10 +53,9 @@ class AddressSearchUi extends GetView<AddressController> {
         print(result.latitude.toString());
         print(result.longitude.toString());
 
-        controller.tempAddress.value = result.address;
-        // Get.back();
-        // Get.toNamed("/address/detail");
-        // Get.toNamed("/address/detail");
+        controller.addressTextFormFieldController.text = result.address;
+        controller.addressLat.value = result.latitude.toString();
+        controller.addressLng.value = result.longitude.toString();
       },
     );
   }

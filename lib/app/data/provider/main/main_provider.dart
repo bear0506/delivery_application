@@ -32,6 +32,7 @@ class MainInitProvider {
       );
 
       if (response.statusCode == 200) {
+        print(response.data);
         return MemberBaseResponseModel.fromJson(response.data);
       } else {
         throw Exception('faild to load request');

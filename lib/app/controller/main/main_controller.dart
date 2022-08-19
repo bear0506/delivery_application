@@ -1,3 +1,4 @@
+import 'package:delivery_service/app/controller/address/address_controller.dart';
 import 'package:delivery_service/app/data/model/main/main_model.dart';
 import 'package:delivery_service/main.dart';
 
@@ -41,6 +42,8 @@ class MainController extends GetxController {
         if (value.status == "success") {
           loginStatus.value = true;
           currentMember.value = value.member;
+
+          Get.put(AddressController()).handleAddressInitProvider();
         } else {
           loginStatus.value = false;
         }
