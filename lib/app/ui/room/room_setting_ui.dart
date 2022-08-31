@@ -1,8 +1,11 @@
+import 'package:delivery_service/app/controller/order/order_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:delivery_service/app/controller/room/room_controller.dart';
+import 'package:delivery_service/app/controller/address/address_controller.dart';
+import 'package:intl/intl.dart';
 
 class RoomSettingUi extends GetView<RoomController> {
   const RoomSettingUi({Key? key}) : super(key: key);
@@ -78,18 +81,20 @@ class RoomSettingUi extends GetView<RoomController> {
             child: SingleChildScrollView(
               physics: const NeverScrollableScrollPhysics(),
               child: Column(
-                children: const [
-                  SetAddress(),
+                children: [
+                  SetAddressWidget(),
                   Divider(
                     color: Color(0xFFECECEC),
                     thickness: 5,
                   ),
-                  SelectTime(),
+                  // SelectTime(),
+                  SelectTimeWidget(),
                   Divider(
                     color: Color(0xFFECECEC),
                     thickness: 5,
                   ),
-                  PeopleNumberSetting(),
+                  // PeopleNumberSetting(),
+                  NumberSettingWidget(),
                 ],
               ),
             ),
@@ -97,6 +102,81 @@ class RoomSettingUi extends GetView<RoomController> {
         ),
       ),
       bottomNavigationBar: BottomOutlinedButtonWidget(),
+    );
+  }
+}
+
+class SetAddressWidget extends GetView<RoomController> {
+  const SetAddressWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(
+      () => Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: 100.w,
+          vertical: 60.h,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "배달 주소",
+              style: TextStyle(
+                color: const Color(0xFFB8B8B8),
+                fontSize: 50.sp,
+                fontFamily: 'Core_Gothic_D4',
+              ),
+            ),
+            SizedBox(
+              height: 45.h,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Text(
+                    Get.put(AddressController()).currentAddress.value.address +
+                        ", " +
+                        Get.put(AddressController())
+                            .currentAddress
+                            .value
+                            .detail,
+                    style: TextStyle(
+                      color: const Color(0xFF333333),
+                      fontSize: 60.sp,
+                      fontFamily: 'Core_Gothic_D5',
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ),
+                SizedBox(width: 20.w),
+                TextButton(
+                  onPressed: () {
+                    Get.toNamed("/address");
+                  },
+                  style: TextButton.styleFrom(
+                    splashFactory: NoSplash.splashFactory,
+                    minimumSize: Size.zero,
+                    padding: EdgeInsets.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: Text(
+                    "변경",
+                    style: TextStyle(
+                      color: const Color(0xFFFF8800),
+                      fontSize: 50.sp,
+                      fontFamily: 'Core_Gothic_D5',
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -164,165 +244,14 @@ class SetAddress extends StatelessWidget {
   }
 }
 
-class SelectTime extends StatefulWidget {
-  const SelectTime({Key? key}) : super(key: key);
-
-  @override
-  State<SelectTime> createState() => _SelectTimeState();
-}
-
-class _SelectTimeState extends State<SelectTime> {
-  TimeOfDay selectedTime = TimeOfDay.now();
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        vertical: 40.h,
-        horizontal: 100.w,
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "주문 시간 설정",
-                    style: TextStyle(
-                      color: const Color(0xFFB8B8B8),
-                      fontSize: 50.sp,
-                      fontFamily: 'Core_Gothic_D4',
-                    ),
-                  ),
-                  SizedBox(
-                    height: 30.h,
-                  ),
-                  Text(
-                    "입력한 시간에 맞추어 주문이 진행됩니다.",
-                    style: TextStyle(
-                      color: const Color(0xFFB8B8B8),
-                      fontSize: 40.sp,
-                      fontFamily: 'Core_Gothic_D4',
-                    ),
-                  ),
-                ],
-              ),
-              TextButton(
-                onPressed: () {
-                  _selectTime(context);
-                },
-                style: TextButton.styleFrom(
-                  splashFactory: NoSplash.splashFactory,
-                ),
-                child: Text(
-                  "시간 변경",
-                  style: TextStyle(
-                    color: const Color(0xFFFF8800),
-                    fontSize: 50.sp,
-                    fontFamily: 'Core_Gothic_D5',
-                  ),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 80.h,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 400.w,
-                height: 350.h,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    width: 10.w,
-                    color: const Color(0xFFFF8800),
-                  ),
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(10.0),
-                  ),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    vertical: 60.h,
-                    horizontal: 85.w,
-                  ),
-                  child: Text(
-                    selectedTime.hour < 10
-                        ? "0${selectedTime.hour}"
-                        : "${selectedTime.hour}",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: const Color(0xFF333333),
-                      fontSize: 180.sp,
-                      fontFamily: 'Core_Gothic_D5',
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  vertical: 40.h,
-                ),
-                child: Text(
-                  ":",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: const Color(0xFF333333),
-                    fontSize: 200.sp,
-                    fontFamily: 'Core_Gothic_D5',
-                  ),
-                ),
-              ),
-              Container(
-                width: 400.w,
-                height: 350.h,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    width: 10.w,
-                    color: const Color(0xFFFF8800),
-                  ),
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(10.0),
-                  ),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    vertical: 60.h,
-                    horizontal: 85.w,
-                  ),
-                  child: Text(
-                    selectedTime.minute >= 10
-                        ? "${selectedTime.minute}"
-                        : "0${selectedTime.minute}",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: const Color(0xFF333333),
-                      fontSize: 180.sp,
-                      fontFamily: 'Core_Gothic_D5',
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  _selectTime(BuildContext context) async {
+class SelectTimeWidget extends GetView<RoomController> {
+  openSelectTimeModal(BuildContext context) async {
     final TimeOfDay? timeOfDay = await showTimePicker(
       context: context,
-      initialTime: selectedTime,
+      initialTime: controller.selectedTime.value,
+      // initialTime: TimeOfDay(
+      //     hour: controller.selectedTime.value.hour,
+      //     minute: controller.selectedTime.value.minute),
       initialEntryMode: TimePickerEntryMode.input,
       confirmText: "확인",
       cancelText: "취소",
@@ -372,212 +301,246 @@ class _SelectTimeState extends State<SelectTime> {
         );
       },
     );
-    if (timeOfDay != null && timeOfDay != selectedTime) {
-      setState(
-        () {
-          selectedTime = timeOfDay;
-        },
-      );
-    }
-  }
-}
-
-// class SelectTime extends GetView<RoomController> {
-//   const SelectTime({Key? key}) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) => Obx(
-//         () => Padding(
-//           padding: EdgeInsets.symmetric(
-//             horizontal: 100.w,
-//             vertical: 40.h,
-//           ),
-//           child: Column(
-//             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             children: [
-//               Text(
-//                 "주문 시간 설정",
-//                 style: TextStyle(
-//                   color: const Color(0xFFB8B8B8),
-//                   fontSize: 50.sp,
-//                   fontFamily: 'Core_Gothic_D4',
-//                 ),
-//               ),
-//               SizedBox(
-//                 height: 30.h,
-//               ),
-//               Text(
-//                 "입력한 시간에 맞추어 주문이 진행됩니다.",
-//                 style: TextStyle(
-//                   color: const Color(0xFFB8B8B8),
-//                   fontSize: 40.sp,
-//                   fontFamily: 'Core_Gothic_D4',
-//                 ),
-//               ),
-//               ListView.builder(
-//                 physics: const NeverScrollableScrollPhysics(),
-//                 shrinkWrap: true,
-//                 itemCount: controller.isCheckbox.length,
-//                 itemBuilder: (BuildContext context, int index) => Obx(
-//                   () => Theme(
-//                     data: ThemeData(unselectedWidgetColor: kPrimaryColor),
-//                     child: CheckboxListTile(
-//                       focusNode: index == 0
-//                           ? controller.timeCheckBoxFocusNode
-//                           : controller.privacyCheckBoxFocusNode,
-//                       controlAffinity: ListTileControlAffinity.leading,
-//                       contentPadding: EdgeInsets.zero,
-//                       dense: true,
-//                       title: Row(
-//                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                         crossAxisAlignment: CrossAxisAlignment.start,
-//                         children: [
-//                           Text(
-//                             controller.isCheckbox[index]["time"].value,
-//                             style: TextStyle(
-//                               color: const Color(0xFF333333),
-//                               fontSize: 60.sp,
-//                               fontFamily: 'Core_Gothic_D5',
-//                             ),
-//                           ),
-//                         ],
-//                       ),
-//                       value: controller.isCheckbox[index]["isChecked"].value,
-//                       activeColor: kPrimaryColor,
-//                       onChanged: (bool? value) {
-//                         for (var element in controller.isCheckbox) {
-//                           element["isChecked"].value = false;
-//                         }
-//                         controller.isCheckbox[index]["isChecked"].value = value;
-//                       },
-//                     ),
-//                   ),
-//                 ),
-//               ),
-//             ],
-//           ),
-//         ),
-//       );
-// }
-
-class PeopleNumberSetting extends StatefulWidget {
-  const PeopleNumberSetting({Key? key}) : super(key: key);
-
-  @override
-  State<PeopleNumberSetting> createState() => _PeopleNumberSettingState();
-}
-
-int n = 2;
-
-class _PeopleNumberSettingState extends State<PeopleNumberSetting> {
-  void add() {
-    if (n < 5) {
-      setState(() {
-        n++;
-      });
-    }
-  }
-
-  void minus() {
-    if (n > 2) {
-      setState(() {
-        n--;
-      });
+    if (timeOfDay != null && timeOfDay != controller.selectedTime) {
+      controller.selectedTime.value = timeOfDay;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: 100.w,
-        vertical: 40.h,
-      ),
-      height: 350.h,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "인원 설정",
-            style: TextStyle(
-              color: const Color(0xFFB8B8B8),
-              fontSize: 50.sp,
-              fontFamily: 'Core_Gothic_D4',
-            ),
-          ),
-          Text(
-            "최소 2인에서 최대 5인까지 인원을 설정해주세요.",
-            style: TextStyle(
-              color: const Color(0xFFB8B8B8),
-              fontSize: 40.sp,
-              fontFamily: 'Core_Gothic_D4',
-            ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Spacer(),
-              SizedBox(
-                width: 80.w,
-                height: 80.h,
-                child: FloatingActionButton(
-                  backgroundColor: const Color(0xFFEFEFEF),
-                  splashColor: Colors.transparent,
-                  elevation: 0,
-                  onPressed: minus,
-                  heroTag: "minus",
-                  child: Image.asset(
-                    "assets/icons/minus.png",
-                    width: 50.w,
-                    height: 50.h,
+    return Obx(
+      () => Padding(
+        padding: EdgeInsets.symmetric(
+          vertical: 40.h,
+          horizontal: 100.w,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "주문 시간 설정",
+                      style: TextStyle(
+                        color: const Color(0xFFB8B8B8),
+                        fontSize: 50.sp,
+                        fontFamily: 'Core_Gothic_D4',
+                      ),
+                    ),
+                    SizedBox(
+                      height: 30.h,
+                    ),
+                    Text(
+                      "입력한 시간에 맞추어 주문이 진행됩니다.",
+                      style: TextStyle(
+                        color: const Color(0xFFB8B8B8),
+                        fontSize: 40.sp,
+                        fontFamily: 'Core_Gothic_D4',
+                      ),
+                    ),
+                  ],
+                ),
+                TextButton(
+                  onPressed: () {
+                    openSelectTimeModal(context);
+                  },
+                  style: TextButton.styleFrom(
+                    splashFactory: NoSplash.splashFactory,
+                  ),
+                  child: Text(
+                    "시간 변경",
+                    style: TextStyle(
+                      color: const Color(0xFFFF8800),
+                      fontSize: 50.sp,
+                      fontFamily: 'Core_Gothic_D5',
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(
-                width: 60.w,
-              ),
-              Text(
-                "$n",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 60.sp,
-                  fontFamily: 'Core_Gothic_D5',
-                ),
-              ),
-              SizedBox(
-                width: 60.w,
-              ),
-              SizedBox(
-                width: 80.w,
-                height: 80.h,
-                child: FloatingActionButton(
-                  backgroundColor: const Color(0xFFEFEFEF),
-                  splashColor: Colors.transparent,
-                  elevation: 0,
-                  onPressed: add,
-                  heroTag: "plus",
-                  child: Image.asset(
-                    "assets/icons/plus.png",
-                    width: 50.w,
-                    height: 50.h,
+              ],
+            ),
+            SizedBox(
+              height: 80.h,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 400.w,
+                  height: 350.h,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      width: 10.w,
+                      color: const Color(0xFFFF8800),
+                    ),
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(10.0),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      vertical: 60.h,
+                      horizontal: 85.w,
+                    ),
+                    child: Text(
+                      controller.selectedTime.value.hour < 10
+                          ? "0${controller.selectedTime.value.hour}"
+                          : "${controller.selectedTime.value.hour}",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: const Color(0xFF333333),
+                        fontSize: 180.sp,
+                        fontFamily: 'Core_Gothic_D5',
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        ],
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    vertical: 40.h,
+                  ),
+                  child: Text(
+                    ":",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: const Color(0xFF333333),
+                      fontSize: 200.sp,
+                      fontFamily: 'Core_Gothic_D5',
+                    ),
+                  ),
+                ),
+                Container(
+                  width: 400.w,
+                  height: 350.h,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      width: 10.w,
+                      color: const Color(0xFFFF8800),
+                    ),
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(10.0),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      vertical: 60.h,
+                      horizontal: 85.w,
+                    ),
+                    child: Text(
+                      controller.selectedTime.value.minute >= 10
+                          ? "${controller.selectedTime.value.minute}"
+                          : "0${controller.selectedTime.value.minute}",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: const Color(0xFF333333),
+                        fontSize: 180.sp,
+                        fontFamily: 'Core_Gothic_D5',
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-class BottomOutlinedButtonWidget extends StatelessWidget {
-  BottomOutlinedButtonWidget({Key? key}) : super(key: key);
+class NumberSettingWidget extends GetView<RoomController> {
+  @override
+  Widget build(BuildContext context) {
+    return Obx(
+      () => Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: 100.w,
+          vertical: 40.h,
+        ),
+        height: 350.h,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "인원 설정",
+              style: TextStyle(
+                color: const Color(0xFFB8B8B8),
+                fontSize: 50.sp,
+                fontFamily: 'Core_Gothic_D4',
+              ),
+            ),
+            Text(
+              "최소 2인에서 최대 5인까지 인원을 설정해주세요.",
+              style: TextStyle(
+                color: const Color(0xFFB8B8B8),
+                fontSize: 40.sp,
+                fontFamily: 'Core_Gothic_D4',
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Spacer(),
+                SizedBox(
+                  width: 80.w,
+                  height: 80.h,
+                  child: IconButton(
+                    padding: EdgeInsets.zero,
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    onPressed: () {
+                      controller.minusNumberOfPeople();
+                    },
+                    icon: Image.asset("assets/icons/minus1.png"),
+                  ),
+                ),
+                SizedBox(
+                  width: 60.w,
+                ),
+                Text(
+                  controller.numberOfPeople.value.toString(),
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 60.sp,
+                    fontFamily: 'Core_Gothic_D5',
+                  ),
+                ),
+                SizedBox(
+                  width: 60.w,
+                ),
+                SizedBox(
+                  width: 80.w,
+                  height: 80.h,
+                  child: IconButton(
+                    padding: EdgeInsets.zero,
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    onPressed: () {
+                      controller.plusNumberOfPeople();
+                    },
+                    icon: Image.asset("assets/icons/plus1.png"),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
-  final roomController = Get.put(RoomController());
+class BottomOutlinedButtonWidget extends GetView<RoomController> {
+  BottomOutlinedButtonWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -592,7 +555,18 @@ class BottomOutlinedButtonWidget extends StatelessWidget {
         height: 200.h,
         child: OutlinedButton(
           onPressed: () {
-            Get.toNamed('/store=${roomController.storeIdx}/roomResult');
+            // Get.toNamed('/store=${controller.storeIdx}/roomResult');
+            print(Get.put(AddressController()).currentAddress.value.address +
+                ", " +
+                Get.put(AddressController()).currentAddress.value.detail);
+
+            print(controller.selectedTime.value);
+
+            controller.handleRoomAddProvider();
+
+            // print(Get.put(OrderController()).)
+            // print(DateFormat('yyyy-MM-dd HH:mm:ss')
+            //     .format(controller.selectedTime.value));
           },
           style: OutlinedButton.styleFrom(
             side: const BorderSide(color: Color(0xFFFF8800), width: 1),

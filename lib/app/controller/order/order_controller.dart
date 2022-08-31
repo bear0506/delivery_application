@@ -12,7 +12,10 @@ import 'package:delivery_service/app/data/provider/order/order_provider.dart';
 import 'package:delivery_service/app/data/model/order/order_model.dart';
 
 class OrderController extends GetxController with GetTickerProviderStateMixin {
-  late Rx<dynamic> storeIdx = Get.parameters["storeIdx"].obs;
+  // late Rx<dynamic> storeIdx = Get.parameters["storeIdx"].obs;
+
+  // Rx<dynamic> orderIdx = 0.obs;
+
   Rx<ScrollController> scrollController = ScrollController().obs;
   RxBool temp = true.obs;
 
@@ -77,8 +80,14 @@ class OrderController extends GetxController with GetTickerProviderStateMixin {
 
   late Rx<OrderResponseModel> cartOrder = OrderResponseModel(
     idx: 0,
+    storeIdx: 0,
     price: 0,
     deliveryFee: 0,
+    address: "",
+    detail: "",
+    lat: "",
+    lng: "",
+    status: "IC",
   ).obs;
 
   late RxList<OrderDetailResponseModel> cartMenus =
@@ -298,6 +307,56 @@ class OrderController extends GetxController with GetTickerProviderStateMixin {
           handleCartUpdateProvider(orderIdx);
         } else {
           print("장바구니 메뉴 삭제 실패");
+        }
+      });
+    } catch (e) {
+      logger.d(e);
+    } finally {
+      Future.delayed(
+          const Duration(milliseconds: 500),
+          // ignore: avoid_print
+          () {});
+    }
+  }
+
+  // 장바구니 메뉴 수량 플러스
+  Future<void> handleOrderDetailCountPlusProvider(
+      int orderIdx, int orderDetailIdx) async {
+    try {
+      await OrderDetailCountPlusProvider()
+          .dio(idx: orderDetailIdx)
+          .then((value) {
+        if (value.status == "success") {
+          print("장바구니 메뉴 수량 +1 성공");
+
+          handleCartUpdateProvider(orderIdx);
+        } else {
+          print("장바구니 메뉴 수량 +1 실패");
+        }
+      });
+    } catch (e) {
+      logger.d(e);
+    } finally {
+      Future.delayed(
+          const Duration(milliseconds: 500),
+          // ignore: avoid_print
+          () {});
+    }
+  }
+
+  // 장바구니 메뉴 수량 마이너스
+  Future<void> handleOrderDetailCountMinusProvider(
+      int orderIdx, int orderDetailIdx) async {
+    try {
+      await OrderDetailCountMinusProvider()
+          .dio(idx: orderDetailIdx)
+          .then((value) {
+        if (value.status == "success") {
+          print("장바구니 메뉴 수량 -1 성공");
+
+          handleCartUpdateProvider(orderIdx);
+        } else {
+          print("장바구니 메뉴 수량 -1 실패");
         }
       });
     } catch (e) {

@@ -52,21 +52,22 @@ class HomeController extends GetxController {
   RxBool modalVisibility = false.obs;
 
   late Rx<RoomResponseModel> currentRoom = RoomResponseModel(
-          idx: -1,
-          memIdx: 0,
-          memName: "",
-          storeIdx: 0,
-          storeName: "",
-          address: "",
-          lat: "",
-          lng: "",
-          timeLimit: "",
-          currentNum: 0,
-          maximumNum: 0,
-          deliveryTime: "",
-          deliveryFee: 0,
-          active: false)
-      .obs;
+    idx: -1,
+    memIdx: 0,
+    memName: "",
+    storeIdx: 0,
+    storeName: "",
+    address: "",
+    detail: "",
+    lat: "",
+    lng: "",
+    currentNum: 0,
+    maximumNum: 0,
+    deliveryTime: "",
+    deliveryFee: 0,
+    timeLimit: "",
+    active: false,
+  ).obs;
 
   // // 조회
   // Future<void> handleInitProvider() async {

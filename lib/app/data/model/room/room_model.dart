@@ -38,6 +38,7 @@ class RoomResponseModel {
   late int storeIdx;
   late String storeName;
   late String address;
+  late String detail;
   late String lat;
   late String lng;
   late String timeLimit;
@@ -54,6 +55,7 @@ class RoomResponseModel {
     required this.storeIdx,
     required this.storeName,
     required this.address,
+    required this.detail,
     required this.lat,
     required this.lng,
     required this.timeLimit,
@@ -72,9 +74,10 @@ class RoomResponseModel {
       storeIdx: data['store_idx'],
       storeName: data['store_name'],
       address: data['address'],
+      detail: data['detail'] != null ? data['detail'] : "",
       lat: data['lat'],
       lng: data['lng'],
-      timeLimit: data['time_limit'],
+      timeLimit: data['time_limit'] != null ? data['time_limit'] : "",
       currentNum: data['current_num'],
       maximumNum: data['maximum_num'],
       deliveryTime:
@@ -82,5 +85,48 @@ class RoomResponseModel {
       deliveryFee: data['delivery_fee'],
       active: data['active'],
     );
+  }
+}
+
+class RoomAddRequestModel {
+  late int storeIdx;
+  late String address;
+  late String detail;
+  late String lat;
+  late String lng;
+  late int currentNum;
+  late int maximumNum;
+  late int deliveryFee;
+  late DateTime timeLimit;
+  late bool active;
+
+  RoomAddRequestModel({
+    required this.storeIdx,
+    required this.address,
+    required this.detail,
+    required this.lat,
+    required this.lng,
+    required this.currentNum,
+    required this.maximumNum,
+    required this.deliveryFee,
+    required this.timeLimit,
+    required this.active,
+  });
+
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {
+      "store_idx": storeIdx,
+      "address": address,
+      "detail": detail,
+      "lat": lat,
+      "lng": lng,
+      "current_num": currentNum,
+      "maximum_num": maximumNum,
+      "delivery_fee": deliveryFee,
+      "time_limit": timeLimit,
+      "active": active,
+    };
+
+    return map;
   }
 }

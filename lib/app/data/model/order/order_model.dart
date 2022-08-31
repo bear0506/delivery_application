@@ -21,7 +21,17 @@ class CartBaseResponseModel {
     status = data["status"];
     order = data["message"]["order"] != null
         ? OrderResponseModel.fromJson(data["message"]["order"])
-        : OrderResponseModel(idx: 0, price: 0, deliveryFee: 0);
+        : OrderResponseModel(
+            idx: 0,
+            storeIdx: 0,
+            price: 0,
+            deliveryFee: 0,
+            address: "",
+            detail: "",
+            lat: "",
+            lng: "",
+            status: "IC",
+          );
     data["message"]["cart"]
         .map((e) => orderDetails.add(OrderDetailResponseModel.fromJson(e)))
         .toList();
@@ -124,20 +134,38 @@ class OrderDetailAddRequestModel {
 
 class OrderResponseModel {
   late int idx;
+  late int storeIdx;
   late int price;
   late int deliveryFee;
+  late String address;
+  late String detail;
+  late String lat;
+  late String lng;
+  late String status;
 
   OrderResponseModel({
     required this.idx,
+    required this.storeIdx,
     required this.price,
     required this.deliveryFee,
+    required this.address,
+    required this.detail,
+    required this.lat,
+    required this.lng,
+    required this.status,
   });
 
   factory OrderResponseModel.fromJson(Map<String, dynamic> data) {
     return OrderResponseModel(
       idx: data['idx'],
+      storeIdx: data['store_idx'],
       price: data['price'],
       deliveryFee: data['delivery_fee'],
+      address: data['address'] != null ? data['address'] : "",
+      detail: data['detail'] != null ? data['detail'] : "",
+      lat: data['lat'] != null ? data['lat'] : "",
+      lng: data['lng'] != null ? data['lng'] : "",
+      status: data['status'],
     );
   }
 }

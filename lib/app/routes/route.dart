@@ -93,11 +93,11 @@ abstract class Routes {
   static const store = "/store=:storeIdx";
   static const storeMenuDetail = "/store=:storeIdx/storeMenuDetail=:menuIdx";
 
-  static const order = "/store=:storeIdx/order";
-  static const orderResult = "/store=:storeIdx/orderResult";
+  static const order = "/order=:orderIdx";
+  static const orderResult = "/order=:orderIdx/orderResult";
 
-  static const roomSetting = "/store=:storeIdx/roomSetting";
-  static const roomResult = "/store=:storeIdx/roomResult";
+  static const roomSetting = "/order=:orderIdx/roomSetting";
+  static const roomResult = "/order=:orderIdx/roomResult";
 
   static const room = "/room=:roomIdx";
 

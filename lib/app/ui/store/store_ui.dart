@@ -152,9 +152,8 @@ class StoreUi extends GetView<StoreController> {
                               heroTag: "shoppingBasket",
                               backgroundColor: Colors.transparent,
                               onPressed: () {
-                                // orderController.handleCartInitProvider();
                                 Get.toNamed(
-                                    '/store=${storeController.storeIdx}/order');
+                                    '/order=${orderController.cartOrder.value.idx}');
                               },
                               tooltip: 'Increment',
                               child: Image.asset(
@@ -515,16 +514,16 @@ class StoreDetailWidget extends GetView<StoreController> {
                                   .length,
                               itemBuilder: (BuildContext context, index) {
                                 var totalCost = json
-                                    .decode(
-                                        _storeController.store.value.deliveryFee)
+                                    .decode(_storeController
+                                        .store.value.deliveryFee)
                                     .keys
                                     .toList()[index]
                                     .toString()
                                     .split('~');
 
                                 var deliveryFee = json
-                                    .decode(
-                                        _storeController.store.value.deliveryFee)
+                                    .decode(_storeController
+                                        .store.value.deliveryFee)
                                     .values
                                     .toList()[index]
                                     .toString();
@@ -536,15 +535,18 @@ class StoreDetailWidget extends GetView<StoreController> {
                                     Text(
                                       totalCost.length > 1
                                           ? NumberFormat('###,###,###,###')
-                                                  .format(int.parse(totalCost[0]))
+                                                  .format(
+                                                      int.parse(totalCost[0]))
                                                   .replaceAll(" ", "") +
                                               "원 ~ " +
                                               NumberFormat('###,###,###,###')
-                                                  .format(int.parse(totalCost[1]))
+                                                  .format(
+                                                      int.parse(totalCost[1]))
                                                   .replaceAll(" ", "") +
                                               "원"
                                           : NumberFormat('###,###,###,###')
-                                                  .format(int.parse(totalCost[0]))
+                                                  .format(
+                                                      int.parse(totalCost[0]))
                                                   .replaceAll(" ", "") +
                                               "원 ~",
                                       style: TextStyle(

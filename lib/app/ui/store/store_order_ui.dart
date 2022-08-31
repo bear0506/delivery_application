@@ -1,9 +1,11 @@
+import 'package:delivery_service/app/controller/order/order_controller.dart';
 import 'package:get/get.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:delivery_service/app/controller/store/store_controller.dart';
+import 'package:delivery_service/app/controller/address/address_controller.dart';
 import 'package:delivery_service/app/ui/store/store_order_list_item_data.dart';
 
 class StoreOrderUi extends GetView<StoreController> {
@@ -108,63 +110,75 @@ class StoreOrderUi extends GetView<StoreController> {
   }
 }
 
-class SetAddress extends StatelessWidget {
+class SetAddress extends GetView<StoreController> {
   const SetAddress({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 310.h,
-      color: Colors.white,
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: 100.w,
-          vertical: 40.h,
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "배달 주소",
-              style: TextStyle(
-                color: const Color(0xFFB8B8B8),
-                fontSize: 50.sp,
-                fontFamily: 'Core_Gothic_D4',
-              ),
-            ),
-            SizedBox(
-              height: 10.h,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  "서울 중구 퇴계로36길 2 910호",
-                  style: TextStyle(
-                    color: const Color(0xFF333333),
-                    fontSize: 60.sp,
-                    fontFamily: 'Core_Gothic_D5',
-                  ),
+    print(Get.put(AddressController()).currentAddress.value.address +
+        ", " +
+        Get.put(AddressController()).currentAddress.value.detail);
+
+    return Obx(
+      () => Container(
+        height: 310.h,
+        color: Colors.white,
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: 100.w,
+            vertical: 40.h,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "배달 주소",
+                style: TextStyle(
+                  color: const Color(0xFFB8B8B8),
+                  fontSize: 50.sp,
+                  fontFamily: 'Core_Gothic_D4',
                 ),
-                TextButton(
-                  onPressed: () {},
-                  style: TextButton.styleFrom(
-                    splashFactory: NoSplash.splashFactory,
-                  ),
-                  child: Text(
-                    "변경",
+              ),
+              SizedBox(
+                height: 10.h,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    // Get.put(AddressController()).currentAddress.value.address +
+                    //     ", " +
+                    //     Get.put(AddressController())
+                    //         .currentAddress
+                    //         .value
+                    //         .detail,
+                    "ㅋㅋㅋㅋ",
                     style: TextStyle(
-                      color: const Color(0xFFFF8800),
-                      fontSize: 50.sp,
+                      color: const Color(0xFF333333),
+                      fontSize: 60.sp,
                       fontFamily: 'Core_Gothic_D5',
                     ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                  TextButton(
+                    onPressed: () {},
+                    style: TextButton.styleFrom(
+                      splashFactory: NoSplash.splashFactory,
+                    ),
+                    child: Text(
+                      "변경",
+                      style: TextStyle(
+                        color: const Color(0xFFFF8800),
+                        fontSize: 50.sp,
+                        fontFamily: 'Core_Gothic_D5',
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

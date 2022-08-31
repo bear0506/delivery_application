@@ -678,15 +678,21 @@ class AppbarWidget extends GetView<HomeController>
                         Expanded(
                           child: Text(
                             Get.put(AddressController())
-                                .currentAddress
-                                .value
-                                .address,
+                                    .currentAddress
+                                    .value
+                                    .address +
+                                ", " +
+                                Get.put(AddressController())
+                                    .currentAddress
+                                    .value
+                                    .detail,
                             textAlign: TextAlign.left,
                             style: TextStyle(
                               color: const Color(0xFF333333),
                               fontSize: 45.sp,
                               fontFamily: 'Core_Gothic_D5',
                               fontWeight: FontWeight.w400,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ),
@@ -924,7 +930,12 @@ class MapModalWidget extends GetView<HomeController> {
                       width: 590.w,
                       height: 150.h,
                       child: OutlinedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Get.toNamed("/store=" +
+                              _homeController.currentRoom.value.storeIdx
+                                  .toString());
+                          _homeController.TurnOffMapModal();
+                        },
                         style: OutlinedButton.styleFrom(
                           side: const BorderSide(
                               color: Color(0xFFFF8800), width: 1),

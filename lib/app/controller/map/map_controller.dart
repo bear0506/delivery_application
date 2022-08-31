@@ -33,20 +33,19 @@ class MapController extends GetxController {
           roomsMap.addAll(value.roomsMap);
           roomsMap.refresh();
 
-          webViewController.value.runJavascript(
-              '''
+          webViewController.value.runJavascript('''
               var mapMarkers = '${jsonEncode(roomsMap)}';
               mapMarkers = JSON.parse(mapMarkers);
 
               for(var i = 0; i < mapMarkers.length; i++){
                 var marker = new kakao.maps.Marker({
                     map: map, // 마커를 표시할 지도
-                    position: eval(mapMarkers[i].latlng) // 마커의 위치
+                    position: eval("new kakao.maps.LatLng(" + mapMarkers[i].lat + ", " + mapMarkers[i].lng + ")") // 마커의 위치
                 });
 
                 kakao.maps.event.addListener(marker, 'click', function(num) {
                   return function() {
-                    var latlng = mapMarkers[num].latlng;
+                    var latlng = "new kakao.maps.LatLng(" + mapMarkers[num].lat + ", " + mapMarkers[num].lng + ")";
                     onTapMarker.postMessage(num);
 
                     map.panTo(eval(latlng));
@@ -78,8 +77,7 @@ class MapController extends GetxController {
         mapLng.toString() +
         ")";
 
-    webViewController.value
-        .runJavascript('''
+    webViewController.value.runJavascript('''
         map.setCenter($mapLatLng);
       ''');
   }

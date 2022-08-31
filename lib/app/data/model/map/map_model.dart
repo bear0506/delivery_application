@@ -25,7 +25,6 @@ class RoomResponseModel {
   late String address;
   late String lat;
   late String lng;
-  late String latlng;
   late String timeLimit;
   late int currentNum;
   late int maximumNum;
@@ -41,7 +40,6 @@ class RoomResponseModel {
     required this.address,
     required this.lat,
     required this.lng,
-    required this.latlng,
     required this.timeLimit,
     required this.currentNum,
     required this.maximumNum,
@@ -59,7 +57,6 @@ class RoomResponseModel {
       address: data['address'],
       lat: data['lat'],
       lng: data['lng'],
-      latlng: data['latlng'],
       timeLimit: data['time_limit'],
       currentNum: data['current_num'],
       maximumNum: data['maximum_num'],
