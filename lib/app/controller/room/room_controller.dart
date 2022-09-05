@@ -73,28 +73,28 @@ class RoomController extends GetxController {
   late FocusNode privacyCheckBoxFocusNode;
   late FocusNode timeOutlinedButtonFocusNode;
 
-  RxList<dynamic> isCheckbox = [
-    {
-      "id": 0,
-      "time": "01:00".obs,
-      "isChecked": false.obs,
-    },
-    {
-      "id": 1,
-      "time": "03:00".obs,
-      "isChecked": false.obs,
-    },
-    {
-      "id": 2,
-      "time": "05:00".obs,
-      "isChecked": false.obs,
-    },
-    {
-      "id": 3,
-      "time": "10:00".obs,
-      "isChecked": false.obs,
-    },
-  ].obs;
+  // RxList<dynamic> isCheckbox = [
+  //   {
+  //     "id": 0,
+  //     "time": "01:00".obs,
+  //     "isChecked": false.obs,
+  //   },
+  //   {
+  //     "id": 1,
+  //     "time": "03:00".obs,
+  //     "isChecked": false.obs,
+  //   },
+  //   {
+  //     "id": 2,
+  //     "time": "05:00".obs,
+  //     "isChecked": false.obs,
+  //   },
+  //   {
+  //     "id": 3,
+  //     "time": "10:00".obs,
+  //     "isChecked": false.obs,
+  //   },
+  // ].obs;
 
   RxList roomInfos = [
     jsonDecode(
@@ -102,7 +102,24 @@ class RoomController extends GetxController {
   ].obs;
 
   Rx<TimeOfDay> selectedTime = TimeOfDay.now().obs;
-  // Rx<DateTime> selectedTime = DateTime.now().obs;
+
+  Rx<RoomResponseModel> roomResult = RoomResponseModel(
+    idx: 0,
+    memIdx: 0,
+    memName: "",
+    storeIdx: 0,
+    storeName: "",
+    address: "",
+    detail: "",
+    lat: "",
+    lng: "",
+    timeLimit: "",
+    currentNum: 0,
+    maximumNum: 0,
+    deliveryTime: "",
+    deliveryFee: 0,
+    active: false,
+  ).obs;
 
   isSliverAppBarExpanded() {
     temptemp = (scrollController.value.hasClients &&
@@ -139,7 +156,7 @@ class RoomController extends GetxController {
     currentNum: 0,
     maximumNum: 0,
     deliveryFee: 0,
-    timeLimit: DateTime.now(),
+    timeLimit: "",
     active: false,
   ).obs;
 
@@ -152,7 +169,7 @@ class RoomController extends GetxController {
     required int currentNum,
     required int maximumNum,
     required int deliveryFee,
-    required DateTime timeLimit,
+    required String timeLimit,
     required bool active,
   }) {
     roomAddRequestModel.update((_) {
@@ -257,48 +274,56 @@ class RoomController extends GetxController {
       currentNum: 1,
       maximumNum: numberOfPeople.value,
       deliveryFee: Get.put(OrderController()).cartOrder.value.deliveryFee,
-      timeLimit: DateTime.now(),
+      timeLimit: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime(
+        DateTime.now().year,
+        DateTime.now().month,
+        DateTime.now().day,
+        selectedTime.value.hour,
+        selectedTime.value.minute,
+      )),
       active: true,
     );
 
-// DateFormat('yyyy-MM-dd HH:mm:ss').format(selectedTime.value)
-    print(DateFormat('yyyy-MM-dd').format(DateTime.now()) +
-        " " +
-        selectedTime.value.hour.toString() +
-        ":" +
-        selectedTime.value.minute.toString() +
-        ":00");
+    // print(DateFormat('yyyy-MM-dd').format(DateTime.now()) +
+    //     " " +
+    //     selectedTime.value.hour.toString() +
+    //     ":" +
+    //     selectedTime.value.minute.toString() +
+    //     ":00");
 
-    print(DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime(
-      DateTime.now().year,
-      DateTime.now().month,
-      DateTime.now().day,
-      selectedTime.value.hour,
-      selectedTime.value.minute,
-    )));
+    // print(DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime(
+    //   DateTime.now().year,
+    //   DateTime.now().month,
+    //   DateTime.now().day,
+    //   selectedTime.value.hour,
+    //   selectedTime.value.minute,
+    // )));
 
-    print(roomAddRequestModel.value.storeIdx);
-    print(roomAddRequestModel.value.maximumNum);
+    // print(roomAddRequestModel.value.storeIdx);
+    // print(roomAddRequestModel.value.maximumNum);
 
-    // try {
-    //   await RoomInitProvider()
-    //       .dio(roomIdx: int.parse(roomIdx.value))
-    //       .then((value) {
-    //     if (value.status == "success") {
-    //       room.value = value.room;
-    //       room.refresh();
-    //     } else {
-    //       print("fail");
-    //     }
-    //   });
-    // } catch (e) {
-    //   logger.d(e);
-    // } finally {
-    //   Future.delayed(
-    //       const Duration(milliseconds: 500),
-    //       // ignore: avoid_print
-    //       () {});
-    // }
+    try {
+      await RoomAddProvider()
+          .dio(requestModel: roomAddRequestModel)
+          .then((value) {
+        if (value.status == "success") {
+          print("방 추가 성공");
+
+          roomResult.value = value.room;
+
+          Get.toNamed('/order=${value.room.storeIdx}/roomResult');
+        } else {
+          print("방 추가 실패");
+        }
+      });
+    } catch (e) {
+      logger.d(e);
+    } finally {
+      Future.delayed(
+          const Duration(milliseconds: 500),
+          // ignore: avoid_print
+          () {});
+    }
   }
 
   @override

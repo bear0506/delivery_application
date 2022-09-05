@@ -556,17 +556,8 @@ class BottomOutlinedButtonWidget extends GetView<RoomController> {
         child: OutlinedButton(
           onPressed: () {
             // Get.toNamed('/store=${controller.storeIdx}/roomResult');
-            print(Get.put(AddressController()).currentAddress.value.address +
-                ", " +
-                Get.put(AddressController()).currentAddress.value.detail);
-
-            print(controller.selectedTime.value);
 
             controller.handleRoomAddProvider();
-
-            // print(Get.put(OrderController()).)
-            // print(DateFormat('yyyy-MM-dd HH:mm:ss')
-            //     .format(controller.selectedTime.value));
           },
           style: OutlinedButton.styleFrom(
             side: const BorderSide(color: Color(0xFFFF8800), width: 1),

@@ -69,10 +69,10 @@ class RoomResponseModel {
   factory RoomResponseModel.fromJson(Map<String, dynamic> data) {
     return RoomResponseModel(
       idx: data['idx'],
-      memIdx: data['mem_idx'],
-      memName: data['mem_name'],
+      memIdx: data.containsKey('mem_idx') ? data['mem_idx'] : 0,
+      memName: data.containsKey('mem_name') ? data['mem_name'] : "",
       storeIdx: data['store_idx'],
-      storeName: data['store_name'],
+      storeName: data.containsKey('store_name') ? data['store_name'] : "",
       address: data['address'],
       detail: data['detail'] != null ? data['detail'] : "",
       lat: data['lat'],
@@ -97,7 +97,7 @@ class RoomAddRequestModel {
   late int currentNum;
   late int maximumNum;
   late int deliveryFee;
-  late DateTime timeLimit;
+  late String timeLimit;
   late bool active;
 
   RoomAddRequestModel({
