@@ -148,6 +148,7 @@ class RoomController extends GetxController {
 
   // 방 추가
   Rx<RoomAddRequestModel> roomAddRequestModel = RoomAddRequestModel(
+    orderIdx: 0,
     storeIdx: 0,
     address: "",
     detail: "",
@@ -161,6 +162,7 @@ class RoomController extends GetxController {
   ).obs;
 
   void handleRoomAddRequestModel({
+    required int orderIdx,
     required int storeIdx,
     required String address,
     required String detail,
@@ -173,6 +175,7 @@ class RoomController extends GetxController {
     required bool active,
   }) {
     roomAddRequestModel.update((_) {
+      _?.orderIdx = orderIdx;
       _?.storeIdx = storeIdx;
       _?.address = address;
       _?.detail = detail;
@@ -266,6 +269,7 @@ class RoomController extends GetxController {
   // 특정 방 추가
   Future<void> handleRoomAddProvider() async {
     handleRoomAddRequestModel(
+      orderIdx: int.parse(Get.parameters["orderIdx"]!),
       storeIdx: Get.put(OrderController()).cartOrder.value.storeIdx,
       address: Get.put(AddressController()).currentAddress.value.address,
       detail: Get.put(AddressController()).currentAddress.value.detail,
@@ -283,24 +287,6 @@ class RoomController extends GetxController {
       )),
       active: true,
     );
-
-    // print(DateFormat('yyyy-MM-dd').format(DateTime.now()) +
-    //     " " +
-    //     selectedTime.value.hour.toString() +
-    //     ":" +
-    //     selectedTime.value.minute.toString() +
-    //     ":00");
-
-    // print(DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime(
-    //   DateTime.now().year,
-    //   DateTime.now().month,
-    //   DateTime.now().day,
-    //   selectedTime.value.hour,
-    //   selectedTime.value.minute,
-    // )));
-
-    // print(roomAddRequestModel.value.storeIdx);
-    // print(roomAddRequestModel.value.maximumNum);
 
     try {
       await RoomAddProvider()

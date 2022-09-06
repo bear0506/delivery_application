@@ -687,12 +687,12 @@ class AppbarWidget extends GetView<HomeController>
                                     .value
                                     .detail,
                             textAlign: TextAlign.left,
+                            overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               color: const Color(0xFF333333),
                               fontSize: 45.sp,
                               fontFamily: 'Core_Gothic_D5',
                               fontWeight: FontWeight.w400,
-                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ),

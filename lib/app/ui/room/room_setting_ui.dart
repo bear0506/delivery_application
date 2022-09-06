@@ -22,8 +22,8 @@ class RoomSettingUi extends GetView<RoomController> {
             Obx(
               () => SliverAppBar(
                 elevation: 0,
-                expandedHeight: 200.h,
-                collapsedHeight: 200.h,
+                // expandedHeight: 200.h,
+                // collapsedHeight: 200.h,
                 automaticallyImplyLeading: false,
                 titleSpacing: 0,
                 backgroundColor: Colors.white,

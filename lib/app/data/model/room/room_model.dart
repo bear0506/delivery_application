@@ -89,6 +89,7 @@ class RoomResponseModel {
 }
 
 class RoomAddRequestModel {
+  late int orderIdx;
   late int storeIdx;
   late String address;
   late String detail;
@@ -101,6 +102,7 @@ class RoomAddRequestModel {
   late bool active;
 
   RoomAddRequestModel({
+    required this.orderIdx,
     required this.storeIdx,
     required this.address,
     required this.detail,
@@ -115,6 +117,7 @@ class RoomAddRequestModel {
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {
+      "order_idx": orderIdx,
       "store_idx": storeIdx,
       "address": address,
       "detail": detail,
