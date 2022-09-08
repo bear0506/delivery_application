@@ -73,34 +73,6 @@ class RoomController extends GetxController {
   late FocusNode privacyCheckBoxFocusNode;
   late FocusNode timeOutlinedButtonFocusNode;
 
-  // RxList<dynamic> isCheckbox = [
-  //   {
-  //     "id": 0,
-  //     "time": "01:00".obs,
-  //     "isChecked": false.obs,
-  //   },
-  //   {
-  //     "id": 1,
-  //     "time": "03:00".obs,
-  //     "isChecked": false.obs,
-  //   },
-  //   {
-  //     "id": 2,
-  //     "time": "05:00".obs,
-  //     "isChecked": false.obs,
-  //   },
-  //   {
-  //     "id": 3,
-  //     "time": "10:00".obs,
-  //     "isChecked": false.obs,
-  //   },
-  // ].obs;
-
-  RxList roomInfos = [
-    jsonDecode(
-        '{"idx":1,"storeName":"교촌치킨 약수점","starRate":"4.5","reviewCount":"159","deliveryTime":"21분 ~ 30분","img":"assets/icons/orderer.png","user":"♡zi존성민1♡","address":"서울 중구 퇴계로36길 2","numberOfTransactions":"15","mannerScore":"100","deliveryFee":"3,000","time":"09:27","distance":"0.7","capacity":"4","totalDeliveryFee":"750"}'),
-  ].obs;
-
   Rx<TimeOfDay> selectedTime = TimeOfDay.now().obs;
 
   Rx<RoomResponseModel> roomResult = RoomResponseModel(
@@ -274,7 +246,7 @@ class RoomController extends GetxController {
       address: Get.put(AddressController()).currentAddress.value.address,
       detail: Get.put(AddressController()).currentAddress.value.detail,
       lat: Get.put(AddressController()).currentAddress.value.lat,
-      lng: Get.put(AddressController()).currentAddress.value.lat,
+      lng: Get.put(AddressController()).currentAddress.value.lng,
       currentNum: 1,
       maximumNum: numberOfPeople.value,
       deliveryFee: Get.put(OrderController()).cartOrder.value.deliveryFee,

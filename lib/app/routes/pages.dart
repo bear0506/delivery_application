@@ -396,6 +396,7 @@ import 'package:delivery_service/app/binding/order/order_binding.dart';
 import 'package:delivery_service/app/ui/room/room_setting_ui.dart';
 import 'package:delivery_service/app/ui/room/room_ui.dart';
 import 'package:delivery_service/app/ui/room/room_result_ui.dart';
+import 'package:delivery_service/app/ui/room/room_status_ui.dart';
 import 'package:delivery_service/app/binding/room/room_binding.dart';
 
 import 'package:delivery_service/app/ui/address/address_ui.dart';
@@ -579,6 +580,12 @@ class Pages {
       title: "방 정보",
       name: Routes.room,
       page: () => RoomUi(),
+      binding: RoomBinding(),
+    ),
+    GetPage(
+      title: "방 상태",
+      name: Routes.roomStatus,
+      page: () => RoomStatusUi(),
       binding: RoomBinding(),
     ),
     GetPage(

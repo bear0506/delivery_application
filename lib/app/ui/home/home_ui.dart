@@ -1,5 +1,6 @@
 import 'package:delivery_service/app/controller/address/address_controller.dart';
 import 'package:delivery_service/app/controller/main/main_controller.dart';
+import 'package:delivery_service/app/controller/store/store_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
@@ -457,6 +458,7 @@ class AppbarWidget extends GetView<HomeController>
                           builder: (BuildContext context) {
                             return Column(
                               children: [
+                                SizedBox(height: 50.h),
                                 Align(
                                   alignment: Alignment.topRight,
                                   child: ElevatedButton(
@@ -907,9 +909,14 @@ class MapModalWidget extends GetView<HomeController> {
                                 ),
                                 child: StepProgressIndicator(
                                   padding: 1,
-                                  totalSteps: 4,
-                                  // currentStep: int.parse(roomInfo['capacity']),
-                                  currentStep: 1,
+                                  totalSteps: _homeController
+                                              .currentRoom.value.maximumNum >
+                                          0
+                                      ? _homeController
+                                          .currentRoom.value.maximumNum
+                                      : 2,
+                                  currentStep: _homeController
+                                      .currentRoom.value.currentNum,
                                   size: 40.h,
                                   selectedColor: const Color(0xFFFF4E00),
                                   unselectedColor: const Color(0xFFFFFFFF),
@@ -935,6 +942,7 @@ class MapModalWidget extends GetView<HomeController> {
                               _homeController.currentRoom.value.storeIdx
                                   .toString());
                           _homeController.TurnOffMapModal();
+                          Get.put(StoreController()).handleStoreInitProvider();
                         },
                         style: OutlinedButton.styleFrom(
                           side: const BorderSide(

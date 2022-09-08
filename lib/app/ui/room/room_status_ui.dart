@@ -7,8 +7,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:delivery_service/app/controller/room/room_controller.dart';
 import 'package:intl/intl.dart';
 
-class RoomUi extends GetView<RoomController> {
-  RoomUi({Key? key}) : super(key: key);
+class RoomStatusUi extends GetView<RoomController> {
+  RoomStatusUi({Key? key}) : super(key: key);
 
   final roomController = Get.put(RoomController());
 
@@ -24,8 +24,6 @@ class RoomUi extends GetView<RoomController> {
             Obx(
               () => SliverAppBar(
                 elevation: 0,
-                // expandedHeight: 200.h,
-                // collapsedHeight: 200.h,
                 automaticallyImplyLeading: false,
                 titleSpacing: 0,
                 backgroundColor: Colors.white,

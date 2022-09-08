@@ -51,13 +51,11 @@ class MapUi extends GetView<MapController> {
         },
         onTapMarker: (message) async {
           var tempMessage = message.message;
-          print(tempMessage);
 
           homeController.TurnOnMapModal(int.parse(tempMessage));
         },
         onTapMap: (message) async {
           var tempMessage = message.message;
-          print(tempMessage);
 
           homeController.TurnOffMapModal();
         },

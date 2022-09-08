@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 
 import 'package:step_progress_indicator/step_progress_indicator.dart';
 
@@ -233,11 +234,13 @@ class RoomCardWidget extends GetView<RoomController> {
 
   @override
   Widget build(BuildContext context) {
+    print(roomInfo.maximumNum);
+
     return InkWell(
       onTap: () {
         Get.toNamed("/store=" + roomInfo.storeIdx.toString());
         storeController.handleStoreInitProvider();
-        roomController.handleRoomsInStoreProvider();
+        // roomController.handleRoomsInStoreProvider();
       },
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 20.h, horizontal: 0),
@@ -375,7 +378,8 @@ class RoomCardWidget extends GetView<RoomController> {
                         width: 20.w,
                       ),
                       Text(
-                        roomInfo.deliveryFee.toString(),
+                        NumberFormat('###,###,###,###')
+                            .format(roomInfo.deliveryFee),
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.black,
@@ -398,9 +402,9 @@ class RoomCardWidget extends GetView<RoomController> {
                         ),
                         child: StepProgressIndicator(
                           padding: 1,
-                          totalSteps: 4,
-                          // currentStep: int.parse(roomInfo['capacity']),
-                          currentStep: 1,
+                          totalSteps:
+                              roomInfo.maximumNum > 0 ? roomInfo.maximumNum : 2,
+                          currentStep: roomInfo.currentNum,
                           size: 40.h,
                           selectedColor: const Color(0xFFFF4E00),
                           unselectedColor: const Color(0xFFFFFFFF),

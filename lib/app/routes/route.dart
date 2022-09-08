@@ -100,6 +100,7 @@ abstract class Routes {
   static const roomResult = "/order=:orderIdx/roomResult";
 
   static const room = "/room=:roomIdx";
+  static const roomStatus = "/room=:roomIdx/status";
 
   static const address = "/address";
   static const addressDetail = "/address/detail";

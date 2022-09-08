@@ -555,8 +555,6 @@ class BottomOutlinedButtonWidget extends GetView<RoomController> {
         height: 200.h,
         child: OutlinedButton(
           onPressed: () {
-            // Get.toNamed('/store=${controller.storeIdx}/roomResult');
-
             controller.handleRoomAddProvider();
           },
           style: OutlinedButton.styleFrom(

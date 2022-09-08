@@ -54,7 +54,7 @@ class StoreListUi extends GetView<StoreController> {
                               Get.toNamed("/store=" +
                                   data.stores[index].idx.toString());
                               storeController.handleStoreInitProvider();
-                              roomController.handleRoomsInStoreProvider();
+                              // roomController.handleRoomsInStoreProvider();
                             },
                             child: Container(
                               width: 1240.w,

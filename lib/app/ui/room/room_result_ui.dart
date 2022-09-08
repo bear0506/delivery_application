@@ -291,35 +291,69 @@ class BottomOutlinedButtonWidget extends StatelessWidget {
         left: 100.w,
         right: 100.w,
       ),
-      child: SizedBox(
-        width: 1240.w,
-        height: 200.h,
-        child: OutlinedButton(
-          // onPressed: () => Get.toNamed('/main'),
-          onPressed: () => Get.offAllNamed('/main'),
-          style: OutlinedButton.styleFrom(
-            side: const BorderSide(color: Color(0xFFFF8800), width: 1),
-            backgroundColor: const Color(0xFFFF8800),
-            primary: Colors.white,
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(
-                Radius.circular(
-                  50,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: 490.w,
+            height: 200.h,
+            child: OutlinedButton(
+              onPressed: () => Get.offAllNamed('/main'),
+              style: OutlinedButton.styleFrom(
+                side: const BorderSide(color: Color(0xFFFF8800), width: 1),
+                backgroundColor: const Color(0xFFFF8800),
+                primary: Colors.white,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(
+                      50,
+                    ),
+                  ),
+                ),
+                elevation: 2,
+                shadowColor: Colors.black,
+              ),
+              child: Text(
+                "홈으로",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 70.sp,
+                  fontFamily: 'Core_Gothic_D5',
                 ),
               ),
             ),
-            elevation: 2,
-            shadowColor: Colors.black,
           ),
-          child: Text(
-            "홈으로",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 70.sp,
-              fontFamily: 'Core_Gothic_D5',
+          SizedBox(
+            width: 700.w,
+            height: 200.h,
+            child: OutlinedButton(
+              onPressed: () {},
+              style: OutlinedButton.styleFrom(
+                side: const BorderSide(color: Color(0xFFFF8800), width: 1),
+                backgroundColor: Colors.white,
+                primary: const Color(0xFFFF8800),
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(
+                      50,
+                    ),
+                  ),
+                ),
+                elevation: 2,
+                shadowColor: Colors.black,
+              ),
+              child: Text(
+                "모임 확인",
+                style: TextStyle(
+                  color: const Color(0xFFFF8800),
+                  fontSize: 70.sp,
+                  fontFamily: 'Core_Gothic_D5',
+                ),
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }

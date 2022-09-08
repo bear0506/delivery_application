@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:delivery_service/app/controller/room/room_controller.dart';
 import 'package:delivery_service/main.dart';
 import 'package:get/get.dart';
 
@@ -237,6 +238,7 @@ class StoreController extends GetxController with GetTickerProviderStateMixin {
           store.refresh();
 
           initStoreTabMenu();
+          Get.put(RoomController()).handleRoomsInStoreProvider();
         } else {
           print("else");
         }
