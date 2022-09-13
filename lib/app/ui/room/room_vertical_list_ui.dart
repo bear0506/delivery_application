@@ -234,8 +234,6 @@ class RoomCardWidget extends GetView<RoomController> {
 
   @override
   Widget build(BuildContext context) {
-    print(roomInfo.maximumNum);
-
     return InkWell(
       onTap: () {
         Get.toNamed("/store=" + roomInfo.storeIdx.toString());

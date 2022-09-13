@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:intl/intl.dart';
 
 // delivery
@@ -23,11 +25,18 @@ class RoomBaseResponseModel {
   RoomBaseResponseModel.fromJson(Map<String, dynamic> data) {
     status = data["status"];
     room = RoomResponseModel.fromJson(data["message"]["room"]);
-    // data["message"]["room"]
-    //     .map((e) => rooms.add(RoomResponseModel.fromJson(e)))
-    //     .toList();
+  }
+}
 
-    // data["message"]["room"].map((e) => roomsMap.add(e)).toList();
+class RoomStatusBaseResponseModel {
+  late String? status;
+  late RoomResponseModel room;
+  late OrderResponseModel order;
+
+  RoomStatusBaseResponseModel.fromJson(Map<String, dynamic> data) {
+    status = data["status"];
+    room = RoomResponseModel.fromJson(data["message"]["roomStatus"]["room"]);
+    order = OrderResponseModel.fromJson(data["message"]["roomStatus"]["order"]);
   }
 }
 
@@ -84,6 +93,87 @@ class RoomResponseModel {
           data.containsKey('delivery_time') ? data['delivery_time'] : "",
       deliveryFee: data['delivery_fee'],
       active: data['active'],
+    );
+  }
+}
+
+class OrderResponseModel {
+  late int idx;
+  late int storeIdx;
+  late int price;
+  late int deliveryFee;
+  late String address;
+  late String detail;
+  late String lat;
+  late String lng;
+  late String status;
+  late List<OrderDetailResponseModel> orderDetails =
+      <OrderDetailResponseModel>[];
+
+  OrderResponseModel({
+    required this.idx,
+    required this.storeIdx,
+    required this.price,
+    required this.deliveryFee,
+    required this.address,
+    required this.detail,
+    required this.lat,
+    required this.lng,
+    required this.status,
+    required this.orderDetails,
+  });
+
+  factory OrderResponseModel.fromJson(Map<String, dynamic> data) {
+    late List<OrderDetailResponseModel> orderDetails =
+        <OrderDetailResponseModel>[];
+
+    data["orderDetail"]
+        .map((e) => orderDetails.add(OrderDetailResponseModel.fromJson(e)))
+        .toList();
+
+    return OrderResponseModel(
+      idx: data['idx'],
+      storeIdx: data['store_idx'],
+      price: data['price'],
+      deliveryFee: data['delivery_fee'],
+      address: data['address'] != null ? data['address'] : "",
+      detail: data['detail'] != null ? data['detail'] : "",
+      lat: data['lat'] != null ? data['lat'] : "",
+      lng: data['lng'] != null ? data['lng'] : "",
+      status: data['status'],
+      orderDetails: orderDetails,
+    );
+  }
+}
+
+class OrderDetailResponseModel {
+  late int idx;
+  late int orderIdx;
+  late int menuIdx;
+  late String menuOptions;
+  late int count;
+  late int price;
+  late String menu;
+
+  OrderDetailResponseModel({
+    required this.idx,
+    required this.orderIdx,
+    required this.menuIdx,
+    required this.menuOptions,
+    required this.count,
+    required this.price,
+    required this.menu,
+  });
+
+  factory OrderDetailResponseModel.fromJson(Map<String, dynamic> data) {
+    return OrderDetailResponseModel(
+      idx: data['idx'],
+      orderIdx: data['order_idx'],
+      menuIdx: data['menu_idx'],
+      menuOptions: data['menu_options'],
+      count: data['count'],
+      price: data['price'],
+      menu: json.encode(data['menu']),
     );
   }
 }

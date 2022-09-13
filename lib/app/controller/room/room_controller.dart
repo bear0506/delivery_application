@@ -49,7 +49,21 @@ class RoomController extends GetxController {
     active: false,
   ).obs;
 
+  late Rx<OrderResponseModel> order = OrderResponseModel(
+    idx: 0,
+    storeIdx: 0,
+    price: 0,
+    deliveryFee: 0,
+    address: "",
+    detail: "",
+    lat: "",
+    lng: "",
+    status: "",
+    orderDetails: [],
+  ).obs;
+
   Rx<ScrollController> scrollController = ScrollController().obs;
+  Rx<ScrollController> roomStatusScrollController = ScrollController().obs;
   Rx<ScrollController> scrollController2 = ScrollController().obs;
 
   late Rx<dynamic> currentStore;
@@ -222,10 +236,38 @@ class RoomController extends GetxController {
           .dio(roomIdx: int.parse(roomIdx.value))
           .then((value) {
         if (value.status == "success") {
+          print("특정 방 조회 성공!");
           room.value = value.room;
           room.refresh();
         } else {
-          print("fail");
+          print("특정 방 조회 실패!");
+        }
+      });
+    } catch (e) {
+      logger.d(e);
+    } finally {
+      Future.delayed(
+          const Duration(milliseconds: 500),
+          // ignore: avoid_print
+          () {});
+    }
+  }
+
+  // 특정 방 주문 조회
+  Future<void> handleRoomStatusInitProvider() async {
+    roomIdx = Get.parameters["roomIdx"].obs;
+
+    try {
+      await RoomStatusInitProvider()
+          .dio(roomIdx: int.parse(roomIdx.value))
+          .then((value) {
+        if (value.status == "success") {
+          print("특정 방 주문 조회 성공!");
+
+          room.value = value.room;
+          order.value = value.order;
+        } else {
+          print("특정 방 주문 조회 실패!");
         }
       });
     } catch (e) {

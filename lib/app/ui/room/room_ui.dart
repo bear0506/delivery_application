@@ -87,14 +87,14 @@ class RoomUi extends GetView<RoomController> {
                 children: [
                   TimeInformation(),
                   StoreInformation(),
-                  const Divider(
-                    color: Color(0xFFECECEC),
-                    thickness: 5,
+                  Container(
+                    height: 5.h,
+                    color: Color(0XFFECECEC),
                   ),
                   OrdererInformation(),
-                  const Divider(
-                    color: Color(0xFFECECEC),
-                    thickness: 5,
+                  Container(
+                    height: 5.h,
+                    color: Color(0XFFECECEC),
                   ),
                   DeliveryFeeInformation(),
                 ],
@@ -146,14 +146,21 @@ class StoreInformation extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                roomController.room.value.storeName,
-                style: TextStyle(
-                  color: const Color(0xFF333333),
-                  fontSize: 60.sp,
-                  fontFamily: 'Core_Gothic_D6',
-                  fontWeight: FontWeight.bold,
+              InkWell(
+                child: Text(
+                  roomController.room.value.storeName,
+                  style: TextStyle(
+                    color: const Color(0xFF333333),
+                    fontSize: 60.sp,
+                    fontFamily: 'Core_Gothic_D6',
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
+                onTap: () {
+                  Get.toNamed("/room=${Get.parameters["roomIdx"]}/status");
+                  roomController.handleRoomProvider();
+                  roomController.handleRoomStatusInitProvider();
+                },
               ),
               SizedBox(
                 height: 30.h,

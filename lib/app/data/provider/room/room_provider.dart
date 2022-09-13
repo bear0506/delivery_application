@@ -184,14 +184,14 @@ class RoomStatusInitProvider {
           sendTimeout: 60 * 1000,
           receiveTimeout: 60 * 1000,
           headers: {
-            'Content-Type': 'application/json'
-            // "authorization": "Bearer ${GetStorage().read('token')}",
+            'Content-Type': 'application/json',
+            "authorization": "Bearer ${GetStorage().read('token')}",
           },
         ),
       );
 
       if (response.statusCode == 200) {
-        return RoomBaseResponseModel.fromJson(response.data);
+        return RoomStatusBaseResponseModel.fromJson(response.data);
       } else {
         throw Exception('faild to load request');
       }
