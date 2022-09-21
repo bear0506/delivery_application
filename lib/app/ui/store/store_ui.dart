@@ -944,19 +944,33 @@ class RoomCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 SizedBox(
-                  height: 50.h,
+                  height: 40.h,
                 ),
-                Text(
-                  roomInfo.memName,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 60.sp,
-                    fontFamily: 'Core_Gothic_D6',
-                  ),
+                Row(
+                  children: [
+                    Text(
+                      roomInfo.memName,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 55.sp,
+                        fontFamily: 'Core_Gothic_D6',
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      "님의 모임",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 55.sp,
+                        fontFamily: 'Core_Gothic_D6',
+                      ),
+                    ),
+                  ],
                 ),
                 SizedBox(
-                  height: 52.h,
+                  height: 65.h,
                 ),
                 Text(
                   '배달위치',

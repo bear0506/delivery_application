@@ -595,8 +595,27 @@ class BottomOutlinedButtonWidget extends GetView<OrderController> {
                     width: 490.w,
                     height: 200.h,
                     child: OutlinedButton(
-                      onPressed: () => Get.toNamed(
-                          '/store=${Get.parameters["orderIdx"]}/orderResult'),
+                      onPressed: () {
+                        print(Get.put(AddressController())
+                                .currentAddress
+                                .value
+                                .address +
+                            ", " +
+                            Get.put(AddressController())
+                                .currentAddress
+                                .value
+                                .detail);
+
+                        print(Get.put(AddressController())
+                                .currentAddress
+                                .value
+                                .lat +
+                            ", " +
+                            Get.put(AddressController())
+                                .currentAddress
+                                .value
+                                .lng);
+                      },
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(
                             color: Color(0xFFFF8800), width: 1),

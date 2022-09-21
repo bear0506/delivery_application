@@ -603,7 +603,7 @@ class DeliveryFeeInformation extends StatelessWidget {
   }
 }
 
-class BottomOutlinedButtonWidget extends StatelessWidget {
+class BottomOutlinedButtonWidget extends GetView<RoomController> {
   const BottomOutlinedButtonWidget({Key? key}) : super(key: key);
 
   @override
@@ -659,12 +659,11 @@ class BottomOutlinedButtonWidget extends StatelessWidget {
             height: 200.h,
             child: InkWell(
               onTap: () {
-                print(Get.put(RoomController()).room.value.storeIdx);
-                print(Get.put(RoomController()).room.value.storeName);
+                print(
+                    "방 인덱스 : ${Get.put(RoomController()).room.value.storeIdx}");
 
-                print(Get.put(OrderController()).cartOrder.value.idx);
-
-                print(Get.put(OrderController()).cartItemCount.value);
+                print(
+                    "장바구니 주문 인덱스 : ${Get.put(OrderController()).cartOrder.value.idx}");
 
                 if (Get.put(OrderController()).cartItemCount.value == 0) {
                   Get.dialog(
@@ -761,6 +760,8 @@ class BottomOutlinedButtonWidget extends StatelessWidget {
                       actionsPadding: EdgeInsets.zero,
                     ),
                   );
+
+                  controller.handleRoomParticipateProvider();
                 }
               },
               child: Container(

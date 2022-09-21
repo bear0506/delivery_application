@@ -20,8 +20,6 @@ class OrderResultUi extends GetView<OrderController> {
             Obx(
               () => SliverAppBar(
                 elevation: 0,
-                expandedHeight: 200.h,
-                collapsedHeight: 200.h,
                 automaticallyImplyLeading: false,
                 titleSpacing: 0,
                 backgroundColor: Colors.white,
@@ -80,14 +78,13 @@ class OrderResultUi extends GetView<OrderController> {
             child: SingleChildScrollView(
               physics: const NeverScrollableScrollPhysics(),
               child: Column(
-                children: const [
+                children: [
                   NoticeMent(),
-                  // OrderList(),
                   OrderContent(),
-                  Notice(),
-                  Divider(
+                  OrderInfo(),
+                  Container(
                     color: Color(0xFFECECEC),
-                    thickness: 5,
+                    height: 20.h,
                   ),
                 ],
               ),
@@ -126,14 +123,9 @@ class NoticeMent extends StatelessWidget {
   }
 }
 
-class OrderContent extends StatefulWidget {
+class OrderContent extends GetView<OrderController> {
   const OrderContent({Key? key}) : super(key: key);
 
-  @override
-  State<OrderContent> createState() => _OrderContentState();
-}
-
-class _OrderContentState extends State<OrderContent> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -194,21 +186,20 @@ class _OrderContentState extends State<OrderContent> {
   }
 }
 
-class Notice extends StatelessWidget {
-  const Notice({Key? key}) : super(key: key);
+class OrderInfo extends StatelessWidget {
+  const OrderInfo({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: 1440.w,
-      height: 302.h,
+      height: 300.h,
       child: Padding(
         padding: EdgeInsets.only(
           left: 100.w,
-          top: 60.h,
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
@@ -219,6 +210,7 @@ class Notice extends StatelessWidget {
                 fontFamily: 'Core_Gothic_D4',
               ),
             ),
+            SizedBox(height: 30.h),
             Text(
               "21분",
               style: TextStyle(

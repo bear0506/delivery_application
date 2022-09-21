@@ -83,6 +83,30 @@ class CartCheckRequestModel {
   }
 }
 
+class OrderExecuteRequestModel {
+  late String address;
+  late String detail;
+  late String lat;
+  late String lng;
+
+  OrderExecuteRequestModel({
+    required this.address,
+    required this.detail,
+    required this.lat,
+    required this.lng,
+  });
+
+  // Map<String, dynamic> toJson() {
+  //   Map<String, dynamic> map = {
+  //     "store_idx": storeIdx,
+  //     "price": price,
+  //     "delivery_fee": deliveryFee,
+  //   };
+
+  //   return map;
+  // }
+}
+
 class OrderAddRequestModel {
   late int storeIdx;
   late int price;

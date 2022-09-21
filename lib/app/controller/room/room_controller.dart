@@ -107,6 +107,8 @@ class RoomController extends GetxController {
     active: false,
   ).obs;
 
+  RxString roomResultStatus = "".obs;
+
   isSliverAppBarExpanded() {
     temptemp = (scrollController.value.hasClients &&
             scrollController.value.offset > (820.h - kToolbarHeight))
@@ -310,10 +312,38 @@ class RoomController extends GetxController {
           print("방 추가 성공");
 
           roomResult.value = value.room;
+          roomResultStatus.value = "ADD";
 
           Get.toNamed('/order=${value.room.storeIdx}/roomResult');
         } else {
           print("방 추가 실패");
+        }
+      });
+    } catch (e) {
+      logger.d(e);
+    } finally {
+      Future.delayed(
+          const Duration(milliseconds: 500),
+          // ignore: avoid_print
+          () {});
+    }
+  }
+
+  // 방 참여
+  Future<void> handleRoomParticipateProvider() async {
+    try {
+      await RoomParticipateProvider()
+          .dio(roomIdx: int.parse(Get.parameters["roomIdx"]!))
+          .then((value) {
+        if (value.status == "success") {
+          print("방 참여 성공");
+
+          roomResult.value = value.room;
+          roomResultStatus.value = "PARTICIPATE";
+
+          Get.toNamed('/order=${value.room.storeIdx}/roomResult');
+        } else {
+          print("방 참여 실패");
         }
       });
     } catch (e) {

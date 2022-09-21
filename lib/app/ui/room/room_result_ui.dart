@@ -19,48 +19,46 @@ class RoomResultUi extends GetView<RoomController> {
         controller: controller.scrollController2.value,
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return <Widget>[
-            Obx(
-              () => SliverAppBar(
-                elevation: 0,
-                automaticallyImplyLeading: false,
-                titleSpacing: 0,
-                backgroundColor: Colors.white,
-                pinned: controller.temptemp.value,
-                title: Padding(
-                  padding: EdgeInsets.only(
-                    left: 50.w,
-                    top: 50.h,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      IconButton(
-                        icon: Image.asset(
-                          "assets/icons/x.png",
+            SliverAppBar(
+              elevation: 0,
+              automaticallyImplyLeading: false,
+              titleSpacing: 0,
+              backgroundColor: Colors.white,
+              pinned: true,
+              title: Padding(
+                padding: EdgeInsets.only(
+                  left: 50.w,
+                  top: 50.h,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: Image.asset(
+                        "assets/icons/x.png",
+                        color: const Color(0xFF333333),
+                        width: 60.w,
+                        height: 60.h,
+                      ),
+                      // onPressed: () => Get.toNamed('/main'),
+                      onPressed: () => Get.offAllNamed('/main'),
+                    ),
+                    SizedBox(
+                      width: 20.w,
+                    ),
+                    Expanded(
+                      child: Text(
+                        "주문완료",
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
                           color: const Color(0xFF333333),
-                          width: 60.w,
-                          height: 60.h,
-                        ),
-                        // onPressed: () => Get.toNamed('/main'),
-                        onPressed: () => Get.offAllNamed('/main'),
-                      ),
-                      SizedBox(
-                        width: 20.w,
-                      ),
-                      Expanded(
-                        child: Text(
-                          "주문완료",
-                          textAlign: TextAlign.start,
-                          style: TextStyle(
-                            color: const Color(0xFF333333),
-                            fontSize: 60.sp,
-                            fontFamily: 'Core_Gothic_D5',
-                          ),
+                          fontSize: 60.sp,
+                          fontFamily: 'Core_Gothic_D5',
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -101,7 +99,7 @@ class RoomResultUi extends GetView<RoomController> {
   }
 }
 
-class NoticeMent extends StatelessWidget {
+class NoticeMent extends GetView<RoomController> {
   const NoticeMent({Key? key}) : super(key: key);
 
   @override
@@ -114,7 +112,9 @@ class NoticeMent extends StatelessWidget {
       width: 1440.w,
       height: 240.h,
       child: Text(
-        "방만들기가 완료되었습니다.",
+        controller.roomResultStatus.value == "ADD"
+            ? "방만들기가 완료되었습니다."
+            : "모임에 참가하였습니다.",
         textAlign: TextAlign.left,
         style: TextStyle(
           color: const Color(0xFF333333),
@@ -280,7 +280,7 @@ class RoomTimeWidget extends GetView<RoomController> {
   }
 }
 
-class BottomOutlinedButtonWidget extends StatelessWidget {
+class BottomOutlinedButtonWidget extends GetView<RoomController> {
   const BottomOutlinedButtonWidget({Key? key}) : super(key: key);
 
   @override
@@ -328,7 +328,11 @@ class BottomOutlinedButtonWidget extends StatelessWidget {
             width: 700.w,
             height: 200.h,
             child: OutlinedButton(
-              onPressed: () {},
+              onPressed: () {
+                Get.toNamed("/room=${Get.parameters["roomIdx"]}/status");
+                controller.handleRoomProvider();
+                controller.handleRoomStatusInitProvider();
+              },
               style: OutlinedButton.styleFrom(
                 side: const BorderSide(color: Color(0xFFFF8800), width: 1),
                 backgroundColor: Colors.white,

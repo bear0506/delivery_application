@@ -99,14 +99,14 @@ class RoomStatusUi extends GetView<RoomController> {
                     height: 5.h,
                     color: Color(0XFFECECEC),
                   ),
-                  ChattingWidget(),
+                  // ChattingWidget(),
                 ],
               ),
             ),
           ),
         ),
       ),
-      bottomNavigationBar: const BottomOutlinedButtonWidget(),
+      // bottomNavigationBar: const BottomOutlinedButtonWidget(),
     );
   }
 }
@@ -540,13 +540,59 @@ class OrderListWidget extends GetView<RoomController> {
             Container(
               margin: EdgeInsets.symmetric(vertical: 60.h),
               color: Color(0xFFECECEC),
+              height: 2.h,
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      "배달비",
+                      style: TextStyle(
+                        color: const Color(0xFF333333),
+                        fontSize: 60.sp,
+                        fontFamily: 'Core_Gothic_D5',
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 35.h),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "2,000원 / 4명",
+                      style: TextStyle(
+                        color: const Color(0xFFB8B8B8),
+                        fontSize: 45.sp,
+                        fontFamily: 'Core_Gothic_D4',
+                      ),
+                    ),
+                    Text(
+                      "2,000원",
+                      style: TextStyle(
+                        color: const Color(0xFF333333),
+                        fontSize: 60.sp,
+                        fontFamily: 'Core_Gothic_D5',
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            ),
+            Container(
+              margin: EdgeInsets.symmetric(vertical: 60.h),
+              color: Color(0xFFECECEC),
               height: 5.h,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "최종금액",
+                  "예상금액",
                   style: TextStyle(
                     color: const Color(0xFF333333),
                     fontSize: 70.sp,

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:delivery_service/app/controller/address/address_controller.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
@@ -29,6 +30,29 @@ class OrderController extends GetxController with GetTickerProviderStateMixin {
   }) {
     cartCheckRequestModel.update((_) {
       _?.storeIdx = storeIdx;
+    });
+  }
+
+  // 주문 실행
+  Rx<OrderExecuteRequestModel> orderExecuteRequestModel =
+      OrderExecuteRequestModel(
+    address: "",
+    detail: "",
+    lat: "",
+    lng: "",
+  ).obs;
+
+  void handleOrderExecuteRequestModel({
+    required String address,
+    required String detail,
+    required String lat,
+    required String lng,
+  }) {
+    orderExecuteRequestModel.update((_) {
+      _?.address = address;
+      _?.detail = detail;
+      _?.lat = lat;
+      _?.lng = lng;
     });
   }
 
@@ -217,6 +241,32 @@ class OrderController extends GetxController with GetTickerProviderStateMixin {
           print(value.status);
           print(value.message);
           print("else");
+        }
+      });
+    } catch (e) {
+      logger.d(e);
+    }
+  }
+
+  //주문 실행
+  Future<void> handleOrderExecuteProvider() async {
+    try {
+      handleOrderExecuteRequestModel(
+        address: Get.put(AddressController()).currentAddress.value.address,
+        detail: Get.put(AddressController()).currentAddress.value.detail,
+        lat: Get.put(AddressController()).currentAddress.value.lat,
+        lng: Get.put(AddressController()).currentAddress.value.lng,
+      );
+
+      await OrderExecuteProvider()
+          .dio(requestModel: orderExecuteRequestModel)
+          .then((value) {
+        if (value.status == "success") {
+          print("주문 실행 성공");
+
+          Get.toNamed('/order=${Get.parameters["orderIdx"]}/orderResult');
+        } else {
+          print("주문 실행 실패");
         }
       });
     } catch (e) {
