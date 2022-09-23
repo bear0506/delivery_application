@@ -615,6 +615,8 @@ class BottomOutlinedButtonWidget extends GetView<OrderController> {
                                 .currentAddress
                                 .value
                                 .lng);
+
+                        controller.handleOrderExecuteProvider();
                       },
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(

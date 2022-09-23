@@ -11,6 +11,16 @@ class OrderBaseResponseModel {
   }
 }
 
+class OrderExecuteResponseModel {
+  late String? status;
+  late OrderResultResponseModel orderResult;
+
+  OrderExecuteResponseModel.fromJson(Map<String, dynamic> data) {
+    status = data["status"];
+    orderResult = OrderResultResponseModel.fromJson(data["message"]["order"]);
+  }
+}
+
 class CartBaseResponseModel {
   late String? status;
   late OrderResponseModel order;
@@ -84,27 +94,31 @@ class CartCheckRequestModel {
 }
 
 class OrderExecuteRequestModel {
+  late int orderIdx;
   late String address;
   late String detail;
   late String lat;
   late String lng;
 
   OrderExecuteRequestModel({
+    required this.orderIdx,
     required this.address,
     required this.detail,
     required this.lat,
     required this.lng,
   });
 
-  // Map<String, dynamic> toJson() {
-  //   Map<String, dynamic> map = {
-  //     "store_idx": storeIdx,
-  //     "price": price,
-  //     "delivery_fee": deliveryFee,
-  //   };
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {
+      "order_idx": orderIdx,
+      "address": address,
+      "detail": detail,
+      "lat": lat,
+      "lng": lng,
+    };
 
-  //   return map;
-  // }
+    return map;
+  }
 }
 
 class OrderAddRequestModel {
@@ -153,6 +167,50 @@ class OrderDetailAddRequestModel {
     };
 
     return map;
+  }
+}
+
+class OrderResultResponseModel {
+  late int idx;
+  late int storeIdx;
+  late String storeName;
+  late int price;
+  late int deliveryFee;
+  late String deliveryTime;
+  late String address;
+  late String detail;
+  late String lat;
+  late String lng;
+  late String status;
+
+  OrderResultResponseModel({
+    required this.idx,
+    required this.storeIdx,
+    required this.storeName,
+    required this.price,
+    required this.deliveryFee,
+    required this.deliveryTime,
+    required this.address,
+    required this.detail,
+    required this.lat,
+    required this.lng,
+    required this.status,
+  });
+
+  factory OrderResultResponseModel.fromJson(Map<String, dynamic> data) {
+    return OrderResultResponseModel(
+      idx: data['idx'],
+      storeIdx: data['store_idx'],
+      storeName: data['store_name'],
+      price: data['price'],
+      deliveryFee: data['delivery_fee'],
+      deliveryTime: data['delivery_time'],
+      address: data['address'] != null ? data['address'] : "",
+      detail: data['detail'] != null ? data['detail'] : "",
+      lat: data['lat'] != null ? data['lat'] : "",
+      lng: data['lng'] != null ? data['lng'] : "",
+      status: data['status'],
+    );
   }
 }
 

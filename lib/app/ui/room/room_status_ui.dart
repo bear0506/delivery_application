@@ -564,7 +564,7 @@ class OrderListWidget extends GetView<RoomController> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "2,000원 / 4명",
+                      "${NumberFormat.currency(locale: "ko_KR", symbol: "").format(controller.roomResult.value.deliveryFee)}원 / ${controller.roomResult.value.currentNum}명",
                       style: TextStyle(
                         color: const Color(0xFFB8B8B8),
                         fontSize: 45.sp,
@@ -572,7 +572,7 @@ class OrderListWidget extends GetView<RoomController> {
                       ),
                     ),
                     Text(
-                      "2,000원",
+                      "${NumberFormat.currency(locale: "ko_KR", symbol: "").format(controller.roomResult.value.deliveryFee / controller.roomResult.value.currentNum)}원",
                       style: TextStyle(
                         color: const Color(0xFF333333),
                         fontSize: 60.sp,
@@ -601,8 +601,10 @@ class OrderListWidget extends GetView<RoomController> {
                   ),
                 ),
                 Text(
-                  NumberFormat.currency(locale: "ko_KR", symbol: "")
-                          .format(controller.order.value.price) +
+                  NumberFormat.currency(locale: "ko_KR", symbol: "").format(
+                          controller.order.value.price +
+                              (controller.roomResult.value.deliveryFee /
+                                  controller.roomResult.value.currentNum)) +
                       "원",
                   style: TextStyle(
                     color: const Color(0xFFFF8800),

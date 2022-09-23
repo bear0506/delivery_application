@@ -142,7 +142,7 @@ class StoreController extends GetxController with GetTickerProviderStateMixin {
 
   late Rx<dynamic> storeIdx, menuIdx;
 
-  late RxString categoryTabName = "".obs;
+  late RxString categoryTabName = "전체".obs;
 
   late RxList<CategoryResponseModel> categories = <CategoryResponseModel>[].obs;
   late RxList<StoreResponseModel> stores = <StoreResponseModel>[].obs;
@@ -157,6 +157,7 @@ class StoreController extends GetxController with GetTickerProviderStateMixin {
     information: "",
     tab: <StoreTabResponseModel>[],
     active: false,
+    favorite: false,
   ).obs;
 
   late Rx<StoreMenuResponseModel> currentMenu = StoreMenuResponseModel(
@@ -180,12 +181,13 @@ class StoreController extends GetxController with GetTickerProviderStateMixin {
     try {
       await CategoryAllProvider().dio().then((value) {
         if (value.status == "success") {
-          categories.addAll(value.categories);
+          print("전체 카테고리 조회 성공");
+          categories.assignAll(value.categories);
           categories.refresh();
 
           initStoreListTab();
         } else {
-          print("else");
+          print("전체 카테고리 조회 실패");
         }
       });
     } catch (e) {
@@ -203,12 +205,42 @@ class StoreController extends GetxController with GetTickerProviderStateMixin {
     try {
       await StoreAllProvider().dio().then((value) {
         if (value.status == "success") {
-          print("Success!");
+          print("전체 가게 조회 성공");
 
           stores.addAll(value.stores);
           stores.refresh();
         } else {
-          print("else");
+          print("전체 가게 조회 실패");
+        }
+      });
+    } catch (e) {
+      logger.d(e);
+    } finally {
+      Future.delayed(
+          const Duration(milliseconds: 500),
+          // ignore: avoid_print
+          () {});
+    }
+  }
+
+  // 가게 즐겨찾기 추가or취소
+  Future<void> handleStoreFavoriteProvider() async {
+    storeIdx = Get.parameters["storeIdx"].obs;
+
+    try {
+      await StoreFavoriteProvider()
+          .dio(storeIdx: int.parse(storeIdx.value))
+          .then((value) {
+        if (value.status == "success") {
+          print("가게 즐겨찾기 성공");
+
+          store.value.favorite = value.result;
+          store.refresh();
+
+          handleCategoryAllProvider();
+          categoryTabName.value = "전체";
+        } else {
+          print("가게 즐겨찾기 실패");
         }
       });
     } catch (e) {
@@ -228,6 +260,8 @@ class StoreController extends GetxController with GetTickerProviderStateMixin {
     storeUITabController.value = TabController(length: 0, vsync: this);
 
     storeIdx = Get.parameters["storeIdx"].obs;
+
+    print(storeIdx);
 
     try {
       await StoreInitProvider()

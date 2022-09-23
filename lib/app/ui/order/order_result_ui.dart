@@ -128,98 +128,119 @@ class OrderContent extends GetView<OrderController> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: 100.w,
+    return Obx(
+      () => Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: 100.w,
+        ),
+        color: const Color(0xFFF2F2F2),
+        width: 1440.w,
+        height: 550.h,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  // "교촌치킨 약수점",
+                  controller.orderResult.value.storeName,
+                  style: TextStyle(
+                    color: const Color(0xFF333333),
+                    fontSize: 60.sp,
+                    fontFamily: 'Core_Gothic_D5',
+                  ),
+                ),
+                SizedBox(
+                  height: 60.h,
+                ),
+                Text(
+                  "배달 주소",
+                  style: TextStyle(
+                    color: const Color(0xFF333333),
+                    fontSize: 50.sp,
+                    fontFamily: 'Core_Gothic_D5',
+                  ),
+                ),
+                SizedBox(
+                  height: 10.h,
+                ),
+                SizedBox(
+                  width: 900.w,
+                  child: Text(
+                    controller.orderResult.value.address +
+                        ", " +
+                        controller.orderResult.value.detail,
+                    maxLines: 2,
+                    style: TextStyle(
+                      color: const Color(0xFF333333),
+                      overflow: TextOverflow.ellipsis,
+                      fontSize: 45.sp,
+                      fontFamily: 'Core_Gothic_D5',
+                    ),
+                  ),
+                ),
+                SizedBox(height: 60.h),
+                Text(
+                  "58,000원",
+                  style: TextStyle(
+                    color: const Color(0xFF333333),
+                    fontSize: 45.sp,
+                    fontFamily: 'Core_Gothic_D5',
+                  ),
+                ),
+              ],
+            ),
+            Image.asset(
+              "assets/icons/c.png",
+              width: 300.w,
+              height: 300.h,
+            ),
+          ],
+        ),
       ),
-      color: const Color(0xFFF2F2F2),
-      width: 1440.w,
-      height: 420.h,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Column(
+    );
+  }
+}
+
+class OrderInfo extends GetView<OrderController> {
+  const OrderInfo({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(
+      () => SizedBox(
+        width: 1440.w,
+        height: 300.h,
+        child: Padding(
+          padding: EdgeInsets.only(
+            left: 100.w,
+          ),
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "교촌치킨 약수점",
+                "예상 배달 시간",
+                style: TextStyle(
+                  color: const Color(0xFFB8B8B8),
+                  fontSize: 50.sp,
+                  fontFamily: 'Core_Gothic_D4',
+                ),
+              ),
+              SizedBox(height: 30.h),
+              Text(
+                controller.orderResult.value.deliveryTime + "분",
                 style: TextStyle(
                   color: const Color(0xFF333333),
                   fontSize: 60.sp,
                   fontFamily: 'Core_Gothic_D5',
                 ),
               ),
-              SizedBox(
-                height: 10.h,
-              ),
-              Text(
-                "서울 중구 퇴계로36길 2 910호",
-                style: TextStyle(
-                  color: const Color(0xFF333333),
-                  fontSize: 45.sp,
-                  fontFamily: 'Core_Gothic_D5',
-                ),
-              ),
-              SizedBox(
-                height: 60.h,
-              ),
-              Text(
-                "58,000원",
-                style: TextStyle(
-                  color: const Color(0xFF333333),
-                  fontSize: 45.sp,
-                  fontFamily: 'Core_Gothic_D5',
-                ),
-              ),
             ],
           ),
-          Image.asset(
-            "assets/icons/c.png",
-            width: 300.w,
-            height: 300.h,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class OrderInfo extends StatelessWidget {
-  const OrderInfo({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 1440.w,
-      height: 300.h,
-      child: Padding(
-        padding: EdgeInsets.only(
-          left: 100.w,
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "예상 배달 시간",
-              style: TextStyle(
-                color: const Color(0xFFB8B8B8),
-                fontSize: 50.sp,
-                fontFamily: 'Core_Gothic_D4',
-              ),
-            ),
-            SizedBox(height: 30.h),
-            Text(
-              "21분",
-              style: TextStyle(
-                color: const Color(0xFF333333),
-                fontSize: 60.sp,
-                fontFamily: 'Core_Gothic_D5',
-              ),
-            ),
-          ],
         ),
       ),
     );
@@ -241,7 +262,6 @@ class BottomOutlinedButtonWidget extends StatelessWidget {
         width: 1240.w,
         height: 200.h,
         child: OutlinedButton(
-          // onPressed: () => Get.toNamed('/main'),
           onPressed: () => Get.offAllNamed('/main'),
           style: OutlinedButton.styleFrom(
             side: const BorderSide(color: Color(0xFFFF8800), width: 1),

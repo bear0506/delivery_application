@@ -329,7 +329,7 @@ class BottomOutlinedButtonWidget extends GetView<RoomController> {
             height: 200.h,
             child: OutlinedButton(
               onPressed: () {
-                Get.toNamed("/room=${Get.parameters["roomIdx"]}/status");
+                Get.toNamed("/room=${controller.roomResult.value.idx}/status");
                 controller.handleRoomProvider();
                 controller.handleRoomStatusInitProvider();
               },

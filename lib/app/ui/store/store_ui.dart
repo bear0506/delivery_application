@@ -37,7 +37,7 @@ class StoreUi extends GetView<StoreController> {
               SliverPersistentHeader(
                 floating: false,
                 pinned: true,
-                delegate: _SliverPersistentHeaderDelegate(
+                delegate: StoreAppBar(
                   controller: storeController,
                   maxHeight: 700.h + AppBar().preferredSize.height,
                   minHeight: 200.h + AppBar().preferredSize.height,
@@ -204,8 +204,8 @@ class StoreUi extends GetView<StoreController> {
   }
 }
 
-class _SliverPersistentHeaderDelegate extends SliverPersistentHeaderDelegate {
-  _SliverPersistentHeaderDelegate({
+class StoreAppBar extends SliverPersistentHeaderDelegate {
+  StoreAppBar({
     required this.controller,
     required this.maxHeight,
     required this.minHeight,
@@ -218,83 +218,89 @@ class _SliverPersistentHeaderDelegate extends SliverPersistentHeaderDelegate {
   @override
   Widget build(
       BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return ConstrainedBox(
-      constraints: const BoxConstraints.expand(),
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          Positioned(
-            bottom: 0.0,
-            left: 0.0,
-            right: 0.0,
-            top: 0.0,
-            child: Container(
-              width: 1440.w,
-              decoration: BoxDecoration(
-                color: const Color(0xFFFFFFFF),
-                image: DecorationImage(
-                  opacity: titleOpacity(shrinkOffset),
-                  image: const AssetImage("assets/icons/ch2.png"),
-                  fit: BoxFit.cover,
+    return Obx(
+      () => ConstrainedBox(
+        constraints: const BoxConstraints.expand(),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Positioned(
+              bottom: 0.0,
+              left: 0.0,
+              right: 0.0,
+              top: 0.0,
+              child: Container(
+                width: 1440.w,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFFFFF),
+                  image: DecorationImage(
+                    opacity: titleOpacity(shrinkOffset),
+                    image: const AssetImage("assets/icons/ch2.png"),
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),
-          ),
-          Positioned(
-            top: AppBar().preferredSize.height,
-            child: SizedBox(
-              height: 200.h,
-              width: 1440.w,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    icon: Image.asset(
-                      "assets/icons/back.png",
-                      color: Color.lerp(
-                        const Color(0xFF333333),
-                        const Color(0xFFFFFFFF),
-                        titleOpacity(shrinkOffset),
-                      ),
-                      width: 80.w,
-                      height: 60.h,
-                    ),
-                    onPressed: () => Get.back(),
-                  ),
-                  Expanded(
-                    child: Text(
-                      controller.store.value.name,
-                      textAlign: TextAlign.start,
-                      style: TextStyle(
+            Positioned(
+              top: AppBar().preferredSize.height,
+              child: SizedBox(
+                height: 200.h,
+                width: 1440.w,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      icon: Image.asset(
+                        "assets/icons/back.png",
                         color: Color.lerp(
                           const Color(0xFF333333),
-                          const Color(0x00FFFFFF),
+                          const Color(0xFFFFFFFF),
                           titleOpacity(shrinkOffset),
                         ),
-                        fontSize: 60.sp,
-                        fontFamily: 'Core_Gothic_D6',
-                        fontWeight: FontWeight.bold,
+                        width: 80.w,
+                        height: 60.h,
+                      ),
+                      onPressed: () => Get.back(),
+                    ),
+                    Expanded(
+                      child: Text(
+                        controller.store.value.name,
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          color: Color.lerp(
+                            const Color(0xFF333333),
+                            const Color(0x00FFFFFF),
+                            titleOpacity(shrinkOffset),
+                          ),
+                          fontSize: 60.sp,
+                          fontFamily: 'Core_Gothic_D6',
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                  ),
-                  IconButton(
-                    icon: Image.asset(
-                      "assets/icons/heart.png",
-                      color: Color.lerp(
-                        const Color(0xFFFF2659),
-                        const Color(0xFFFFFFFF),
-                        titleOpacity(shrinkOffset),
+                    IconButton(
+                      icon: Image.asset(
+                        controller.store.value.favorite
+                            ? "assets/icons/heart_active.png"
+                            : "assets/icons/heart.png",
+                        color: Color.lerp(
+                          const Color(0xFFFF2659),
+                          const Color(0xFFFFFFFF),
+                          titleOpacity(shrinkOffset),
+                        ),
+                        width: 80.w,
+                        height: 80.h,
                       ),
-                      width: 80.w,
-                      height: 80.h,
+                      onPressed: () {
+                        controller.handleStoreFavoriteProvider();
+                      },
                     ),
-                    onPressed: () => {},
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

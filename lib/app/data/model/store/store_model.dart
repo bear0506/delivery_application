@@ -15,6 +15,16 @@ class StoreBaseResponseModel {
   }
 }
 
+class StoreFavoriteResponseModel {
+  late String? status;
+  late bool result;
+
+  StoreFavoriteResponseModel.fromJson(Map<String, dynamic> data) {
+    status = data["status"];
+    result = data["message"]["result"];
+  }
+}
+
 class CategoryBaseResponseModel {
   late String? status;
   late List<CategoryResponseModel> categories = <CategoryResponseModel>[];
@@ -76,6 +86,7 @@ class StoreResponseModel {
   late String information;
   late List<StoreTabResponseModel> tab = <StoreTabResponseModel>[];
   late bool active;
+  late bool favorite;
 
   StoreResponseModel({
     required this.idx,
@@ -88,6 +99,7 @@ class StoreResponseModel {
     required this.information,
     required this.tab,
     required this.active,
+    required this.favorite,
   });
 
   factory StoreResponseModel.fromJson(Map<String, dynamic> data) {
@@ -110,6 +122,7 @@ class StoreResponseModel {
       information: data['information'] == null ? "" : data['information'],
       tab: tabs,
       active: data['active'],
+      favorite: data.containsKey('favorite') ? data['favorite'] : false,
     );
   }
 }

@@ -135,7 +135,7 @@ class OrderHistoryContentWidget extends GetView<MyPageFavoritesController> {
                             top: 30.h,
                             right: 30.w,
                             child: Image.asset(
-                              "assets/icons/full_heart.png",
+                              "assets/icons/heart_active.png",
                               width: 60.w,
                               height: 60.h,
                             ),

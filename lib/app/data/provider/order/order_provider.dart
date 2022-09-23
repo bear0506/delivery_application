@@ -110,7 +110,9 @@ class OrderExecuteProvider {
       );
 
       if (response.statusCode == 200) {
-        return CartCheckResponseModel.formJson(response.data);
+        // return OrderResultResponseModel.fromJson(
+        //     response.data["message"]["order"]);
+        return OrderExecuteResponseModel.fromJson(response.data);
       } else {
         throw Exception('faild to load request');
       }

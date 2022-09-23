@@ -70,14 +70,14 @@ class StoreCategory extends GetView<HomeController> {
   StoreCategory(this.iconAsset, this.name, this.index, {Key? key})
       : super(key: key);
 
-  final StoreController _storeController = Get.put(StoreController());
+  final StoreController storeController = Get.put(StoreController());
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
         Get.toNamed("/home/storeList");
-        _storeController.storeListUITabController.value.index = index;
+        storeController.storeListUITabController.value.index = index;
       },
       borderRadius: BorderRadius.circular(20),
       child: Padding(

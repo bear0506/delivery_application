@@ -12,7 +12,6 @@ import 'package:intl/intl.dart';
 class StoreListUi extends GetView<StoreController> {
   StoreListUi({Key? key}) : super(key: key);
 
-  final StoreController storeController = Get.put(StoreController());
   final RoomController roomController = Get.put(RoomController());
 
   @override
@@ -37,8 +36,8 @@ class StoreListUi extends GetView<StoreController> {
                 return true;
               },
               child: TabBarView(
-                controller: storeController.storeListUITabController.value,
-                children: storeController.categories.map(
+                controller: controller.storeListUITabController.value,
+                children: controller.categories.map(
                   (dynamic data) {
                     return SingleChildScrollView(
                       child: ListView.separated(
@@ -47,14 +46,13 @@ class StoreListUi extends GetView<StoreController> {
                           horizontal: 100.w,
                         ),
                         shrinkWrap: true,
-                        controller: storeController.scrollController3.value,
+                        controller: controller.scrollController3.value,
                         itemBuilder: (BuildContext context, int index) {
                           return InkWell(
                             onTap: () {
                               Get.toNamed("/store=" +
                                   data.stores[index].idx.toString());
-                              storeController.handleStoreInitProvider();
-                              // roomController.handleRoomsInStoreProvider();
+                              controller.handleStoreInitProvider();
                             },
                             child: Container(
                               width: 1240.w,
@@ -80,7 +78,9 @@ class StoreListUi extends GetView<StoreController> {
                                       children: [
                                         const Spacer(),
                                         Image.asset(
-                                          "assets/icons/heart.png",
+                                          data.stores[index].favorite
+                                              ? "assets/icons/heart_active.png"
+                                              : "assets/icons/heart.png",
                                           width: 60.w,
                                           height: 60.h,
                                         ),
@@ -237,7 +237,7 @@ class StoreListUi extends GetView<StoreController> {
 class MyAppBar extends GetView<StoreController> {
   MyAppBar({Key? key}) : super(key: key);
 
-  final StoreController _storeController = Get.put(StoreController());
+  // final StoreController _storeController = Get.put(StoreController());
   final RoomController roomController = Get.put(RoomController());
 
   @override
@@ -263,7 +263,7 @@ class MyAppBar extends GetView<StoreController> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              _storeController.categoryTabName.value,
+              controller.categoryTabName.value,
               textAlign: TextAlign.center,
               style: TextStyle(
                 // backgroundColor: Colors.pink,
@@ -462,7 +462,7 @@ class MyAppBar extends GetView<StoreController> {
               padding: EdgeInsets.only(top: 10.h, left: 50.w, right: 50.w),
               unselectedLabelColor: const Color(0xFFB8B8B8),
               labelPadding: EdgeInsets.symmetric(horizontal: 50.w),
-              controller: _storeController.storeListUITabController.value,
+              controller: controller.storeListUITabController.value,
               labelColor: Colors.black,
               indicator: const BoxDecoration(
                 color: Colors.white,
@@ -479,7 +479,7 @@ class MyAppBar extends GetView<StoreController> {
                 ],
               ),
               isScrollable: true,
-              tabs: _storeController.categories
+              tabs: controller.categories
                   .map(
                     (e) => Center(
                       child: Text(

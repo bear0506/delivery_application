@@ -36,6 +36,7 @@ class OrderController extends GetxController with GetTickerProviderStateMixin {
   // 주문 실행
   Rx<OrderExecuteRequestModel> orderExecuteRequestModel =
       OrderExecuteRequestModel(
+    orderIdx: 0,
     address: "",
     detail: "",
     lat: "",
@@ -43,12 +44,14 @@ class OrderController extends GetxController with GetTickerProviderStateMixin {
   ).obs;
 
   void handleOrderExecuteRequestModel({
+    required int orderIdx,
     required String address,
     required String detail,
     required String lat,
     required String lng,
   }) {
     orderExecuteRequestModel.update((_) {
+      _?.orderIdx = orderIdx;
       _?.address = address;
       _?.detail = detail;
       _?.lat = lat;
@@ -107,6 +110,20 @@ class OrderController extends GetxController with GetTickerProviderStateMixin {
     storeIdx: 0,
     price: 0,
     deliveryFee: 0,
+    address: "",
+    detail: "",
+    lat: "",
+    lng: "",
+    status: "IC",
+  ).obs;
+
+  late Rx<OrderResultResponseModel> orderResult = OrderResultResponseModel(
+    idx: 0,
+    storeIdx: 0,
+    storeName: "",
+    price: 0,
+    deliveryFee: 0,
+    deliveryTime: "",
     address: "",
     detail: "",
     lat: "",
@@ -252,6 +269,7 @@ class OrderController extends GetxController with GetTickerProviderStateMixin {
   Future<void> handleOrderExecuteProvider() async {
     try {
       handleOrderExecuteRequestModel(
+        orderIdx: int.parse(Get.parameters["orderIdx"]!),
         address: Get.put(AddressController()).currentAddress.value.address,
         detail: Get.put(AddressController()).currentAddress.value.detail,
         lat: Get.put(AddressController()).currentAddress.value.lat,
@@ -264,6 +282,7 @@ class OrderController extends GetxController with GetTickerProviderStateMixin {
         if (value.status == "success") {
           print("주문 실행 성공");
 
+          orderResult.value = value.orderResult;
           Get.toNamed('/order=${Get.parameters["orderIdx"]}/orderResult');
         } else {
           print("주문 실행 실패");

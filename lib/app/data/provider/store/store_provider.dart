@@ -66,15 +66,53 @@ class StoreInitProvider {
           sendTimeout: 60 * 1000,
           receiveTimeout: 60 * 1000,
           headers: {
-            'Content-Type': 'application/json'
-            // "authorization": "Bearer ${GetStorage().read('token')}",
+            'Content-Type': 'application/json',
+            "authorization": "Bearer ${GetStorage().read('token')}",
           },
         ),
       );
 
       if (response.statusCode == 200) {
-        // logger.d(response.data);
         return StoreBaseResponseModel.fromJson(response.data);
+      } else {
+        throw Exception('faild to load request');
+      }
+    } on DioError catch (e) {
+      logger.d(e);
+    }
+  }
+}
+
+class StoreFavoriteProvider {
+  dio({required int storeIdx}) async {
+    final Dio dio = Dio();
+
+    dio.interceptors.add(InterceptorsWrapper(onRequest: (options, handler) {
+      return handler.next(options);
+    }, onResponse: (response, handler) {
+      return handler.next(response);
+    }, onError: (DioError e, handler) {
+      return handler.next(e);
+    }));
+
+    try {
+      Response<dynamic> response = await dio.post(
+        "$SERVER_IP/store/$storeIdx/favorite",
+        options: Options(
+          contentType: Headers.jsonContentType,
+          responseType: ResponseType.json,
+          maxRedirects: 5,
+          sendTimeout: 60 * 1000,
+          receiveTimeout: 60 * 1000,
+          headers: {
+            'Content-Type': 'application/json',
+            "authorization": "Bearer ${GetStorage().read('token')}",
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        return StoreFavoriteResponseModel.fromJson(response.data);
       } else {
         throw Exception('faild to load request');
       }
@@ -106,14 +144,13 @@ class CategoryAllProvider {
           sendTimeout: 60 * 1000,
           receiveTimeout: 60 * 1000,
           headers: {
-            'Content-Type': 'application/json'
-            // "authorization": "Bearer ${GetStorage().read('token')}",
+            'Content-Type': 'application/json',
+            "authorization": "Bearer ${GetStorage().read('token')}",
           },
         ),
       );
 
       if (response.statusCode == 200) {
-        // logger.d(response.data);
         return CategoryBaseResponseModel.fromJson(response.data);
       } else {
         throw Exception('faild to load request');
