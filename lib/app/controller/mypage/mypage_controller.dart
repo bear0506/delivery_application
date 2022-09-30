@@ -4,9 +4,9 @@ import 'package:delivery_service/main.dart';
 import 'package:delivery_service/app/data/provider/mypage/mypage_provider.dart';
 
 import 'package:delivery_service/app/data/model/mypage/mypage_model.dart';
-import 'package:delivery_service/app/data/model/mypage/mypage_order_history_model.dart';
-import 'package:delivery_service/app/data/model/mypage/mypage_favorites_model.dart';
-import 'package:delivery_service/app/data/provider/mypage/mypage_favorites_provider.dart';
+// import 'package:delivery_service/app/data/model/mypage/mypage_order_history_model.dart';
+// import 'package:delivery_service/app/data/model/mypage/mypage_favorites_model.dart';
+// import 'package:delivery_service/app/data/provider/mypage/mypage_favorites_provider.dart';
 
 class MyPageController extends GetxController with GetTickerProviderStateMixin {
   RxList<dynamic> users = [
@@ -18,119 +18,150 @@ class MyPageController extends GetxController with GetTickerProviderStateMixin {
     },
   ].obs;
 
-  RxList<dynamic> orderHistory = [
-    {
-      "img": "assets/icons/realc.png",
-      "favorites": "true",
-      "storeName": "교촌치킨 약수점",
-      "price": "18,000원",
-      "numberOfPeople": "4명",
-      "date": "2022-07-01",
-    },
-    {
-      "img": "assets/icons/2.png",
-      "favorites": "true",
-      "storeName": "Vips 명동점",
-      "price": "23,500원",
-      "numberOfPeople": "5명",
-      "date": "2022-06-30",
-    },
-    {
-      "img": "assets/icons/p.png",
-      "favorites": "true",
-      "storeName": "피자헛 동국대점",
-      "price": "15,200원",
-      "numberOfPeople": "4명",
-      "date": "2022-06-25",
-    },
-    {
-      "img": "assets/icons/daesung.png",
-      "favorites": "true",
-      "storeName": "대성꼬치",
-      "price": "35,000원",
-      "numberOfPeople": "1명",
-      "date": "2022-06-12",
-    },
-    {
-      "img": "assets/icons/bibi.png",
-      "favorites": "true",
-      "storeName": "비비살몬",
-      "price": "21,000원",
-      "numberOfPeople": "3명",
-      "date": "2022-06-11",
-    },
-  ].obs;
+  // RxList<dynamic> orderHistory = [
+  //   {
+  //     "img": "assets/icons/realc.png",
+  //     "favorites": "true",
+  //     "storeName": "교촌치킨 약수점",
+  //     "price": "18,000원",
+  //     "numberOfPeople": "4명",
+  //     "date": "2022-07-01",
+  //   },
+  //   {
+  //     "img": "assets/icons/2.png",
+  //     "favorites": "true",
+  //     "storeName": "Vips 명동점",
+  //     "price": "23,500원",
+  //     "numberOfPeople": "5명",
+  //     "date": "2022-06-30",
+  //   },
+  //   {
+  //     "img": "assets/icons/p.png",
+  //     "favorites": "true",
+  //     "storeName": "피자헛 동국대점",
+  //     "price": "15,200원",
+  //     "numberOfPeople": "4명",
+  //     "date": "2022-06-25",
+  //   },
+  //   {
+  //     "img": "assets/icons/daesung.png",
+  //     "favorites": "true",
+  //     "storeName": "대성꼬치",
+  //     "price": "35,000원",
+  //     "numberOfPeople": "1명",
+  //     "date": "2022-06-12",
+  //   },
+  //   {
+  //     "img": "assets/icons/bibi.png",
+  //     "favorites": "true",
+  //     "storeName": "비비살몬",
+  //     "price": "21,000원",
+  //     "numberOfPeople": "3명",
+  //     "date": "2022-06-11",
+  //   },
+  // ].obs;
 
-  RxList<dynamic> favorites = [
-    {
-      "img": "assets/icons/realc.png",
-      "storeName": "교촌치킨 약수점",
-      "starPoint": "4.5",
-      "reviewNumber": "159",
-      "deliveryTime": "12분 ~ 20분",
-      "deliveryFee": "3000원",
-    },
-    {
-      "img": "assets/icons/salady.png",
-      "storeName": "Salady 동국대점",
-      "starPoint": "4.5",
-      "reviewNumber": "159",
-      "deliveryTime": "12분 ~ 20분",
-      "deliveryFee": "3000원",
-    },
-    {
-      "img": "assets/icons/coffee.png",
-      "storeName": "매머드커피 남산점",
-      "starPoint": "4.5",
-      "reviewNumber": "159",
-      "deliveryTime": "12분 ~ 20분",
-      "deliveryFee": "3000원",
-    },
-    {
-      "img": "assets/icons/realc.png",
-      "storeName": "교촌치킨 약수점",
-      "starPoint": "4.5",
-      "reviewNumber": "159",
-      "deliveryTime": "12분 ~ 20분",
-      "deliveryFee": "3000원",
-    },
-    {
-      "img": "assets/icons/salady.png",
-      "storeName": "Salady 동국대점",
-      "starPoint": "4.5",
-      "reviewNumber": "159",
-      "deliveryTime": "12분 ~ 20분",
-      "deliveryFee": "3000원",
-    },
-    {
-      "img": "assets/icons/coffee.png",
-      "storeName": "매머드커피 남산점",
-      "starPoint": "4.5",
-      "reviewNumber": "159",
-      "deliveryTime": "12분 ~ 20분",
-      "deliveryFee": "3000원",
-    },
-  ].obs;
+  // RxList<dynamic> favorites = [
+  //   {
+  //     "img": "assets/icons/realc.png",
+  //     "storeName": "교촌치킨 약수점",
+  //     "starPoint": "4.5",
+  //     "reviewNumber": "159",
+  //     "deliveryTime": "12분 ~ 20분",
+  //     "deliveryFee": "3000원",
+  //   },
+  //   {
+  //     "img": "assets/icons/salady.png",
+  //     "storeName": "Salady 동국대점",
+  //     "starPoint": "4.5",
+  //     "reviewNumber": "159",
+  //     "deliveryTime": "12분 ~ 20분",
+  //     "deliveryFee": "3000원",
+  //   },
+  //   {
+  //     "img": "assets/icons/coffee.png",
+  //     "storeName": "매머드커피 남산점",
+  //     "starPoint": "4.5",
+  //     "reviewNumber": "159",
+  //     "deliveryTime": "12분 ~ 20분",
+  //     "deliveryFee": "3000원",
+  //   },
+  //   {
+  //     "img": "assets/icons/realc.png",
+  //     "storeName": "교촌치킨 약수점",
+  //     "starPoint": "4.5",
+  //     "reviewNumber": "159",
+  //     "deliveryTime": "12분 ~ 20분",
+  //     "deliveryFee": "3000원",
+  //   },
+  //   {
+  //     "img": "assets/icons/salady.png",
+  //     "storeName": "Salady 동국대점",
+  //     "starPoint": "4.5",
+  //     "reviewNumber": "159",
+  //     "deliveryTime": "12분 ~ 20분",
+  //     "deliveryFee": "3000원",
+  //   },
+  //   {
+  //     "img": "assets/icons/coffee.png",
+  //     "storeName": "매머드커피 남산점",
+  //     "starPoint": "4.5",
+  //     "reviewNumber": "159",
+  //     "deliveryTime": "12분 ~ 20분",
+  //     "deliveryFee": "3000원",
+  //   },
+  // ].obs;
 
   RxBool temp = false.obs;
 
   // 로딩 인디케이터
-  RxBool isLoaderVisible = true.obs;
+  RxBool isLoaderVisible = false.obs;
 
-  // 조회
-  Future<void> handleInitProvider() async {
+  RxBool orderHistoryDetailLoader = false.obs;
+
+  late RxList<OrderResponseModel> orders = <OrderResponseModel>[].obs;
+  late RxList<FavoriteResponseModel> favorites = <FavoriteResponseModel>[].obs;
+
+  late Rx<OrderResponseModel> order = OrderResponseModel(
+    idx: 0,
+    storeIdx: 0,
+    storeName: "",
+    price: 0,
+    address: "",
+    detail: "",
+    status: "",
+    orderCount: 0,
+    orderAt: DateTime.now(),
+    favorite: false,
+  ).obs;
+
+  late Rx<OrderHisotryResponseModel> orderHistory = OrderHisotryResponseModel(
+    idx: 0,
+    storeIdx: 0,
+    storeName: "",
+    memName: "",
+    memPhoto: "",
+    price: 0,
+    address: "",
+    detail: "",
+    status: "",
+    deliveryTime: "",
+    deliveryFee: 0,
+    orderCount: 0,
+    orderAt: DateTime.now(),
+    orderDetails: [],
+  ).obs;
+
+  // 마이페이지 정보 전체 조회
+  Future<void> handleMyPageInfoInitProvider() async {
     try {
-      await MyPageProvider().dio().then((value) {
+      await MyPageInfoInitProvider().dio().then((value) {
         if (value.status == "success") {
-          // users.assign(value.user);
-          // trades.assignAll(value.trades);
-          // wishlists.assignAll(value.wishlists);
-          // searchRecents.assignAll(value.searchRecents);
+          orders.assignAll(value.orders);
+          favorites.assignAll(value.favorites);
 
-          // user.refresh();
-          // trades.refresh();
-          // wishlists.refresh();
-          // searchRecents.refresh();
+          orders.refresh();
+          favorites.refresh();
         } else {
           logger.d(value.message);
         }
@@ -138,13 +169,43 @@ class MyPageController extends GetxController with GetTickerProviderStateMixin {
     } catch (e) {
       logger.d(e);
     } finally {
-      isLoaderVisible.value = false;
+      isLoaderVisible.value = true;
+    }
+  }
+
+  Future<void> handleOrderHistoryProvider() async {
+    try {
+      await OrderHistoryInitProvider()
+          .dio(orderIdx: int.parse(Get.parameters["orderIdx"]!))
+          .then((value) {
+        if (value.status == "success") {
+          orderHistory.value = value.orderHistory;
+          orderHistory.refresh();
+        } else {
+          logger.d(value.message);
+        }
+      });
+    } catch (e) {
+      logger.d(e);
+    } finally {
+      orderHistoryDetailLoader.value = true;
+    }
+  }
+
+  void handleMyPageOrderInitProvider(int index) {
+    for (var tempOrder in orders) {
+      if (tempOrder.idx == index) {
+        order.value = tempOrder;
+        order.refresh();
+      }
     }
   }
 
   @override
   // ignore: unnecessary_overrides
   void onReady() {
+    handleMyPageInfoInitProvider();
+
     super.onReady();
   }
 

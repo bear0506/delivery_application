@@ -1,4 +1,3 @@
-import 'package:delivery_service/app/controller/main/main_controller.dart';
 import 'package:get/get.dart';
 
 import 'package:flutter/material.dart';
@@ -6,13 +5,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:carousel_slider/carousel_slider.dart';
 
+import 'package:delivery_service/app/controller/main/main_controller.dart';
 import 'package:delivery_service/app/controller/mypage/mypage_controller.dart';
+import 'package:delivery_service/app/controller/address/address_controller.dart';
+import 'package:intl/intl.dart';
 
 class MyPageUi extends GetView<MyPageController> {
   MyPageUi({Key? key}) : super(key: key);
-
-  @override
-  final MyPageController controller = Get.find();
 
   @override
   Widget build(BuildContext context) => Obx(
@@ -173,64 +172,74 @@ class MypageProfileWidget extends GetView<MyPageController> {
       );
 }
 
-class SetAddress extends StatelessWidget {
+class SetAddress extends GetView<AddressController> {
   const SetAddress({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 1440.w,
-      height: 315.h,
-      color: Colors.white,
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: 100.w,
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "배달 주소",
-              style: TextStyle(
-                color: const Color(0xFFB8B8B8),
-                fontSize: 50.sp,
-                fontFamily: 'Core_Gothic_D4',
-              ),
-            ),
-            SizedBox(height: 30.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  "서울 중구 퇴계로36길 2 910호",
-                  style: TextStyle(
-                    color: const Color(0xFF333333),
-                    fontSize: 60.sp,
-                    fontFamily: 'Core_Gothic_D5',
-                  ),
+    return Obx(
+      () => Container(
+        width: 1440.w,
+        height: 315.h,
+        color: Colors.white,
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: 100.w,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "배달 주소",
+                style: TextStyle(
+                  color: const Color(0xFFB8B8B8),
+                  fontSize: 50.sp,
+                  fontFamily: 'Core_Gothic_D4',
                 ),
-                TextButton(
-                  onPressed: () {},
-                  style: TextButton.styleFrom(
-                    minimumSize: Size.zero,
-                    padding: EdgeInsets.zero,
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    // splashFactory: NoSplash.splashFactory,
-                  ),
-                  child: Text(
-                    "변경",
-                    style: TextStyle(
-                      color: const Color(0xFFFF8800),
-                      fontSize: 50.sp,
-                      fontFamily: 'Core_Gothic_D5',
+              ),
+              SizedBox(height: 30.h),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 1100.w,
+                    child: Text(
+                      controller.currentAddress.value.address +
+                          ", " +
+                          controller.currentAddress.value.detail,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: const Color(0xFF333333),
+                        fontSize: 60.sp,
+                        fontFamily: 'Core_Gothic_D5',
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                  TextButton(
+                    onPressed: () {
+                      Get.toNamed("/address");
+                    },
+                    style: TextButton.styleFrom(
+                      minimumSize: Size.zero,
+                      padding: EdgeInsets.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      // splashFactory: NoSplash.splashFactory,
+                    ),
+                    child: Text(
+                      "변경",
+                      style: TextStyle(
+                        color: const Color(0xFFFF8800),
+                        fontSize: 50.sp,
+                        fontFamily: 'Core_Gothic_D5',
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -286,9 +295,9 @@ class MyPageOrderHistoryWidget extends GetView<MyPageController> {
               SizedBox(
                 height: 70.h,
               ),
-              controller.orderHistory.isEmpty
-                  ? const MyPageOrderHistoryContentEmptyWidget()
-                  : const MyPageOrderHistoryContentWidget(),
+              controller.orders.length == 0
+                  ? MyPageOrderHistoryContentEmptyWidget()
+                  : MyPageOrderHistoryContentWidget(),
             ],
           ),
         ),
@@ -336,78 +345,83 @@ class MyPageOrderHistoryContentWidget extends GetView<MyPageController> {
             enableInfiniteScroll: false,
             padEnds: false,
           ),
-          items: controller.orderHistory
+          items: controller.orders
               .map(
-                (value) => Padding(
-                  // padding: controller.orderHistory.indexOf(value) == 0
-                  //     ? EdgeInsets.only(left: 100.w, right: 50.w)
-                  //     : controller.orderHistory.indexOf(value) ==
-                  //             controller.orderHistory.length - 1
-                  //         ? EdgeInsets.only(left: 50.w, right: 100.w)
-                  //         : EdgeInsets.symmetric(horizontal: 50.w),
-                  padding: EdgeInsets.symmetric(horizontal: 50.w),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      InkWell(
-                        child: Stack(
+                (value) => InkWell(
+                  onTap: () {
+                    Get.toNamed('/mypage/order/history/detail=${value.idx}');
+                    controller.handleOrderHistoryProvider();
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 50.w),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        InkWell(
+                          child: Stack(
+                            children: [
+                              ClipRRect(
+                                borderRadius:
+                                    const BorderRadius.all(Radius.circular(15)),
+                                child: Image.asset(
+                                  "assets/icons/realc.png",
+                                  width: 500.w,
+                                  height: 500.h,
+                                ),
+                              ),
+                              Positioned(
+                                top: 30.h,
+                                right: 30.w,
+                                child: Image.asset(
+                                  value.favorite
+                                      ? "assets/icons/heart_active.png"
+                                      : "assets/icons/heart.png",
+                                  width: 60.w,
+                                  height: 60.h,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 30.h),
+                        Text(
+                          value.storeName,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: const Color(0xFF333333),
+                            fontSize: 60.sp,
+                            fontFamily: 'Core_Gothic_D5',
+                          ),
+                        ),
+                        SizedBox(height: 30.h),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            ClipRRect(
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(15)),
-                              child: Image.asset(
-                                value["img"],
-                                width: 500.w,
-                                height: 500.h,
+                            Text(
+                              NumberFormat.currency(locale: "ko_KR", symbol: "")
+                                      .format(value.price) +
+                                  "원",
+                              style: TextStyle(
+                                color: const Color(0xFF333333),
+                                fontSize: 50.sp,
+                                fontFamily: 'Core_Gothic_D5',
                               ),
                             ),
-                            Positioned(
-                              top: 30.h,
-                              right: 30.w,
-                              child: Image.asset(
-                                "assets/icons/heart.png",
-                                width: 60.w,
-                                height: 60.h,
+                            const Spacer(),
+                            Text(
+                              "${value.orderCount}명",
+                              style: TextStyle(
+                                color: const Color(0xFFFF8800),
+                                fontSize: 50.sp,
+                                fontFamily: 'Core_Gothic_D5',
                               ),
                             ),
                           ],
                         ),
-                      ),
-                      SizedBox(height: 30.h),
-                      Text(
-                        value["storeName"],
-                        style: TextStyle(
-                          color: const Color(0xFF333333),
-                          fontSize: 60.sp,
-                          fontFamily: 'Core_Gothic_D5',
-                        ),
-                      ),
-                      SizedBox(height: 30.h),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            value["price"],
-                            style: TextStyle(
-                              color: const Color(0xFF333333),
-                              fontSize: 50.sp,
-                              fontFamily: 'Core_Gothic_D5',
-                            ),
-                          ),
-                          const Spacer(),
-                          Text(
-                            value["numberOfPeople"],
-                            style: TextStyle(
-                              color: const Color(0xFFFF8800),
-                              fontSize: 50.sp,
-                              fontFamily: 'Core_Gothic_D5',
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               )
@@ -466,9 +480,9 @@ class MyPageFavoritesWidget extends GetView<MyPageController> {
               SizedBox(
                 height: 70.h,
               ),
-              controller.orderHistory.isEmpty
-                  ? const MyPageFavoritesContentEmptyWidget()
-                  : const MyPageFavoritesContentWidget(),
+              controller.favorites.length == 0
+                  ? MyPageFavoritesContentEmptyWidget()
+                  : MyPageFavoritesContentWidget(),
             ],
           ),
         ),
@@ -533,7 +547,7 @@ class MyPageFavoritesContentWidget extends GetView<MyPageController> {
                               borderRadius:
                                   const BorderRadius.all(Radius.circular(15)),
                               child: Image.asset(
-                                value["img"],
+                                "assets/icons/salady.png",
                                 width: 500.w,
                                 height: 500.h,
                               ),
@@ -554,7 +568,8 @@ class MyPageFavoritesContentWidget extends GetView<MyPageController> {
                         height: 30.h,
                       ),
                       Text(
-                        value["storeName"],
+                        value.name,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           color: const Color(0xFF333333),
                           fontSize: 60.sp,

@@ -396,8 +396,6 @@ class _SliverTabBarDelegate extends SliverPersistentHeaderDelegate {
 class StoreTitleWidget extends GetView<StoreController> {
   StoreTitleWidget({Key? key}) : super(key: key);
 
-  final StoreController _storeController = Get.put(StoreController());
-
   // final double expandedHeight;
   @override
   Widget build(BuildContext context) {
@@ -414,7 +412,7 @@ class StoreTitleWidget extends GetView<StoreController> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              _storeController.store.value.name,
+              controller.store.value.name,
               style: TextStyle(
                 color: const Color(0xFF333333),
                 fontSize: 80.sp,
@@ -426,7 +424,9 @@ class StoreTitleWidget extends GetView<StoreController> {
               height: 20.h,
             ),
             InkWell(
-              onTap: () {},
+              onTap: () {
+                Get.toNamed("/store=${Get.parameters["storeIdx"]}/review");
+              },
               child: SizedBox(
                 width: 327.w,
                 height: 69.h,

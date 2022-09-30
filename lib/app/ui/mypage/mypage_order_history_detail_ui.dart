@@ -1,4 +1,9 @@
+import 'dart:convert';
+
+import 'package:delivery_service/app/controller/mypage/mypage_controller.dart';
+import 'package:delivery_service/app/controller/store/store_controller.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import 'package:shimmer/shimmer.dart';
 
@@ -7,7 +12,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:delivery_service/app/controller/mypage/mypage_order_history_controller.dart';
 
-class MyPageOrderHistoryDetailUi extends GetView<MyPageOrderHistoryController> {
+class MyPageOrderHistoryDetailUi extends GetView<MyPageController> {
   const MyPageOrderHistoryDetailUi({Key? key}) : super(key: key);
 
   @override
@@ -52,7 +57,7 @@ class MyPageOrderHistoryDetailUi extends GetView<MyPageOrderHistoryController> {
                 return true;
               },
               child: SafeArea(
-                child: controller.isLoaderVisible.value == false
+                child: controller.orderHistoryDetailLoader.value == false
                     ? const OrderHistoryDetailShimmerWidget()
                     : OrderHistoryDetailWidget(),
               ),
@@ -62,24 +67,8 @@ class MyPageOrderHistoryDetailUi extends GetView<MyPageOrderHistoryController> {
       );
 }
 
-class OrderHistoryDetailWidget extends GetView<MyPageOrderHistoryController> {
+class OrderHistoryDetailWidget extends GetView<MyPageController> {
   OrderHistoryDetailWidget({Key? key}) : super(key: key);
-
-  @override
-  final MyPageOrderHistoryController controller = Get.find();
-
-  @override
-  Widget build(BuildContext context) => OrderHistoryDetailContentWidget(
-        int.parse(controller.number.value),
-      );
-}
-
-class OrderHistoryDetailContentWidget
-    extends GetView<MyPageOrderHistoryController> {
-  const OrderHistoryDetailContentWidget(this.number, {Key? key})
-      : super(key: key);
-
-  final int number;
 
   @override
   Widget build(BuildContext context) => Obx(
@@ -89,7 +78,7 @@ class OrderHistoryDetailContentWidget
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Image.asset(
-                controller.orderHistory[number - 1]["storeImg"],
+                "assets/icons/ch2.png",
                 fit: BoxFit.fill,
               ),
               Padding(
@@ -104,7 +93,7 @@ class OrderHistoryDetailContentWidget
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          controller.orderHistory[number - 1]["storeName"],
+                          controller.orderHistory.value.storeName,
                           style: TextStyle(
                             color: const Color(0xFF333333),
                             fontSize: 60.sp,
@@ -113,42 +102,23 @@ class OrderHistoryDetailContentWidget
                           ),
                         ),
                         Row(
-                          children: [
-                            Image.asset(
-                              "assets/icons/person2.png",
-                              width: 80.w,
-                              height: 80.h,
+                          children: List.generate(
+                            controller.orderHistory.value.orderCount,
+                            (index) => Padding(
+                              padding: EdgeInsets.only(left: 5.w),
+                              child: Image.asset(
+                                "assets/icons/person.png",
+                                color: Color(0xFFFF7700),
+                                width: 80.w,
+                                height: 80.h,
+                              ),
                             ),
-                            SizedBox(
-                              width: 20.w,
-                            ),
-                            Image.asset(
-                              "assets/icons/person2.png",
-                              width: 80.w,
-                              height: 80.h,
-                            ),
-                            SizedBox(
-                              width: 20.w,
-                            ),
-                            Image.asset(
-                              "assets/icons/person2.png",
-                              width: 80.w,
-                              height: 80.h,
-                            ),
-                            SizedBox(
-                              width: 20.w,
-                            ),
-                            Image.asset(
-                              "assets/icons/person2.png",
-                              width: 80.w,
-                              height: 80.h,
-                            ),
-                          ],
+                          ),
                         ),
                       ],
                     ),
                     SizedBox(
-                      height: 30.h,
+                      height: 50.h,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -165,7 +135,7 @@ class OrderHistoryDetailContentWidget
                               width: 20.w,
                             ),
                             Text(
-                              controller.orderHistory[number - 1]["starPoint"],
+                              "4.5",
                               style: TextStyle(
                                 color: const Color(0xFF333333),
                                 fontSize: 50.sp,
@@ -173,7 +143,7 @@ class OrderHistoryDetailContentWidget
                               ),
                             ),
                             Text(
-                              "(${controller.orderHistory[number - 1]["reviewNumber"]})",
+                              "(156)",
                               style: TextStyle(
                                 color: const Color(0xFF333333),
                                 fontSize: 50.sp,
@@ -185,18 +155,8 @@ class OrderHistoryDetailContentWidget
                         Row(
                           children: [
                             Text(
-                              controller.orderHistory[number - 1]["date"],
-                              style: TextStyle(
-                                color: const Color(0xFF9B9B9B),
-                                fontSize: 50.sp,
-                                fontFamily: 'Core_Gothic_D5',
-                              ),
-                            ),
-                            SizedBox(
-                              width: 50.w,
-                            ),
-                            Text(
-                              controller.orderHistory[number - 1]["time"],
+                              DateFormat('yyyy-MM-dd HH:mm')
+                                  .format(controller.order.value.orderAt),
                               style: TextStyle(
                                 color: const Color(0xFF9B9B9B),
                                 fontSize: 50.sp,
@@ -210,9 +170,9 @@ class OrderHistoryDetailContentWidget
                   ],
                 ),
               ),
-              Divider(
-                color: const Color(0xFFECECEC),
-                thickness: 4.h,
+              Container(
+                color: Color(0xFFECECEC),
+                height: 4.h,
               ),
               Container(
                 height: 780.h,
@@ -255,10 +215,16 @@ class OrderHistoryDetailContentWidget
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            Image.asset(
-                              controller.orderHistory[number - 1]['userImg'],
+                            Container(
                               width: 400.w,
                               height: 400.h,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                image: DecorationImage(
+                                    image: NetworkImage(
+                                        controller.orderHistory.value.memPhoto),
+                                    fit: BoxFit.cover),
+                              ),
                             ),
                             Container(
                               width: 10.w,
@@ -284,8 +250,7 @@ class OrderHistoryDetailContentWidget
                                         ),
                                       ),
                                       Text(
-                                        controller.orderHistory[number - 1]
-                                            ['userID'],
+                                        controller.orderHistory.value.memName,
                                         style: TextStyle(
                                           color: const Color(0xFF333333),
                                           fontSize: 60.sp,
@@ -319,14 +284,21 @@ class OrderHistoryDetailContentWidget
                                         onTap: () {},
                                         child: Row(
                                           children: [
-                                            Text(
-                                              controller
-                                                      .orderHistory[number - 1]
-                                                  ['address'],
-                                              style: TextStyle(
-                                                color: const Color(0xFF333333),
-                                                fontSize: 40.sp,
-                                                fontFamily: 'Core_Gothic_D5',
+                                            SizedBox(
+                                              width: 500.w,
+                                              child: Text(
+                                                controller.orderHistory.value
+                                                        .address +
+                                                    ", " +
+                                                    controller.orderHistory
+                                                        .value.detail,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(
+                                                  color:
+                                                      const Color(0xFF333333),
+                                                  fontSize: 40.sp,
+                                                  fontFamily: 'Core_Gothic_D5',
+                                                ),
                                               ),
                                             ),
                                             SizedBox(
@@ -358,7 +330,7 @@ class OrderHistoryDetailContentWidget
                                         ),
                                       ),
                                       Text(
-                                        "${controller.orderHistory[number - 1]['orderNumber']}회",
+                                        "15회",
                                         style: TextStyle(
                                           color: const Color(0xFFFF8800),
                                           fontSize: 40.sp,
@@ -383,7 +355,7 @@ class OrderHistoryDetailContentWidget
                                         ),
                                       ),
                                       Text(
-                                        "${controller.orderHistory[number - 1]['mannerScore']}점",
+                                        "100점",
                                         style: TextStyle(
                                           color: const Color(0xFFFF8800),
                                           fontSize: 40.sp,
@@ -427,60 +399,88 @@ class OrderHistoryDetailContentWidget
                     SizedBox(
                       height: 50.h,
                     ),
-                    Obx(
-                      () => ListView.separated(
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: controller.orderMenuHistory.length,
-                        itemBuilder: (BuildContext context, int index) =>
-                            Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              controller.orderMenuHistory[index]['menuName'],
-                              style: TextStyle(
-                                color: const Color(0xFF333333),
-                                fontSize: 60.sp,
-                                fontFamily: 'Core_Gothic_D5',
+                    ListView.separated(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount:
+                          controller.orderHistory.value.orderDetails.length,
+                      itemBuilder: (BuildContext context, int index) => Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            jsonDecode(controller.orderHistory.value
+                                .orderDetails[index].menu)["name"],
+                            style: TextStyle(
+                              color: const Color(0xFF333333),
+                              fontSize: 60.sp,
+                              fontFamily: 'Core_Gothic_D5',
+                            ),
+                          ),
+                          SizedBox(height: 25.h),
+                          ListView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: jsonDecode(controller.orderHistory.value
+                                    .orderDetails[index].menu)['menu_option']
+                                .length,
+                            itemBuilder: (context, index2) => Container(
+                              child: Padding(
+                                padding: EdgeInsets.only(left: 20.w),
+                                child: Container(
+                                  margin: EdgeInsets.symmetric(vertical: 5.h),
+                                  child: Text(
+                                    "- " +
+                                        jsonDecode(controller
+                                            .orderHistory
+                                            .value
+                                            .orderDetails[index]
+                                            .menu)['menu_option'][index2],
+                                    style: TextStyle(
+                                      color: const Color(0xFFB8B8B8),
+                                      fontSize: 45.sp,
+                                      fontFamily: 'Core_Gothic_D4',
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
-                            SizedBox(
-                              height: 30.h,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "${controller.orderMenuHistory[index]['price']}원",
-                                  style: TextStyle(
-                                    color: const Color(0xFF333333),
-                                    fontSize: 60.sp,
-                                    fontFamily: 'Core_Gothic_D5',
-                                  ),
+                          ),
+                          SizedBox(
+                            height: 30.h,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                "${NumberFormat.currency(locale: "ko_KR", symbol: "").format(controller.orderHistory.value.orderDetails[index].price)}원",
+                                style: TextStyle(
+                                  color: const Color(0xFF333333),
+                                  fontSize: 60.sp,
+                                  fontFamily: 'Core_Gothic_D5',
                                 ),
-                                Text(
-                                  "${controller.orderMenuHistory[index]['quantity']}개",
-                                  style: TextStyle(
-                                    color: const Color(0xFF333333),
-                                    fontSize: 60.sp,
-                                    fontFamily: 'Core_Gothic_D5',
-                                  ),
+                              ),
+                              Text(
+                                "${controller.orderHistory.value.orderDetails[index].count}개",
+                                style: TextStyle(
+                                  color: const Color(0xFF333333),
+                                  fontSize: 60.sp,
+                                  fontFamily: 'Core_Gothic_D5',
                                 ),
-                              ],
-                            )
-                          ],
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      separatorBuilder: (BuildContext context, int index) =>
+                          Padding(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 60.h,
                         ),
-                        separatorBuilder: (BuildContext context, int index) =>
-                            Padding(
-                          padding: EdgeInsets.symmetric(
-                            vertical: 60.h,
-                          ),
-                          child: const Divider(
-                            color: Color(0xFFB8B8B8),
-                            thickness: 1,
-                          ),
+                        child: Container(
+                          color: Color(0xFFB8B8B8),
+                          height: 1.h,
                         ),
                       ),
                     ),
@@ -488,9 +488,9 @@ class OrderHistoryDetailContentWidget
                       padding: EdgeInsets.symmetric(
                         vertical: 60.h,
                       ),
-                      child: const Divider(
+                      child: Container(
                         color: Color(0xFFB8B8B8),
-                        thickness: 1,
+                        height: 2.h,
                       ),
                     ),
                     Text(
@@ -504,21 +504,34 @@ class OrderHistoryDetailContentWidget
                     SizedBox(
                       height: 30.h,
                     ),
-                    Text(
-                      "750원",
-                      style: TextStyle(
-                        color: const Color(0xFF333333),
-                        fontSize: 60.sp,
-                        fontFamily: 'Core_Gothic_D5',
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "${NumberFormat.currency(locale: "ko_KR", symbol: "").format(controller.orderHistory.value.deliveryFee)}원 / ${controller.orderHistory.value.orderCount}명",
+                          style: TextStyle(
+                            color: const Color(0xFFB8B8B8),
+                            fontSize: 45.sp,
+                            fontFamily: 'Core_Gothic_D4',
+                          ),
+                        ),
+                        Text(
+                          "${NumberFormat.currency(locale: "ko_KR", symbol: "").format(controller.orderHistory.value.deliveryFee / controller.orderHistory.value.orderCount)}원",
+                          style: TextStyle(
+                            color: const Color(0xFF333333),
+                            fontSize: 60.sp,
+                            fontFamily: 'Core_Gothic_D5',
+                          ),
+                        ),
+                      ],
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(
                         vertical: 60.h,
                       ),
-                      child: Divider(
-                        color: const Color(0xFFAFAFAF),
-                        thickness: 8.h,
+                      child: Container(
+                        color: Color(0xFFAFAFAF),
+                        height: 4.h,
                       ),
                     ),
                     Row(
@@ -535,7 +548,13 @@ class OrderHistoryDetailContentWidget
                           ),
                         ),
                         Text(
-                          "56,750원",
+                          NumberFormat.currency(locale: "ko_KR", symbol: "")
+                                  .format(controller.orderHistory.value.price +
+                                      (controller
+                                              .orderHistory.value.deliveryFee /
+                                          controller
+                                              .orderHistory.value.orderCount)) +
+                              "원",
                           style: TextStyle(
                             color: const Color(0xFFFF8800),
                             fontSize: 70.sp,
@@ -569,7 +588,11 @@ class OrderHistoryDetailContentWidget
                   width: 1240.w,
                   height: 200.h,
                   child: OutlinedButton(
-                    onPressed: () => {},
+                    onPressed: () => {
+                      Get.toNamed(
+                          "/store=${controller.orderHistory.value.storeIdx}"),
+                      Get.put(StoreController()).handleStoreInitProvider()
+                    },
                     style: OutlinedButton.styleFrom(
                       side:
                           const BorderSide(color: Color(0xFFFF8800), width: 1),
@@ -605,8 +628,12 @@ class OrderHistoryDetailContentWidget
                   width: 1240.w,
                   height: 200.h,
                   child: OutlinedButton(
-                    onPressed: () => Get.toNamed(
-                        '/mypage/order/history/detail=${controller.orderHistory[number]["number"]}/reviewWrite=${controller.storeIdx}'),
+                    onPressed: () => {
+                      Get.toNamed(
+                          "/store=${controller.orderHistory.value.storeIdx}/review/write")
+                      // Get.toNamed(
+                      //     '/mypage/order/history/detail=${controller.orderHistory[number]["number"]}/reviewWrite=${controller.storeIdx}');
+                    },
                     style: OutlinedButton.styleFrom(
                       side:
                           const BorderSide(color: Color(0xFFFF8800), width: 1),

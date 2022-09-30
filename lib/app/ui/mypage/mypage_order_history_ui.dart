@@ -1,13 +1,15 @@
+import 'package:delivery_service/app/controller/mypage/mypage_controller.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import 'package:shimmer/shimmer.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import 'package:delivery_service/app/controller/mypage/mypage_order_history_controller.dart';
+import 'package:delivery_service/app/controller/mypage/mypage_controller.dart';
 
-class MyPageOrderHistoryUi extends GetView<MyPageOrderHistoryController> {
+class MyPageOrderHistoryUi extends GetView<MyPageController> {
   const MyPageOrderHistoryUi({Key? key}) : super(key: key);
 
   @override
@@ -65,12 +67,12 @@ class MyPageOrderHistoryUi extends GetView<MyPageOrderHistoryController> {
       );
 }
 
-class OrderHistoryWidget extends GetView<MyPageOrderHistoryController> {
+class OrderHistoryWidget extends GetView<MyPageController> {
   const OrderHistoryWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) => Obx(
-        () => controller.orderHistory.isEmpty
+        () => controller.orders.isEmpty
             ? const OrderHistoryContentEmptyWidget()
             : const OrderHistoryContentWidget(),
       );
@@ -106,134 +108,121 @@ class OrderHistoryContentEmptyWidget extends StatelessWidget {
       );
 }
 
-class OrderHistoryContentWidget extends GetView<MyPageOrderHistoryController> {
+class OrderHistoryContentWidget extends GetView<MyPageController> {
   const OrderHistoryContentWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) => Obx(
         () => ListView.separated(
           shrinkWrap: true,
-          itemCount: controller.orderHistory.length,
+          itemCount: controller.orders.length,
           itemBuilder: (BuildContext context, int index) => Column(
             children: [
               InkWell(
-                child: Container(
-                  color: Colors.cyan,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Stack(
-                        children: [
-                          Image.asset(
-                            controller.orderHistory[index]["img"],
-                            width: 500.w,
-                            height: 500.h,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Stack(
+                      children: [
+                        Image.asset(
+                          "assets/icons/realc.png",
+                          width: 500.w,
+                          height: 500.h,
+                        ),
+                        Positioned(
+                          top: 30.h,
+                          right: 30.w,
+                          child: Image.asset(
+                            "assets/icons/heart.png",
+                            width: 60.w,
+                            height: 60.h,
                           ),
-                          Positioned(
-                            top: 30.h,
-                            right: 30.w,
-                            child: Image.asset(
-                              "assets/icons/heart.png",
-                              width: 60.w,
-                              height: 60.h,
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      width: 50.w,
+                    ),
+                    Expanded(
+                      child: Column(
+                        // mainAxisAlignment: MainAxisAlignment.start,
+                        // crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            width: double.infinity,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  controller.orders[index].storeName,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    color: const Color(0xFF333333),
+                                    fontSize: 80.sp,
+                                    fontFamily: 'Core_Gothic_D6',
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 30.h,
+                                ),
+                                Text(
+                                  NumberFormat.currency(
+                                              locale: "ko_KR", symbol: "")
+                                          .format(
+                                              controller.orders[index].price) +
+                                      "원",
+                                  style: TextStyle(
+                                    color: const Color(0xFF333333),
+                                    fontSize: 70.sp,
+                                    fontFamily: 'Core_Gothic_D5',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 90.h,
+                          ),
+                          SizedBox(
+                            width: double.infinity,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  "${controller.orders[index].orderCount}명",
+                                  style: TextStyle(
+                                    color: const Color(0xFFFF8800),
+                                    fontSize: 60.sp,
+                                    fontFamily: 'Core_Gothic_D5',
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 30.h,
+                                ),
+                                Text(
+                                  DateFormat("yyyy-MM-dd")
+                                      .format(controller.orders[index].orderAt)
+                                      .toString(),
+                                  style: TextStyle(
+                                    color: const Color(0xFF9B9B9B),
+                                    fontSize: 50.sp,
+                                    fontFamily: 'Core_Gothic_D5',
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
-                      SizedBox(
-                        width: 50.w,
-                      ),
-                      Container(
-                        color: Colors.pink,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              color: Colors.yellow,
-                              child: Row(
-                                children: [
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        controller.orderHistory[index]
-                                            ["storeName"],
-                                        style: TextStyle(
-                                          color: const Color(0xFF333333),
-                                          fontSize: 80.sp,
-                                          fontFamily: 'Core_Gothic_D6',
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 30.h,
-                                      ),
-                                      Text(
-                                        controller.orderHistory[index]["price"],
-                                        style: TextStyle(
-                                          color: const Color(0xFF333333),
-                                          fontSize: 70.sp,
-                                          fontFamily: 'Core_Gothic_D5',
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(
-                              height: 90.h,
-                            ),
-                            Container(
-                              color: Colors.purple,
-                              child: Row(
-                                children: [
-                                  SizedBox(
-                                    width: 467.w,
-                                  ),
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                        controller.orderHistory[index]
-                                            ["numberOfPeople"],
-                                        style: TextStyle(
-                                          color: const Color(0xFFFF8800),
-                                          fontSize: 60.sp,
-                                          fontFamily: 'Core_Gothic_D5',
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 30.h,
-                                      ),
-                                      Text(
-                                        controller.orderHistory[index]["date"],
-                                        style: TextStyle(
-                                          color: const Color(0xFF9B9B9B),
-                                          fontSize: 50.sp,
-                                          fontFamily: 'Core_Gothic_D5',
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
                 onTap: () {
                   Get.toNamed(
-                      '/mypage/order/history/detail=${controller.orderHistory[index]["number"]}');
-                  controller.onChangeNumber();
+                      '/mypage/order/history/detail=${controller.orders[index].idx}');
+                  controller.handleOrderHistoryProvider();
                 },
               ),
             ],
@@ -252,13 +241,13 @@ class OrderHistoryContentWidget extends GetView<MyPageOrderHistoryController> {
       );
 }
 
-class OrderHistoryShimmerWidget extends GetView<MyPageOrderHistoryController> {
+class OrderHistoryShimmerWidget extends GetView<MyPageController> {
   const OrderHistoryShimmerWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) => ListView.separated(
         shrinkWrap: true,
-        itemCount: controller.orderHistory.length,
+        itemCount: controller.orders.length,
         itemBuilder: (BuildContext _, int index) => Column(
           children: [
             Row(

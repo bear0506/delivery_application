@@ -365,6 +365,7 @@ import 'package:delivery_service/app/ui/mypage/mypage_order_history_detail_ui.da
 import 'package:delivery_service/app/ui/mypage/mypage_favorites_ui.dart';
 import 'package:delivery_service/app/binding/mypage/mypage_favoirtes_binding.dart';
 
+import 'package:delivery_service/app/ui/review/review_ui.dart';
 import 'package:delivery_service/app/ui/review/review_write_ui.dart';
 import 'package:delivery_service/app/binding/review/review_binding.dart';
 
@@ -475,8 +476,14 @@ class Pages {
       binding: MyPageOrderHistoryBinding(),
     ),
     GetPage(
+      title: "리뷰",
+      name: Routes.review,
+      page: () => const ReviewUi(),
+      binding: ReviewBinding(),
+    ),
+    GetPage(
       title: "리뷰작성",
-      name: Routes.mypageReviewWrite,
+      name: Routes.reviewWrite,
       page: () => const ReviewWriteUi(),
       binding: ReviewBinding(),
     ),

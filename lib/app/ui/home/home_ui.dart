@@ -8,6 +8,7 @@ import 'dart:math';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:intl/intl.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import 'package:delivery_service/app/controller/home/home_controller.dart';
@@ -883,9 +884,7 @@ class MapModalWidget extends GetView<HomeController> {
                               ),
                               Text(
                                 _homeController.currentRoom.value.idx != -1
-                                    ? _homeController
-                                        .currentRoom.value.deliveryFee
-                                        .toString()
+                                    ? "${NumberFormat.currency(locale: "ko_KR", symbol: "").format(_homeController.currentRoom.value.deliveryFee)}원"
                                     : "",
                                 textAlign: TextAlign.center,
                                 style: TextStyle(

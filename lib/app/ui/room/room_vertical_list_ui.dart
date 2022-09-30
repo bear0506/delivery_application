@@ -11,8 +11,6 @@ import 'package:delivery_service/app/controller/store/store_controller.dart';
 class RoomVerticalListUi extends GetView<RoomController> {
   RoomVerticalListUi({Key? key}) : super(key: key);
 
-  final RoomController _roomController = Get.put(RoomController());
-
   @override
   Widget build(BuildContext context) {
     return Obx(
@@ -72,9 +70,9 @@ class RoomVerticalListUi extends GetView<RoomController> {
                                       ),
                                     ),
                                     value: Sort.popularity,
-                                    groupValue: _roomController.sort.value,
+                                    groupValue: controller.sort.value,
                                     onChanged: (Sort? value) {
-                                      _roomController.sort.value = value!;
+                                      controller.sort.value = value!;
                                       Get.back();
                                     },
                                     activeColor: const Color(0xFFFF8800),
@@ -92,9 +90,9 @@ class RoomVerticalListUi extends GetView<RoomController> {
                                       ),
                                     ),
                                     value: Sort.newOrder,
-                                    groupValue: _roomController.sort.value,
+                                    groupValue: controller.sort.value,
                                     onChanged: (Sort? value) {
-                                      _roomController.sort.value = value!;
+                                      controller.sort.value = value!;
                                       Get.back();
                                     },
                                     activeColor: const Color(0xFFFF8800),
@@ -112,9 +110,9 @@ class RoomVerticalListUi extends GetView<RoomController> {
                                       ),
                                     ),
                                     value: Sort.quickTimeOrder,
-                                    groupValue: _roomController.sort.value,
+                                    groupValue: controller.sort.value,
                                     onChanged: (Sort? value) {
-                                      _roomController.sort.value = value!;
+                                      controller.sort.value = value!;
                                       Get.back();
                                     },
                                     activeColor: const Color(0xFFFF8800),
@@ -145,9 +143,9 @@ class RoomVerticalListUi extends GetView<RoomController> {
                                       ),
                                     ),
                                     value: Sort.delieveryCostMuch,
-                                    groupValue: _roomController.sort.value,
+                                    groupValue: controller.sort.value,
                                     onChanged: (Sort? value) {
-                                      _roomController.sort.value = value!;
+                                      controller.sort.value = value!;
                                       Get.back();
                                     },
                                     activeColor: const Color(0xFFFF8800),
@@ -165,9 +163,9 @@ class RoomVerticalListUi extends GetView<RoomController> {
                                       ),
                                     ),
                                     value: Sort.delieveryCostLess,
-                                    groupValue: _roomController.sort.value,
+                                    groupValue: controller.sort.value,
                                     onChanged: (Sort? value) {
-                                      _roomController.sort.value = value!;
+                                      controller.sort.value = value!;
                                       Get.back();
                                     },
                                     activeColor: const Color(0xFFFF8800),
@@ -185,9 +183,9 @@ class RoomVerticalListUi extends GetView<RoomController> {
                                       ),
                                     ),
                                     value: Sort.numberOfPeople,
-                                    groupValue: _roomController.sort.value,
+                                    groupValue: controller.sort.value,
                                     onChanged: (Sort? value) {
-                                      _roomController.sort.value = value!;
+                                      controller.sort.value = value!;
                                       Get.back();
                                     },
                                     activeColor: const Color(0xFFFF8800),
@@ -208,9 +206,9 @@ class RoomVerticalListUi extends GetView<RoomController> {
             scrollDirection: Axis.vertical,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: _roomController.rooms.length,
-            itemBuilder: (BuildContext context, index) => Align(
-                child: RoomCardWidget(roomInfo: _roomController.rooms[index])),
+            itemCount: controller.rooms.length,
+            itemBuilder: (BuildContext context, index) =>
+                Align(child: RoomCardWidget(roomInfo: controller.rooms[index])),
             separatorBuilder: (BuildContext context, int index) => Divider(
               thickness: 1,
               indent: 100.w,
@@ -376,8 +374,9 @@ class RoomCardWidget extends GetView<RoomController> {
                         width: 20.w,
                       ),
                       Text(
-                        NumberFormat('###,###,###,###')
-                            .format(roomInfo.deliveryFee),
+                        NumberFormat.currency(locale: "ko_KR", symbol: "")
+                                .format(roomInfo.deliveryFee) +
+                            "원",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.black,

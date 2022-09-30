@@ -261,8 +261,6 @@ class StoreController extends GetxController with GetTickerProviderStateMixin {
 
     storeIdx = Get.parameters["storeIdx"].obs;
 
-    print(storeIdx);
-
     try {
       await StoreInitProvider()
           .dio(idx: int.parse(storeIdx.value))

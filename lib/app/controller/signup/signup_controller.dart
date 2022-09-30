@@ -174,8 +174,6 @@ class SignUpController extends GetxController {
     value.length >= 2
         ? isPhoneTextFormFieldEnabled.value = true
         : isPhoneTextFormFieldEnabled.value = false;
-
-    print(isPhoneTextFormFieldEnabled.value);
   }
 
   // 핸드폰 번호 텍스트 필드 변경

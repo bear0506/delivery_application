@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:get/get.dart';
 
 import 'package:flutter/material.dart';
@@ -12,8 +15,11 @@ class ReviewWriteUi extends GetView<ReviewController> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(
-      () => Scaffold(
+    return GestureDetector(
+      onTap: () {
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      child: Scaffold(
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
@@ -29,7 +35,7 @@ class ReviewWriteUi extends GetView<ReviewController> {
             onPressed: () => Get.back(),
           ),
           title: Text(
-            "리뷰",
+            "리뷰작성",
             textAlign: TextAlign.start,
             style: TextStyle(
               color: const Color(0xFF333333),
@@ -53,9 +59,10 @@ class ReviewWriteUi extends GetView<ReviewController> {
               return true;
             },
             child: SafeArea(
-              child: controller.isLoaderVisible.value == false
-                  ? const ReviewWriteContentShimmerWidget()
-                  : ReviewWriteContentWidget(),
+              child: ReviewWriteContentWidget(),
+              // child: controller.isLoaderVisible.value == false
+              //     ? const ReviewWriteContentShimmerWidget()
+              //     : ReviewWriteContentWidget(),
             ),
           ),
         ),
@@ -65,18 +72,8 @@ class ReviewWriteUi extends GetView<ReviewController> {
   }
 }
 
-class ReviewWriteWidget extends GetView<ReviewController> {
-  const ReviewWriteWidget({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) => ReviewWriteContentWidget();
-}
-
 class ReviewWriteContentWidget extends GetView<ReviewController> {
   ReviewWriteContentWidget({Key? key}) : super(key: key);
-
-  @override
-  final controller = Get.put(ReviewController());
 
   @override
   Widget build(BuildContext context) => Obx(
@@ -86,8 +83,8 @@ class ReviewWriteContentWidget extends GetView<ReviewController> {
             children: [
               Padding(
                 padding: EdgeInsets.symmetric(
-                  vertical: 111.h,
                   horizontal: 100.w,
+                  vertical: 110.h,
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -107,7 +104,7 @@ class ReviewWriteContentWidget extends GetView<ReviewController> {
                       direction: Axis.horizontal,
                       allowHalfRating: false,
                       itemSize: 30,
-                      itemCount: controller.defaultRatingStar.value,
+                      itemCount: 5,
                       ratingWidget: RatingWidget(
                         full: Image.asset("assets/icons/star_full.png"),
                         half: Image.asset("assets/icons/star_half.png"),
@@ -131,9 +128,9 @@ class ReviewWriteContentWidget extends GetView<ReviewController> {
                   ],
                 ),
               ),
-              Divider(
-                color: const Color(0xFFECECEC),
-                thickness: 4.h,
+              Container(
+                color: Color(0xFFECECEC),
+                height: 4.h,
               ),
               Padding(
                 padding: EdgeInsets.only(
@@ -146,7 +143,7 @@ class ReviewWriteContentWidget extends GetView<ReviewController> {
                   children: [
                     InkWell(
                       onTap: () {
-                        controller.getGalleryImage();
+                        controller.handleSelectImage();
                       },
                       child: Container(
                         color: const Color(0xFFF1F1F1),
@@ -161,7 +158,7 @@ class ReviewWriteContentWidget extends GetView<ReviewController> {
                               scale: 2.5,
                             ),
                             SizedBox(
-                              height: 20.h,
+                              height: 30.h,
                             ),
                             Text(
                               "사진 추가",
@@ -175,17 +172,40 @@ class ReviewWriteContentWidget extends GetView<ReviewController> {
                         ),
                       ),
                     ),
-                    SizedBox(
-                      width: 90.w,
-                    ),
-                    InkWell(
-                      onTap: () {
-                        controller.getGalleryImage();
-                      },
-                      child: Container(
-                        color: const Color(0xFFF1F1F1),
-                        width: 312.w,
+                    SizedBox(width: 50.w),
+                    Expanded(
+                      child: SizedBox(
                         height: 312.h,
+                        child: ListView.builder(
+                          physics: const ClampingScrollPhysics(),
+                          scrollDirection: Axis.horizontal,
+                          shrinkWrap: true,
+                          itemCount: controller.imageList.length,
+                          itemBuilder: (context, index) => Container(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 30.w),
+                              child: InkWell(
+                                onTap: () {
+                                  controller.handleDeleteImage(index);
+                                },
+                                child: Container(
+                                  width: 312.w,
+                                  height: 312.h,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFF1F1F1),
+                                    image: DecorationImage(
+                                      image: Image.memory(base64Decode(
+                                              controller.imageList[index]
+                                                  ["base64"]))
+                                          .image,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -227,7 +247,7 @@ class ReviewWriteContentWidget extends GetView<ReviewController> {
       );
 }
 
-class BottomOutlinedButtonWidget extends StatelessWidget {
+class BottomOutlinedButtonWidget extends GetView<ReviewController> {
   const BottomOutlinedButtonWidget({Key? key}) : super(key: key);
 
   @override
@@ -242,7 +262,9 @@ class BottomOutlinedButtonWidget extends StatelessWidget {
         width: 1240.w,
         height: 200.h,
         child: OutlinedButton(
-          onPressed: () => {},
+          onPressed: () {
+            controller.handleReviewAddProvider();
+          },
           style: OutlinedButton.styleFrom(
             side: const BorderSide(color: Color(0xFFFF8800), width: 1),
             backgroundColor: const Color(0xFFFF8800),
@@ -275,11 +297,13 @@ class ReviewWriteContentShimmerWidget extends GetView<ReviewController> {
   const ReviewWriteContentShimmerWidget({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) => SingleChildScrollView(
-        physics: const ClampingScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [],
-        ),
-      );
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      physics: const ClampingScrollPhysics(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [],
+      ),
+    );
+  }
 }

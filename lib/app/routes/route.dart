@@ -106,14 +106,8 @@ abstract class Routes {
   static const addressDetail = "/address/detail";
   static const addressSearch = "/address/search";
 
-  static const house = "/house/:param";
-  static const houseMutualTrade = "/house/trade/mutual/:param";
-  static const houseSingle = "/house/trade/single/:param";
-  static const houseTradeSuccess = "/house/trade/success";
-  static const houseAll = "/house/all/:param";
-  static const houseReviewAll = "/:type/review/all/:param";
-
-  static const reviewAll = "/review/all/:param";
+  static const review = "/store=:storeIdx/review";
+  static const reviewWrite = "/store=:storeIdx/review/write";
 
   static const user = "/user/:param";
   static const mypage = "/mypage";
@@ -121,9 +115,7 @@ abstract class Routes {
   static const mypageTradeAll = "/mypage/trade/all";
   static const mypageOrderHistory = "/mypage/order/history";
   static const mypageOrderHistoryDetail =
-      "/mypage/order/history/detail=:number";
-  static const mypageReviewWrite =
-      "/mypage/order/history/detail=:number/reviewWrite=:storeIdx";
+      "/mypage/order/history/detail=:orderIdx";
   static const mypageFavoritesAll = "/mypage/favorites/all";
   static const mypageSearchRecentAll = "/mypage/search/recent/all";
 

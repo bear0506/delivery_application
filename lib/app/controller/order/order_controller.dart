@@ -252,11 +252,7 @@ class OrderController extends GetxController with GetTickerProviderStateMixin {
               ),
             );
           }
-
-          // print(currentMenu.value.menuOptionTab);
         } else {
-          print(value.status);
-          print(value.message);
           print("else");
         }
       });
