@@ -630,9 +630,7 @@ class OrderHistoryDetailWidget extends GetView<MyPageController> {
                   child: OutlinedButton(
                     onPressed: () => {
                       Get.toNamed(
-                          "/store=${controller.orderHistory.value.storeIdx}/review/write")
-                      // Get.toNamed(
-                      //     '/mypage/order/history/detail=${controller.orderHistory[number]["number"]}/reviewWrite=${controller.storeIdx}');
+                          "/store=${controller.orderHistory.value.storeIdx}/order=${controller.orderHistory.value.idx}/review/write")
                     },
                     style: OutlinedButton.styleFrom(
                       side:

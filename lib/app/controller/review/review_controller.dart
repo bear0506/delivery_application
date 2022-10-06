@@ -19,7 +19,7 @@ enum Sort {
 
 class ReviewController extends GetxController with GetTickerProviderStateMixin {
   // 스켈레톤(쉬머)
-  // RxBool isLoaderVisible = false.obs;
+  RxBool isLoaderVisible = false.obs;
   RxInt defaultRatingStar = 5.obs;
 
   RxDouble ratingValue = 0.0.obs;
@@ -32,6 +32,10 @@ class ReviewController extends GetxController with GetTickerProviderStateMixin {
   Rx<Sort> sort = Sort.latest.obs;
   RxBool photoRiviewCheck = false.obs;
 
+  late RxList<ReviewResponseModel> reviews = <ReviewResponseModel>[].obs;
+  RxList<bool> reviewBool = <bool>[].obs;
+  RxDouble reviewScoreAverage = 0.0.obs;
+
   // 이미지
   RxList imageList = [].obs;
   final ImagePicker picker = ImagePicker();
@@ -39,6 +43,7 @@ class ReviewController extends GetxController with GetTickerProviderStateMixin {
   // 리퀘스트 모델(데이터 넘기기)
   Rx<ReviewAddRequestModel> reviewAddRequestModel = ReviewAddRequestModel(
     storeIdx: 0,
+    orderIdx: 0,
     score: 0.0,
     photos: [],
     comment: "",
@@ -46,12 +51,14 @@ class ReviewController extends GetxController with GetTickerProviderStateMixin {
 
   void handleReviewAddRequestModel({
     required int storeIdx,
+    required int orderIdx,
     required double score,
     required dynamic photos,
     required String comment,
   }) {
     reviewAddRequestModel.update((_) {
       _?.storeIdx = storeIdx;
+      _?.orderIdx = orderIdx;
       _?.score = score;
       _?.photos = photos;
       _?.comment = comment;
@@ -87,10 +94,41 @@ class ReviewController extends GetxController with GetTickerProviderStateMixin {
     imageList.removeAt(index);
   }
 
+  // 리뷰 조회
+  Future<void> handleReviewAllInitProvider() async {
+    try {
+      await ReviewAllInitProvider()
+          .dio(storeIdx: int.parse(Get.parameters["storeIdx"]!))
+          .then((value) async {
+        if (value.status == "success") {
+          print("리뷰 작성 성공!");
+
+          reviews.value = value.reviews;
+          reviewBool.value = [];
+
+          reviewScoreAverage.value = 0.0;
+          for (var review in reviews) {
+            reviewScoreAverage.value += review.score;
+            reviewBool.add(false);
+          }
+
+          reviewScoreAverage.value = reviewScoreAverage / reviews.length;
+        } else {
+          print("리뷰 작성 실패!");
+        }
+      });
+    } catch (e) {
+      logger.d(e);
+    } finally {
+      // isLoaderVisible.value = true;
+    }
+  }
+
   // 리뷰 작성
   Future<void> handleReviewAddProvider() async {
     handleReviewAddRequestModel(
       storeIdx: int.parse(Get.parameters["storeIdx"]!),
+      orderIdx: int.parse(Get.parameters["orderIdx"]!),
       score: ratingValue.value,
       photos: imageList,
       comment: textEditingController.value.text,

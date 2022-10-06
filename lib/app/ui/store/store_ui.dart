@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:delivery_service/app/controller/review/review_controller.dart';
 import 'package:delivery_service/app/controller/room/room_controller.dart';
 import 'package:get/get.dart';
 import 'dart:convert';
@@ -426,6 +427,7 @@ class StoreTitleWidget extends GetView<StoreController> {
             InkWell(
               onTap: () {
                 Get.toNamed("/store=${Get.parameters["storeIdx"]}/review");
+                Get.put(ReviewController()).handleReviewAllInitProvider();
               },
               child: SizedBox(
                 width: 327.w,

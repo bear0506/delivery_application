@@ -107,7 +107,7 @@ abstract class Routes {
   static const addressSearch = "/address/search";
 
   static const review = "/store=:storeIdx/review";
-  static const reviewWrite = "/store=:storeIdx/review/write";
+  static const reviewWrite = "/store=:storeIdx/order=:orderIdx/review/write";
 
   static const user = "/user/:param";
   static const mypage = "/mypage";
