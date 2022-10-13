@@ -1,3 +1,4 @@
+import 'package:delivery_service/app/controller/map/map_controller.dart';
 import 'package:get/get.dart';
 import 'dart:convert';
 import 'package:delivery_service/app/data/provider/home/home_provider.dart';
@@ -45,10 +46,6 @@ class HomeController extends GetxController {
   Rx<FoodCategory> foodCategory = FoodCategory.all.obs;
   Rx<Sort> sort = Sort.popularity.obs;
 
-  // late RxList<RoomResponseModel> rooms = <RoomResponseModel>[].obs;
-
-  // late RxList<StoreResponseModel> store = <StoreResponseModel>[].obs;
-
   RxBool modalVisibility = false.obs;
 
   late Rx<RoomResponseModel> currentRoom = RoomResponseModel(
@@ -57,6 +54,7 @@ class HomeController extends GetxController {
     memName: "",
     storeIdx: 0,
     storeName: "",
+    categoryIdx: "",
     address: "",
     detail: "",
     lat: "",
@@ -104,7 +102,9 @@ class HomeController extends GetxController {
 
     // print(roomController.rooms[index]);
 
-    currentRoom.value = roomController.rooms[index];
+    // currentRoom.value = roomController.rooms[index];
+    currentRoom.value = RoomResponseModel.fromJson(
+        Get.put(MapController()).currentRoomsMap[index]);
 
     modalVisibility.value = true;
   }

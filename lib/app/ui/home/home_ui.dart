@@ -1,5 +1,6 @@
 import 'package:delivery_service/app/controller/address/address_controller.dart';
 import 'package:delivery_service/app/controller/main/main_controller.dart';
+import 'package:delivery_service/app/controller/map/map_controller.dart';
 import 'package:delivery_service/app/controller/store/store_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -451,179 +452,77 @@ class AppbarWidget extends GetView<HomeController>
                     ),
                     ElevatedButton(
                       onPressed: () {
-                        showDialog(
-                          barrierLabel: "Label",
-                          barrierDismissible: true,
-                          barrierColor: Colors.black.withOpacity(0.5),
-                          context: context,
-                          builder: (BuildContext context) {
-                            return Column(
-                              children: [
-                                SizedBox(height: 50.h),
-                                Align(
-                                  alignment: Alignment.topRight,
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      Get.back();
-                                    },
-                                    child: Image.asset(
-                                      'assets/icons/category.png',
-                                      width: 60.w,
-                                      height: 58.h,
+                        Get.dialog(
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              SizedBox(height: 50.h),
+                              Align(
+                                alignment: Alignment.topRight,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    Get.back();
+                                  },
+                                  child: Image.asset(
+                                    'assets/icons/category.png',
+                                    width: 60.w,
+                                    height: 58.h,
+                                  ),
+                                  style: ButtonStyle(
+                                    shape: MaterialStateProperty.all(
+                                      const CircleBorder(),
                                     ),
-                                    style: ButtonStyle(
-                                      shape: MaterialStateProperty.all(
-                                        const CircleBorder(),
-                                      ),
-                                      backgroundColor:
-                                          MaterialStateProperty.all(
-                                        Colors.white,
-                                      ),
-                                      fixedSize: MaterialStateProperty.all(
-                                        Size(134.w, 134.h),
-                                      ),
-                                      shadowColor:
-                                          MaterialStateProperty.all<Color>(
-                                        Colors.black,
+                                    backgroundColor: MaterialStateProperty.all(
+                                      Colors.white,
+                                    ),
+                                    fixedSize: MaterialStateProperty.all(
+                                      Size(134.w, 134.h),
+                                    ),
+                                    shadowColor:
+                                        MaterialStateProperty.all<Color>(
+                                      Colors.black,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              AlertDialog(
+                                alignment: Alignment.topRight,
+                                contentPadding: EdgeInsets.symmetric(
+                                  vertical: 40.h,
+                                  horizontal: 50.w,
+                                ),
+                                // contentPadding: EdgeInsets.fromLTRB(
+                                //     30.w, 40.h, 30.w, 40.h),
+                                content: Container(
+                                  // width: MediaQuery.of(context).size.width,
+                                  // height: 200.h,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: Wrap(
+                                    alignment: WrapAlignment.spaceBetween,
+                                    spacing: 30.w,
+                                    runSpacing: 30.h,
+                                    children: List.generate(
+                                      Get.put(StoreController())
+                                          .categories
+                                          .length,
+                                      (index) => CategoryRadio(
+                                        category: FoodCategory.values[
+                                            Get.put(StoreController())
+                                                .categories[index]
+                                                .idx],
+                                        tagName: Get.put(StoreController())
+                                            .categories[index]
+                                            .name,
                                       ),
                                     ),
                                   ),
                                 ),
-                                AlertDialog(
-                                  contentPadding: EdgeInsets.fromLTRB(
-                                      30.w, 40.h, 30.w, 40.h),
-                                  content: Container(
-                                    width: MediaQuery.of(context).size.width,
-                                    height: 600.h,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(5),
-                                    ),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceAround,
-                                          children: [
-                                            CategoryRadio(
-                                              category: FoodCategory.all,
-                                              tagName: "전체",
-                                            ),
-                                            CategoryRadio(
-                                              category: FoodCategory.korean,
-                                              tagName: "한식",
-                                            ),
-                                            CategoryRadio(
-                                              category: FoodCategory.snackbar,
-                                              tagName: "분식",
-                                            ),
-                                            CategoryRadio(
-                                              category: FoodCategory.chicken,
-                                              tagName: "치킨",
-                                            ),
-                                          ],
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceAround,
-                                          children: [
-                                            CategoryRadio(
-                                              category: FoodCategory.pizza,
-                                              tagName: "피자",
-                                            ),
-                                            CategoryRadio(
-                                              category:
-                                                  FoodCategory.porkcutlets,
-                                              tagName: "돈까스",
-                                            ),
-                                            CategoryRadio(
-                                              category: FoodCategory.porkfeet,
-                                              tagName: "족발",
-                                            ),
-                                            CategoryRadio(
-                                              category: FoodCategory.steambath,
-                                              tagName: "찜/탕",
-                                            ),
-                                          ],
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceAround,
-                                          children: [
-                                            CategoryRadio(
-                                              category: FoodCategory.grilled,
-                                              tagName: "구이",
-                                            ),
-                                            CategoryRadio(
-                                              category: FoodCategory.chinese,
-                                              tagName: "중식",
-                                            ),
-                                            CategoryRadio(
-                                              category: FoodCategory.japanese,
-                                              tagName: "일식",
-                                            ),
-                                            CategoryRadio(
-                                              category:
-                                                  FoodCategory.sashimiSeafood,
-                                              tagName: "회/해물",
-                                            ),
-                                          ],
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceAround,
-                                          children: [
-                                            CategoryRadio(
-                                              category: FoodCategory.western,
-                                              tagName: "양식",
-                                            ),
-                                            CategoryRadio(
-                                              category: FoodCategory.cafe,
-                                              tagName: "카페",
-                                            ),
-                                            CategoryRadio(
-                                              category: FoodCategory.dessert,
-                                              tagName: "디저트",
-                                            ),
-                                            CategoryRadio(
-                                              category: FoodCategory.asian,
-                                              tagName: "아시안",
-                                            ),
-                                          ],
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceAround,
-                                          children: [
-                                            CategoryRadio(
-                                              category: FoodCategory.sandwich,
-                                              tagName: "샌드위치",
-                                            ),
-                                            CategoryRadio(
-                                              category: FoodCategory.burger,
-                                              tagName: "버거",
-                                            ),
-                                            CategoryRadio(
-                                              category: FoodCategory.mexican,
-                                              tagName: "멕시칸",
-                                            ),
-                                            CategoryRadio(
-                                              category: FoodCategory.bento,
-                                              tagName: "도시락",
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
+                              ),
+                            ],
+                          ),
                         );
                       },
                       child: Image.asset(
@@ -720,13 +619,11 @@ class AppbarWidget extends GetView<HomeController>
 }
 
 class MapModalWidget extends GetView<HomeController> {
-  final HomeController _homeController = Get.put(HomeController());
-
   @override
   Widget build(BuildContext context) {
     return Obx(
       () => Visibility(
-        visible: _homeController.modalVisibility.value,
+        visible: controller.modalVisibility.value,
         child: Positioned(
           top: MediaQuery.of(context).padding.top,
           child: Container(
@@ -775,9 +672,8 @@ class MapModalWidget extends GetView<HomeController> {
                               SizedBox(
                                 width: 550.w,
                                 child: Text(
-                                  _homeController.currentRoom.value.idx != -1
-                                      ? _homeController
-                                          .currentRoom.value.storeName
+                                  controller.currentRoom.value.idx != -1
+                                      ? controller.currentRoom.value.storeName
                                       : "",
                                   overflow: TextOverflow.ellipsis,
                                   textAlign: TextAlign.left,
@@ -841,8 +737,8 @@ class MapModalWidget extends GetView<HomeController> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
                               Text(
-                                _homeController.currentRoom.value.idx != -1
-                                    ? _homeController.currentRoom.value.memName
+                                controller.currentRoom.value.idx != -1
+                                    ? controller.currentRoom.value.memName
                                     : "",
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
@@ -852,7 +748,7 @@ class MapModalWidget extends GetView<HomeController> {
                                 ),
                               ),
                               Text(
-                                _homeController.currentRoom.value.idx != -1
+                                controller.currentRoom.value.idx != -1
                                     ? "123m"
                                     : "",
                                 textAlign: TextAlign.center,
@@ -883,8 +779,8 @@ class MapModalWidget extends GetView<HomeController> {
                                 width: 20.w,
                               ),
                               Text(
-                                _homeController.currentRoom.value.idx != -1
-                                    ? "${NumberFormat.currency(locale: "ko_KR", symbol: "").format(_homeController.currentRoom.value.deliveryFee)}원"
+                                controller.currentRoom.value.idx != -1
+                                    ? "${NumberFormat.currency(locale: "ko_KR", symbol: "").format(controller.currentRoom.value.deliveryFee)}원"
                                     : "",
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
@@ -908,14 +804,13 @@ class MapModalWidget extends GetView<HomeController> {
                                 ),
                                 child: StepProgressIndicator(
                                   padding: 1,
-                                  totalSteps: _homeController
+                                  totalSteps: controller
                                               .currentRoom.value.maximumNum >
                                           0
-                                      ? _homeController
-                                          .currentRoom.value.maximumNum
+                                      ? controller.currentRoom.value.maximumNum
                                       : 2,
-                                  currentStep: _homeController
-                                      .currentRoom.value.currentNum,
+                                  currentStep:
+                                      controller.currentRoom.value.currentNum,
                                   size: 40.h,
                                   selectedColor: const Color(0xFFFF4E00),
                                   unselectedColor: const Color(0xFFFFFFFF),
@@ -938,9 +833,8 @@ class MapModalWidget extends GetView<HomeController> {
                       child: OutlinedButton(
                         onPressed: () {
                           Get.toNamed("/store=" +
-                              _homeController.currentRoom.value.storeIdx
-                                  .toString());
-                          _homeController.TurnOffMapModal();
+                              controller.currentRoom.value.storeIdx.toString());
+                          controller.TurnOffMapModal();
                           Get.put(StoreController()).handleStoreInitProvider();
                         },
                         style: OutlinedButton.styleFrom(
@@ -972,7 +866,7 @@ class MapModalWidget extends GetView<HomeController> {
                       width: 500.w,
                       height: 150.h,
                       child: OutlinedButton(
-                        onPressed: () => _homeController.TurnOffMapModal(),
+                        onPressed: () => controller.TurnOffMapModal(),
                         style: OutlinedButton.styleFrom(
                           side: const BorderSide(
                               color: Color(0xFFA1A1A1), width: 1),
@@ -1011,30 +905,31 @@ class MapModalWidget extends GetView<HomeController> {
 
 // ignore: must_be_immutable
 class CategoryRadio extends GetView<HomeController> {
-  FoodCategory category;
-  String tagName;
-
   CategoryRadio({Key? key, required this.category, required this.tagName})
       : super(key: key);
 
-  final HomeController _controller = Get.put(HomeController());
+  FoodCategory category;
+  String tagName;
 
   @override
   Widget build(BuildContext context) {
     return Obx(
-      () => Expanded(
+      () => Container(
+        width: 250.w,
         child: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: EdgeInsets.all(20.w),
               child: SizedBox(
-                width: 50.w,
-                height: 50.h,
+                width: 40.w,
+                height: 40.h,
                 child: Radio(
                   value: category,
-                  groupValue: _controller.foodCategory.value,
+                  groupValue: controller.foodCategory.value,
                   onChanged: (FoodCategory? value) {
-                    _controller.foodCategory.value = value!;
+                    controller.foodCategory.value = value!;
+                    Get.put(MapController()).setStoreCategory(value);
                     Get.back();
                   },
                   activeColor: const Color(0xFFFF8800),
@@ -1044,6 +939,7 @@ class CategoryRadio extends GetView<HomeController> {
             Expanded(
               child: Text(
                 tagName,
+                maxLines: 1,
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 40.sp,
@@ -1053,7 +949,6 @@ class CategoryRadio extends GetView<HomeController> {
             ),
           ],
         ),
-        flex: 1,
       ),
     );
   }

@@ -30,8 +30,8 @@ class MapUi extends GetView<MapController> {
         showZoomControl: false,
         markerImageURL:
             'https://t1.daumcdn.net/localimg/localimages/07/2012/img/marker_p.png',
-        customScript:
-            '''
+        customScript: '''
+                    var markers = [];
 
                     kakao.maps.event.addListener(map, 'click', function() {
                       onTapMap.postMessage("Close!");
@@ -43,7 +43,6 @@ class MapUi extends GetView<MapController> {
                     
                 ''',
         mapController: (controller) {
-          // mapWebViewController = controller;
           mapController.initWebViewController(controller);
         },
         zoomChanged: (message) {

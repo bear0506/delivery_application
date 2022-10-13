@@ -37,6 +37,7 @@ class ReviewUi extends GetView<ReviewController> {
               onPressed: () => Get.back(),
             ),
             title: Text(
+              // "리뷰" + controller.reviewBool.toString(),
               "리뷰",
               textAlign: TextAlign.start,
               style: TextStyle(
@@ -61,11 +62,10 @@ class ReviewUi extends GetView<ReviewController> {
                 return true;
               },
               child: SafeArea(
-                // child: ReviewContentWidget(),
-                child: controller.isLoaderVisible.value == true
-                    ? ReviewWriteContentShimmerWidget()
-                    : ReviewContentWidget(),
-              ),
+                  // child: ReviewContentWidget(),
+                  child: controller.isLoaderVisible.value == true
+                      ? ReviewWriteContentShimmerWidget()
+                      : ReviewContentWidget()),
             ),
           ),
           // bottomNavigationBar: const BottomOutlinedButtonWidget(),
@@ -76,8 +76,6 @@ class ReviewUi extends GetView<ReviewController> {
 }
 
 class ReviewContentWidget extends GetView<ReviewController> {
-  ReviewContentWidget({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return Obx(
@@ -221,10 +219,10 @@ class ReviewContentWidget extends GetView<ReviewController> {
               ),
               SizedBox(width: 20.w),
               Switch(
-                value: controller.photoRiviewCheck.value,
+                value: controller.photoReviewCheck.value,
                 onChanged: (value) {
-                  controller.photoRiviewCheck.value =
-                      !controller.photoRiviewCheck.value;
+                  controller.photoReviewCheck.value =
+                      !controller.photoReviewCheck.value;
                 },
                 activeTrackColor: const Color(0xFFFF8800),
                 activeColor: Colors.white,
@@ -242,236 +240,27 @@ class ReviewContentWidget extends GetView<ReviewController> {
                 ),
                 child: ListView.separated(
                   itemCount: controller.reviews.length,
-                  itemBuilder: (context, index) => Container(
-                    color: Color(0xFFFAFAFA),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          controller.reviews[index].memName,
-                          style: TextStyle(
-                            color: const Color(0xFF333333),
-                            fontSize: 50.sp,
-                            fontFamily: 'Core_Gothic_D5',
-                          ),
-                        ),
-                        SizedBox(height: 20.h),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: 315.w,
-                              height: 52.h,
-                              child: ListView.separated(
-                                physics: const ClampingScrollPhysics(),
-                                scrollDirection: Axis.horizontal,
-                                shrinkWrap: true,
-                                itemCount: 5,
-                                itemBuilder: (context, starIndex) => Container(
-                                  child: Image.asset(
-                                    starIndex <
-                                            controller.reviews[index].score
-                                                .toInt()
-                                        ? "assets/icons/star_full.png"
-                                        : "assets/icons/star.png",
-                                    width: 54.w,
-                                  ),
-                                ),
-                                separatorBuilder:
-                                    (BuildContext context, int index) {
-                                  return SizedBox(
-                                    width: 10.w,
-                                  );
-                                },
-                              ),
-                            ),
-                            SizedBox(width: 30.w),
-                            Text(
-                              DateFormat('yyyy.MM.dd')
-                                  .format(controller.reviews[index].createdAt),
-                              style: TextStyle(
-                                color: const Color(0xFF333333),
-                                fontSize: 40.sp,
-                                fontFamily: 'Core_Gothic_D5',
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 50.h),
-                        controller.reviews[index].photos.length > 0
-                            ? (!controller.reviewBool[index]
-                                ? Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Stack(
-                                        children: [
-                                          Container(
-                                            width: 350.w,
-                                            height: 350.h,
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                              image: DecorationImage(
-                                                  image: NetworkImage(controller
-                                                      .reviews[index]
-                                                      .photos[0]),
-                                                  fit: BoxFit.cover),
-                                            ),
-                                          ),
-                                          controller.reviews[index].photos
-                                                      .length >
-                                                  1
-                                              ? InkWell(
-                                                  onTap: () {
-                                                    print(controller
-                                                        .reviewBool[index]);
-                                                    controller
-                                                            .reviewBool[index] =
-                                                        !controller
-                                                            .reviewBool[index];
-
-                                                    controller.reviewBool
-                                                        .refresh();
-
-                                                    print(controller
-                                                        .reviewBool[index]);
-                                                  },
-                                                  child: Container(
-                                                    width: 350.w,
-                                                    height: 350.h,
-                                                    decoration: BoxDecoration(
-                                                      color: Color(0x50473817),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              20),
-                                                    ),
-                                                    child: Center(
-                                                      child: Text(
-                                                        "+${controller.reviews[index].photos.length - 1}",
-                                                        style: TextStyle(
-                                                          color: const Color(
-                                                              0xFFFFFFFF),
-                                                          fontSize: 100.sp,
-                                                          fontFamily:
-                                                              'Core_Gothic_D5',
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                )
-                                              : Container(),
-                                        ],
-                                      ),
-                                      SizedBox(width: 50.w),
-                                      Expanded(
-                                        child: Text(
-                                          controller.reviews[index].comment,
-                                          style: TextStyle(
-                                            color: const Color(0xFF333333),
-                                            fontSize: 50.sp,
-                                            fontFamily: 'Core_Gothic_D5',
-                                          ),
-                                        ),
-                                      )
-                                    ],
-                                  )
-                                : Column(
-                                    children: [
-                                      SizedBox(
-                                        height: 350.h,
-                                        child: ListView.builder(
-                                          physics:
-                                              const ClampingScrollPhysics(),
-                                          scrollDirection: Axis.horizontal,
-                                          shrinkWrap: true,
-                                          itemCount: controller.reviews[index]
-                                                  .photos.length *
-                                              2,
-                                          itemBuilder: (context, photoIndex) =>
-                                              Container(
-                                            child: InkWell(
-                                              onTap: () {
-                                                print(controller
-                                                    .reviewBool[index]);
-                                                controller.reviewBool[index] =
-                                                    !controller
-                                                        .reviewBool[index];
-
-                                                controller.reviewBool.refresh();
-
-                                                print(controller
-                                                    .reviewBool[index]);
-                                              },
-                                              child: Container(
-                                                margin: EdgeInsets.only(
-                                                    right: 50.w),
-                                                width: 350.w,
-                                                height: 350.h,
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
-                                                  image: DecorationImage(
-                                                    image: NetworkImage(
-                                                        controller
-                                                                .reviews[index]
-                                                                .photos[
-                                                            photoIndex % 2]),
-                                                    fit: BoxFit.cover,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(height: 50.h),
-                                      Text(
-                                        controller.reviews[index].comment,
-                                        style: TextStyle(
-                                          color: const Color(0xFF333333),
-                                          fontSize: 50.sp,
-                                          fontFamily: 'Core_Gothic_D5',
-                                        ),
-                                      ),
-                                    ],
-                                  ))
-                            : Text(
-                                controller.reviews[index].comment,
-                                style: TextStyle(
-                                  color: const Color(0xFF333333),
-                                  fontSize: 50.sp,
-                                  fontFamily: 'Core_Gothic_D5',
-                                ),
-                              ),
-                        SizedBox(height: 50.h),
-                        Wrap(
-                          spacing: 50.h,
-                          runSpacing: 10.w,
-                          children: List.generate(
-                            controller.reviews[index].menus.length,
-                            (index2) => Text(
-                              controller.reviews[index].menus[index2],
-                              style: TextStyle(
-                                color: const Color(0xFF797979),
-                                fontSize: 40.sp,
-                                fontFamily: 'Core_Gothic_D6',
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                  itemBuilder: (context, index) => Obx(
+                    () => controller.photoReviewCheck.value
+                        ? (controller.reviews[index].photos.length > 0
+                            ? ReviewCardWidget(index)
+                            : Container())
+                        : ReviewCardWidget(index),
                   ),
                   separatorBuilder: (BuildContext context, int index) {
-                    return Container(
-                      margin: EdgeInsets.symmetric(vertical: 50.h),
-                      color: Color(0xFFECECEC),
-                      height: 2.h,
-                    );
+                    return controller.photoReviewCheck.value
+                        ? (controller.reviews[index].photos.length > 0
+                            ? Container(
+                                margin: EdgeInsets.symmetric(vertical: 50.h),
+                                color: Color(0xFFECECEC),
+                                height: 5.h,
+                              )
+                            : Container())
+                        : Container(
+                            margin: EdgeInsets.symmetric(vertical: 50.h),
+                            color: Color(0xFFECECEC),
+                            height: 5.h,
+                          );
                   },
                 ),
               ),
@@ -480,6 +269,204 @@ class ReviewContentWidget extends GetView<ReviewController> {
         ],
       ),
     );
+  }
+}
+
+class ReviewCardWidget extends GetView<ReviewController> {
+  const ReviewCardWidget(this.index, {Key? key}) : super(key: key);
+
+  final int index;
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() => Container(
+          color: Color(0xFFFAFAFA),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                controller.reviews[index].memName,
+                style: TextStyle(
+                  color: const Color(0xFF333333),
+                  fontSize: 50.sp,
+                  fontFamily: 'Core_Gothic_D5',
+                ),
+              ),
+              SizedBox(height: 20.h),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 315.w,
+                    height: 52.h,
+                    child: ListView.separated(
+                      physics: const ClampingScrollPhysics(),
+                      scrollDirection: Axis.horizontal,
+                      shrinkWrap: true,
+                      itemCount: 5,
+                      itemBuilder: (context, starIndex) => Container(
+                        child: Image.asset(
+                          starIndex < controller.reviews[index].score.toInt()
+                              ? "assets/icons/star_full.png"
+                              : "assets/icons/star.png",
+                          width: 54.w,
+                        ),
+                      ),
+                      separatorBuilder: (BuildContext context, int index) {
+                        return SizedBox(
+                          width: 10.w,
+                        );
+                      },
+                    ),
+                  ),
+                  SizedBox(width: 30.w),
+                  Text(
+                    DateFormat('yyyy.MM.dd')
+                        .format(controller.reviews[index].createdAt),
+                    style: TextStyle(
+                      color: const Color(0xFF333333),
+                      fontSize: 40.sp,
+                      fontFamily: 'Core_Gothic_D5',
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 50.h),
+              controller.reviews[index].photos.length > 0
+                  ? (!controller.reviewBool[index]
+                      ? Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Stack(
+                              children: [
+                                Container(
+                                  width: 350.w,
+                                  height: 350.h,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    image: DecorationImage(
+                                        image: NetworkImage(controller
+                                            .reviews[index].photos[0]),
+                                        fit: BoxFit.cover),
+                                  ),
+                                ),
+                                controller.reviews[index].photos.length > 1
+                                    ? InkWell(
+                                        onTap: () {
+                                          controller.reviewBool[index] =
+                                              !controller.reviewBool[index];
+                                        },
+                                        child: Container(
+                                          width: 350.w,
+                                          height: 350.h,
+                                          decoration: BoxDecoration(
+                                            color: Color(0x50473817),
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                          ),
+                                          child: Center(
+                                            child: Text(
+                                              "+${controller.reviews[index].photos.length - 1}",
+                                              style: TextStyle(
+                                                color: const Color(0xFFFFFFFF),
+                                                fontSize: 100.sp,
+                                                fontFamily: 'Core_Gothic_D5',
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    : Container(),
+                              ],
+                            ),
+                            SizedBox(width: 50.w),
+                            Expanded(
+                              child: Text(
+                                controller.reviews[index].comment,
+                                style: TextStyle(
+                                  color: const Color(0xFF333333),
+                                  fontSize: 50.sp,
+                                  fontFamily: 'Core_Gothic_D5',
+                                ),
+                              ),
+                            )
+                          ],
+                        )
+                      : Column(
+                          children: [
+                            SizedBox(
+                              height: 350.h,
+                              child: ListView.builder(
+                                physics: const ClampingScrollPhysics(),
+                                scrollDirection: Axis.horizontal,
+                                shrinkWrap: true,
+                                itemCount:
+                                    controller.reviews[index].photos.length,
+                                itemBuilder: (context, photoIndex) => Container(
+                                  child: InkWell(
+                                    onTap: () {
+                                      controller.reviewBool[index] =
+                                          !controller.reviewBool[index];
+                                    },
+                                    child: Container(
+                                      margin: EdgeInsets.only(right: 50.w),
+                                      width: 350.w,
+                                      height: 350.h,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        image: DecorationImage(
+                                          image: NetworkImage(controller
+                                              .reviews[index]
+                                              .photos[photoIndex]),
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 50.h),
+                            Text(
+                              controller.reviews[index].comment,
+                              style: TextStyle(
+                                color: const Color(0xFF333333),
+                                fontSize: 50.sp,
+                                fontFamily: 'Core_Gothic_D5',
+                              ),
+                            ),
+                          ],
+                        ))
+                  : Text(
+                      controller.reviews[index].comment,
+                      style: TextStyle(
+                        color: const Color(0xFF333333),
+                        fontSize: 50.sp,
+                        fontFamily: 'Core_Gothic_D5',
+                      ),
+                    ),
+              SizedBox(height: 50.h),
+              Wrap(
+                spacing: 50.h,
+                runSpacing: 10.w,
+                children: List.generate(
+                  controller.reviews[index].menus.length,
+                  (index2) => Text(
+                    controller.reviews[index].menus[index2],
+                    style: TextStyle(
+                      color: const Color(0xFF797979),
+                      fontSize: 40.sp,
+                      fontFamily: 'Core_Gothic_D6',
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ));
   }
 }
 

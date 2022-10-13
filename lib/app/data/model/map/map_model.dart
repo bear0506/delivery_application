@@ -22,6 +22,7 @@ class RoomResponseModel {
   late String memName;
   late int storeIdx;
   late String storeName;
+  late int categoryIdx;
   late String address;
   late String lat;
   late String lng;
@@ -37,6 +38,7 @@ class RoomResponseModel {
     required this.memName,
     required this.storeIdx,
     required this.storeName,
+    required this.categoryIdx,
     required this.address,
     required this.lat,
     required this.lng,
@@ -54,6 +56,7 @@ class RoomResponseModel {
       memName: data['mem_name'],
       storeIdx: data['store_idx'],
       storeName: data['store_name'],
+      categoryIdx: data['category_idx'],
       address: data['address'],
       lat: data['lat'],
       lng: data['lng'],

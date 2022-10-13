@@ -30,9 +30,10 @@ class ReviewController extends GetxController with GetTickerProviderStateMixin {
   RxBool temp = true.obs;
 
   Rx<Sort> sort = Sort.latest.obs;
-  RxBool photoRiviewCheck = false.obs;
+  RxBool photoReviewCheck = false.obs;
 
   late RxList<ReviewResponseModel> reviews = <ReviewResponseModel>[].obs;
+  late RxList<ReviewResponseModel> photoReviews = <ReviewResponseModel>[].obs;
   RxList<bool> reviewBool = <bool>[].obs;
   RxDouble reviewScoreAverage = 0.0.obs;
 
@@ -67,6 +68,14 @@ class ReviewController extends GetxController with GetTickerProviderStateMixin {
 
   void handleChangeSort(selectedValue) {
     sort.value = selectedValue;
+
+    if (sort.value == Sort.latest) {
+      reviews.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    } else if (sort.value == Sort.higher) {
+      reviews.sort((a, b) => b.score.compareTo(a.score));
+    } else if (sort.value == Sort.lower) {
+      reviews.sort((a, b) => a.score.compareTo(b.score));
+    }
   }
 
   // 이미지 선택시
@@ -107,6 +116,7 @@ class ReviewController extends GetxController with GetTickerProviderStateMixin {
           reviewBool.value = [];
 
           reviewScoreAverage.value = 0.0;
+
           for (var review in reviews) {
             reviewScoreAverage.value += review.score;
             reviewBool.add(false);
