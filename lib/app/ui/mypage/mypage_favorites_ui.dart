@@ -1,3 +1,4 @@
+import 'package:delivery_service/app/controller/store/store_controller.dart';
 import 'package:get/get.dart';
 
 import 'package:shimmer/shimmer.dart';
@@ -5,9 +6,9 @@ import 'package:shimmer/shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import 'package:delivery_service/app/controller/mypage/mypage_favorites_controller.dart';
+import 'package:delivery_service/app/controller/mypage/mypage_controller.dart';
 
-class MyPageFavoritesUi extends GetView<MyPageFavoritesController> {
+class MyPageFavoritesUi extends GetView<MyPageController> {
   const MyPageFavoritesUi({Key? key}) : super(key: key);
 
   @override
@@ -65,7 +66,7 @@ class MyPageFavoritesUi extends GetView<MyPageFavoritesController> {
       );
 }
 
-class OrderHistoryWidget extends GetView<MyPageFavoritesController> {
+class OrderHistoryWidget extends GetView<MyPageController> {
   const OrderHistoryWidget({Key? key}) : super(key: key);
 
   @override
@@ -106,7 +107,7 @@ class OrderHistoryContentEmptyWidget extends StatelessWidget {
       );
 }
 
-class OrderHistoryContentWidget extends GetView<MyPageFavoritesController> {
+class OrderHistoryContentWidget extends GetView<MyPageController> {
   const OrderHistoryContentWidget({Key? key}) : super(key: key);
 
   @override
@@ -117,16 +118,19 @@ class OrderHistoryContentWidget extends GetView<MyPageFavoritesController> {
           itemBuilder: (BuildContext context, int index) => Column(
             children: [
               InkWell(
+                onTap: () {
+                  Get.toNamed("/store=${controller.favorites[index].idx}");
+                  Get.put(StoreController()).handleStoreInitProvider();
+                },
                 child: Container(
-                  color: Colors.cyan,
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Stack(
                         children: [
                           Image.asset(
-                            controller.favorites[index]["img"],
+                            "assets/icons/salady.png",
                             width: 500.w,
                             height: 500.h,
                             fit: BoxFit.contain,
@@ -146,13 +150,11 @@ class OrderHistoryContentWidget extends GetView<MyPageFavoritesController> {
                         width: 50.w,
                       ),
                       Container(
-                        color: Colors.pink,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Container(
-                              color: Colors.yellow,
                               child: Row(
                                 children: [
                                   Column(
@@ -160,14 +162,17 @@ class OrderHistoryContentWidget extends GetView<MyPageFavoritesController> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                        controller.favorites[index]
-                                            ["storeName"],
-                                        style: TextStyle(
-                                          color: const Color(0xFF333333),
-                                          fontSize: 80.sp,
-                                          fontFamily: 'Core_Gothic_D6',
-                                          fontWeight: FontWeight.bold,
+                                      SizedBox(
+                                        width: 700.w,
+                                        child: Text(
+                                          controller.favorites[index].name,
+                                          style: TextStyle(
+                                            color: const Color(0xFF333333),
+                                            overflow: TextOverflow.ellipsis,
+                                            fontSize: 70.sp,
+                                            fontFamily: 'Core_Gothic_D6',
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
                                       ),
                                       SizedBox(
@@ -184,17 +189,9 @@ class OrderHistoryContentWidget extends GetView<MyPageFavoritesController> {
                                             width: 60.w,
                                             height: 55.h,
                                           ),
+                                          SizedBox(width: 20.w),
                                           Text(
-                                            controller.favorites[index]
-                                                ["starPoint"],
-                                            style: TextStyle(
-                                              color: const Color(0xFF333333),
-                                              fontSize: 50.sp,
-                                              fontFamily: 'Core_Gothic_D5',
-                                            ),
-                                          ),
-                                          Text(
-                                            "(${controller.favorites[index]["reviewNumber"]})",
+                                            "${controller.favorites[index].score}(${controller.favorites[index].reviewCount})",
                                             style: TextStyle(
                                               color: const Color(0xFF333333),
                                               fontSize: 50.sp,
@@ -207,8 +204,9 @@ class OrderHistoryContentWidget extends GetView<MyPageFavoritesController> {
                                         height: 30.h,
                                       ),
                                       Text(
-                                        controller.favorites[index]
-                                            ["deliveryTime"],
+                                        controller.favorites[index].deliveryTime
+                                                .replaceAll("~", " ~ ") +
+                                            "분",
                                         style: TextStyle(
                                           color: const Color(0xFF333333),
                                           fontSize: 50.sp,
@@ -220,41 +218,12 @@ class OrderHistoryContentWidget extends GetView<MyPageFavoritesController> {
                                 ],
                               ),
                             ),
-                            SizedBox(
-                              height: 90.h,
-                            ),
-                            Container(
-                              color: Colors.purple,
-                              child: Row(
-                                children: [
-                                  SizedBox(
-                                    width: 547.w,
-                                  ),
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                        controller.favorites[index]
-                                            ["deliveryFee"],
-                                        style: TextStyle(
-                                          color: const Color(0xFFFF8800),
-                                          fontSize: 60.sp,
-                                          fontFamily: 'Core_Gothic_D5',
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            )
                           ],
                         ),
                       ),
                     ],
                   ),
                 ),
-                onTap: () {},
               ),
             ],
           ),
@@ -272,7 +241,7 @@ class OrderHistoryContentWidget extends GetView<MyPageFavoritesController> {
       );
 }
 
-class OrderHistoryShimmerWidget extends GetView<MyPageFavoritesController> {
+class OrderHistoryShimmerWidget extends GetView<MyPageController> {
   const OrderHistoryShimmerWidget({Key? key}) : super(key: key);
 
   @override

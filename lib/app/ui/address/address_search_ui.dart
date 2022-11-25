@@ -49,10 +49,6 @@ class AddressSearchUi extends GetView<AddressController> {
         ),
       ),
       callback: (Kpostal result) {
-        print(result.address);
-        print(result.latitude.toString());
-        print(result.longitude.toString());
-
         controller.addressTextFormFieldController.text = result.address;
         controller.addressLat.value = result.latitude.toString();
         controller.addressLng.value = result.longitude.toString();

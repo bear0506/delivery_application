@@ -309,9 +309,7 @@ class SideMenu extends GetView<StoreController> {
                                         activeColor: Color(0xFFFF8800),
                                         value: menuOption.check.value,
                                         // value: tempCheck,
-                                        onChanged: (bool? value) {
-                                          print(value);
-                                        },
+                                        onChanged: (bool? value) {},
                                       ),
                                     ),
                                     Expanded(

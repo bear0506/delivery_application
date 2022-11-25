@@ -33,7 +33,6 @@ class RoomAllProvider {
       );
 
       if (response.statusCode == 200) {
-        print(response.data);
         return RoomsBaseResponseModel.fromJson(response.data);
       } else {
         throw Exception('faild to load request');
@@ -151,7 +150,6 @@ class RoomAddProvider {
       );
 
       if (response.statusCode == 200) {
-        print(response.data);
         return RoomBaseResponseModel.fromJson(response.data);
       } else {
         throw Exception('faild to load request');
@@ -232,7 +230,6 @@ class RoomParticipateProvider {
       );
 
       if (response.statusCode == 200) {
-        print(response.data);
         return RoomBaseResponseModel.fromJson(response.data);
       } else {
         throw Exception('faild to load request');

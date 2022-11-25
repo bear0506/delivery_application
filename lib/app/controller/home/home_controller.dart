@@ -54,6 +54,8 @@ class HomeController extends GetxController {
     memName: "",
     storeIdx: 0,
     storeName: "",
+    storeScore: 0.0,
+    storeReviewCount: 0,
     categoryIdx: "",
     address: "",
     detail: "",

@@ -49,163 +49,170 @@ class RoomHorizontalListUi extends GetView<RoomController> {
                 (data) {
                   return Builder(
                     builder: (BuildContext context) {
-                      return Container(
-                        margin: EdgeInsets.all(10.h),
-                        decoration: BoxDecoration(
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.5),
-                              spreadRadius: 0.3,
-                              blurRadius: 5.5,
-                              offset: const Offset(0.6, 0.6),
-                            ),
-                          ],
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(30)),
-                        ),
-                        child: Stack(
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image: AssetImage("assets/icons/c.png"),
-                                  fit: BoxFit.cover,
-                                ),
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(30)),
-                                color: Colors.black,
+                      return InkWell(
+                        onTap: () => {
+                          Get.toNamed("/room=${data.idx}"),
+                          controller.handleRoomProvider()
+                        },
+                        child: Container(
+                          margin: EdgeInsets.all(10.h),
+                          decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 0.3,
+                                blurRadius: 5.5,
+                                offset: const Offset(0.6, 0.6),
                               ),
-                              width: 600.w,
-                              height: 600.h,
-                            ),
-                            Positioned(
-                              bottom: 0.h,
-                              child: Container(
+                            ],
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(30)),
+                          ),
+                          child: Stack(
+                            children: [
+                              Container(
                                 decoration: BoxDecoration(
-                                  borderRadius: const BorderRadius.only(
-                                    bottomLeft: Radius.circular(30),
-                                    bottomRight: Radius.circular(30),
+                                  image: DecorationImage(
+                                    image: AssetImage("assets/icons/c.png"),
+                                    fit: BoxFit.cover,
                                   ),
-                                  color: Colors.grey.withOpacity(0.8),
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(30)),
+                                  color: Colors.black,
                                 ),
                                 width: 600.w,
-                                height: 205.h,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Container(
-                                      color: Color(0xFFFF7700),
-                                      width: 600.w,
-                                      height: 5.h,
+                                height: 600.h,
+                              ),
+                              Positioned(
+                                bottom: 0.h,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: const BorderRadius.only(
+                                      bottomLeft: Radius.circular(30),
+                                      bottomRight: Radius.circular(30),
                                     ),
-                                    SizedBox(height: 30.h),
-                                    Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 40.w),
-                                      child: Text(
-                                        '${data.storeName}',
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 1,
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 50.sp,
-                                          fontFamily: 'Core_Gothic_D5',
+                                    color: Colors.grey.withOpacity(0.8),
+                                  ),
+                                  width: 600.w,
+                                  height: 205.h,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        color: Color(0xFFFF7700),
+                                        width: 600.w,
+                                        height: 5.h,
+                                      ),
+                                      SizedBox(height: 30.h),
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 40.w),
+                                        child: Text(
+                                          '${data.storeName}',
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 50.sp,
+                                            fontFamily: 'Core_Gothic_D5',
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    SizedBox(height: 20.h),
-                                    Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 40.w),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            '${data.memName}',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 40.sp,
-                                              fontFamily: 'Core_Gothic_D4',
+                                      SizedBox(height: 20.h),
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 40.w),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              '${data.memName}',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 40.sp,
+                                                fontFamily: 'Core_Gothic_D4',
+                                              ),
                                             ),
-                                          ),
-                                          Padding(
-                                            padding:
-                                                EdgeInsets.only(right: 10.w),
-                                            child: Row(
-                                              children: List.generate(
-                                                data.maximumNum,
-                                                (index) => Padding(
-                                                  padding: EdgeInsets.only(
-                                                      left: 5.w),
-                                                  child: Image.asset(
-                                                    "assets/icons/person.png",
-                                                    color:
-                                                        index < data.currentNum
-                                                            ? Color(0xFFFF7700)
-                                                            : Color(0xFFFFFFFF),
-                                                    width: 40.w,
-                                                    height: 40.h,
+                                            Padding(
+                                              padding:
+                                                  EdgeInsets.only(right: 10.w),
+                                              child: Row(
+                                                children: List.generate(
+                                                  data.maximumNum,
+                                                  (index) => Padding(
+                                                    padding: EdgeInsets.only(
+                                                        left: 5.w),
+                                                    child: Image.asset(
+                                                      "assets/icons/person.png",
+                                                      color: index <
+                                                              data.currentNum
+                                                          ? Color(0xFFFF7700)
+                                                          : Color(0xFFFFFFFF),
+                                                      width: 40.w,
+                                                      height: 40.h,
+                                                    ),
                                                   ),
                                                 ),
                                               ),
                                             ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                            // Padding(
-                            //   padding: EdgeInsets.only(top: 400.h),
-                            //   child: Container(
-                            //     color: const Color(0xFFFF7700),
-                            //     width: 600.w,
-                            //     height: 8.h,
-                            //   ),
-                            // ),
-                            // Padding(
-                            //   padding: EdgeInsets.only(top: 408.h),
-                            //   child: Container(
-                            //     decoration: BoxDecoration(
-                            //       borderRadius: const BorderRadius.only(
-                            //         bottomLeft: Radius.circular(30),
-                            //         bottomRight: Radius.circular(30),
-                            //       ),
-                            //       color: Colors.grey.withOpacity(0.8),
-                            //     ),
-                            //     width: 600.w,
-                            //     height: 200.h,
-                            //   ),
-                            // ),
-                            // Positioned(
-                            //   bottom: 100.h,
-                            //   child: Text(
-                            //     '${data.storeName}',
-                            //     style: TextStyle(
-                            //       color: Colors.white,
-                            //       fontSize: 50.sp,
-                            //       fontFamily: 'Core_Gothic_D5',
-                            //     ),
-                            //   ),
-                            // ),
-                            // Padding(
-                            //   padding: EdgeInsets.only(
-                            //     top: 520.h,
-                            //     left: 50.w,
-                            //   ),
-                            //   child: Text(
-                            //     '${data.memName}',
-                            //     style: TextStyle(
-                            //       color: Colors.white,
-                            //       fontSize: 40.sp,
-                            //       fontFamily: 'Core_Gothic_D4',
-                            //     ),
-                            //   ),
-                            // ),
-                          ],
+                              // Padding(
+                              //   padding: EdgeInsets.only(top: 400.h),
+                              //   child: Container(
+                              //     color: const Color(0xFFFF7700),
+                              //     width: 600.w,
+                              //     height: 8.h,
+                              //   ),
+                              // ),
+                              // Padding(
+                              //   padding: EdgeInsets.only(top: 408.h),
+                              //   child: Container(
+                              //     decoration: BoxDecoration(
+                              //       borderRadius: const BorderRadius.only(
+                              //         bottomLeft: Radius.circular(30),
+                              //         bottomRight: Radius.circular(30),
+                              //       ),
+                              //       color: Colors.grey.withOpacity(0.8),
+                              //     ),
+                              //     width: 600.w,
+                              //     height: 200.h,
+                              //   ),
+                              // ),
+                              // Positioned(
+                              //   bottom: 100.h,
+                              //   child: Text(
+                              //     '${data.storeName}',
+                              //     style: TextStyle(
+                              //       color: Colors.white,
+                              //       fontSize: 50.sp,
+                              //       fontFamily: 'Core_Gothic_D5',
+                              //     ),
+                              //   ),
+                              // ),
+                              // Padding(
+                              //   padding: EdgeInsets.only(
+                              //     top: 520.h,
+                              //     left: 50.w,
+                              //   ),
+                              //   child: Text(
+                              //     '${data.memName}',
+                              //     style: TextStyle(
+                              //       color: Colors.white,
+                              //       fontSize: 40.sp,
+                              //       fontFamily: 'Core_Gothic_D4',
+                              //     ),
+                              //   ),
+                              // ),
+                            ],
+                          ),
                         ),
                       );
                     },

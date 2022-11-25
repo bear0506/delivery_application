@@ -77,8 +77,6 @@ class DrawerWidgetHeader extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    print(mainController.currentMember.value.idx);
-
     return Obx(
       () => mainController.currentMember.value.idx == 0
           ? Container(

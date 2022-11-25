@@ -86,12 +86,16 @@ class FavoriteResponseModel {
   late String name;
   late String deliveryTime;
   late bool favorite;
+  late double score;
+  late int reviewCount;
 
   FavoriteResponseModel({
     required this.idx,
     required this.name,
     required this.deliveryTime,
     required this.favorite,
+    required this.score,
+    required this.reviewCount,
   });
 
   factory FavoriteResponseModel.fromJson(Map<String, dynamic> data) {
@@ -100,6 +104,11 @@ class FavoriteResponseModel {
       name: data['name'],
       deliveryTime: data['delivery_time'],
       favorite: data.containsKey('favorite') ? data['favorite'] : false,
+      score: data['review'].length > 0
+          ? data['review'].map((e) => e['score']).reduce((a, b) => a + b) /
+              data['review'].length
+          : 0,
+      reviewCount: data['review'].length,
     );
   }
 }

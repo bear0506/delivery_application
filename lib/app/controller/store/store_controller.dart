@@ -158,6 +158,8 @@ class StoreController extends GetxController with GetTickerProviderStateMixin {
     tab: <StoreTabResponseModel>[],
     active: false,
     favorite: false,
+    score: 0.0,
+    reviewCount: 0,
   ).obs;
 
   late Rx<StoreMenuResponseModel> currentMenu = StoreMenuResponseModel(
@@ -384,7 +386,6 @@ class StoreController extends GetxController with GetTickerProviderStateMixin {
 
   @override
   void onInit() async {
-    // await handleStoreAllProvider();
     await handleCategoryAllProvider();
 
     super.onInit();

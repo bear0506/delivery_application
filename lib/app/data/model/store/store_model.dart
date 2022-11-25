@@ -87,6 +87,8 @@ class StoreResponseModel {
   late List<StoreTabResponseModel> tab = <StoreTabResponseModel>[];
   late bool active;
   late bool favorite;
+  late double score;
+  late int reviewCount;
 
   StoreResponseModel({
     required this.idx,
@@ -100,6 +102,8 @@ class StoreResponseModel {
     required this.tab,
     required this.active,
     required this.favorite,
+    required this.score,
+    required this.reviewCount,
   });
 
   factory StoreResponseModel.fromJson(Map<String, dynamic> data) {
@@ -123,6 +127,13 @@ class StoreResponseModel {
       tab: tabs,
       active: data['active'],
       favorite: data.containsKey('favorite') ? data['favorite'] : false,
+      score: data.containsKey('review')
+          ? (data['review'].length > 0
+              ? data['review'].map((e) => e['score']).reduce((a, b) => a + b) /
+                  data['review'].length
+              : 0.0)
+          : 0.0,
+      reviewCount: data.containsKey('review') ? data['review'].length : 0,
     );
   }
 }

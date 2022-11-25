@@ -596,26 +596,6 @@ class BottomOutlinedButtonWidget extends GetView<OrderController> {
                     height: 200.h,
                     child: OutlinedButton(
                       onPressed: () {
-                        print(Get.put(AddressController())
-                                .currentAddress
-                                .value
-                                .address +
-                            ", " +
-                            Get.put(AddressController())
-                                .currentAddress
-                                .value
-                                .detail);
-
-                        print(Get.put(AddressController())
-                                .currentAddress
-                                .value
-                                .lat +
-                            ", " +
-                            Get.put(AddressController())
-                                .currentAddress
-                                .value
-                                .lng);
-
                         controller.handleOrderExecuteProvider();
                       },
                       style: OutlinedButton.styleFrom(

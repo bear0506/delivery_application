@@ -175,7 +175,7 @@ class StoreInformation extends StatelessWidget {
                     height: 50.h,
                   ),
                   Text(
-                    "4.5(159)",
+                    "${roomController.room.value.storeScore}(${roomController.room.value.storeReviewCount})",
                     style: TextStyle(
                       color: const Color(0xFF333333),
                       fontSize: 50.sp,

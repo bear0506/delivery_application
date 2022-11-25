@@ -38,7 +38,8 @@ class MapController extends GetxController {
 
           currentRoomsMap = RxList.from(roomsMap);
 
-          webViewController.value.runJavascript('''
+          webViewController.value.runJavascript(
+              '''
               var mapMarkers = '${jsonEncode(roomsMap)}';
               mapMarkers = JSON.parse(mapMarkers);
 
@@ -84,13 +85,13 @@ class MapController extends GetxController {
     } else {
       for (var room in roomsMap) {
         if (room["category_idx"].split(",").contains(value.index.toString())) {
-          print(room.toString());
           currentRoomsMap.add(room);
         }
       }
     }
 
-    webViewController.value.runJavascript('''
+    webViewController.value.runJavascript(
+        '''
               for (var i = 0; i < markers.length; i++) {
                   markers[i].setMap(null);
               }
@@ -129,7 +130,8 @@ class MapController extends GetxController {
         mapLng.toString() +
         ")";
 
-    webViewController.value.runJavascript('''
+    webViewController.value
+        .runJavascript('''
         map.setCenter($mapLatLng);
       ''');
   }

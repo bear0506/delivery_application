@@ -33,6 +33,7 @@ class MyPageInfoInitProvider {
       );
 
       if (response.statusCode == 200) {
+        // print(response.data["message"]["favorites"]);
         return MyPageBaseResponseModel.fromJson(response.data);
       } else {
         throw Exception('faild to load request');

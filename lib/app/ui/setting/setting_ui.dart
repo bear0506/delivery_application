@@ -178,7 +178,6 @@ class SettingUi extends GetView<SettingController> {
                                 minorTicksPerInterval: 10,
                                 onChanged: (dynamic value) {
                                   controller.distance.value = value;
-                                  print(controller.distance.value);
                                 },
                               ),
                             ),

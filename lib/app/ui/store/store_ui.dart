@@ -443,7 +443,7 @@ class StoreTitleWidget extends GetView<StoreController> {
                       width: 20.w,
                     ),
                     Text(
-                      "4.5(159)",
+                      "${controller.store.value.score}(${controller.store.value.reviewCount})",
                       style: TextStyle(
                         color: const Color(0xFF333333),
                         fontSize: 50.sp,

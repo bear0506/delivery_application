@@ -13,7 +13,6 @@ class RoomsBaseResponseModel {
     data["message"]["room"]
         .map((e) => rooms.add(RoomResponseModel.fromJson(e)))
         .toList();
-
     data["message"]["room"].map((e) => roomsMap.add(e)).toList();
   }
 }
@@ -46,6 +45,8 @@ class RoomResponseModel {
   late String memName;
   late int storeIdx;
   late String storeName;
+  late double storeScore;
+  late int storeReviewCount;
   late String categoryIdx;
   late String address;
   late String detail;
@@ -64,6 +65,8 @@ class RoomResponseModel {
     required this.memName,
     required this.storeIdx,
     required this.storeName,
+    required this.storeScore,
+    required this.storeReviewCount,
     required this.categoryIdx,
     required this.address,
     required this.detail,
@@ -84,7 +87,17 @@ class RoomResponseModel {
       memName: data.containsKey('mem_name') ? data['mem_name'] : "",
       storeIdx: data['store_idx'],
       storeName: data.containsKey('store_name') ? data['store_name'] : "",
-      categoryIdx: data['category_idx'],
+      storeScore: data.containsKey('store_review')
+          ? (data['store_review'].length > 0
+              ? data['store_review']
+                      .map((e) => e['score'])
+                      .reduce((a, b) => a + b) /
+                  data['store_review'].length
+              : 0.0)
+          : 0.0,
+      storeReviewCount:
+          data.containsKey('store_review') ? data['store_review'].length : 0,
+      categoryIdx: data.containsKey('category_idx') ? data['category_idx'] : "",
       address: data['address'],
       detail: data['detail'] != null ? data['detail'] : "",
       lat: data['lat'],
