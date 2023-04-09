@@ -363,7 +363,6 @@ import 'package:delivery_service/app/ui/mypage/mypage_order_history_ui.dart';
 import 'package:delivery_service/app/binding/mypage/mypage_order_history_binding.dart';
 import 'package:delivery_service/app/ui/mypage/mypage_order_history_detail_ui.dart';
 import 'package:delivery_service/app/ui/mypage/mypage_favorites_ui.dart';
-import 'package:delivery_service/app/binding/mypage/mypage_favoirtes_binding.dart';
 
 import 'package:delivery_service/app/ui/review/review_ui.dart';
 import 'package:delivery_service/app/ui/review/review_write_ui.dart';
@@ -491,7 +490,7 @@ class Pages {
       title: "마이페이지 -> 즐겨찾기 화면",
       name: Routes.mypageFavoritesAll,
       page: () => const MyPageFavoritesUi(),
-      binding: MyPageFavoritesBinding(),
+      binding: MyPageBinding(),
     ),
     GetPage(
       title: "공지사항",

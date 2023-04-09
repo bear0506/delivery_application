@@ -8,11 +8,11 @@ import 'package:delivery_service/app/binding/splash/splash_binding.dart';
 import 'app/routes/pages.dart';
 
 // const SERVER_IP = 'https://zipting.com/api/v1/app';
-// const SERVER_IP = 'http://52.68.218.9:8000/v1/app';
+const SERVER_IP = 'http://13.112.147.236:8000/v1/app';
 // ignore: constant_identifier_names
 
-// AOS
-const SERVER_IP = 'http://10.0.2.2:8000/v1/app';
+// // AOS
+// const SERVER_IP = 'http://10.0.2.2:8000/v1/app';
 // // IOS
 // const SERVER_IP = 'http://127.0.0.1:8000/v1/app';
 

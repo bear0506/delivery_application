@@ -650,8 +650,12 @@ class MapModalWidget extends GetView<HomeController> {
                       height: 300.h,
                       width: 300.w,
                       child: Image.asset(
-                        // roomInfo['img'],
-                        "assets/icons/c.png",
+                        // "assets/icons/c.png",
+                        controller.currentRoom.value.storeIdx == 1
+                            ? "assets/icons/c.png"
+                            : (controller.currentRoom.value.storeIdx == 2
+                                ? "assets/icons/happyhouse.jpg"
+                                : "assets/icons/dd.jpg"),
                         fit: BoxFit.contain,
                       ),
                     ),

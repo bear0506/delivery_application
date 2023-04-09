@@ -943,7 +943,10 @@ class RoomCard extends StatelessWidget {
                 ),
                 child: Image.asset(
                   // roomInfo['img'],
-                  "assets/icons/noze.png",
+                  // "assets/icons/noze.png",
+                  roomInfo.memIdx == 1
+                      ? "assets/icons/noze.png"
+                      : "assets/icons/min.png",
                   fit: BoxFit.contain,
                 ),
               ),
@@ -1184,7 +1187,8 @@ class MenutItem extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(5),
                   child: Image.asset(
-                    "assets/icons/ch.png",
+                    // "assets/icons/ch.png",
+                    menu.image,
                     width: 300.w,
                     height: 300.h,
                     fit: BoxFit.cover,

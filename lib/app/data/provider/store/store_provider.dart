@@ -73,6 +73,7 @@ class StoreInitProvider {
       );
 
       if (response.statusCode == 200) {
+        print(response.data);
         return StoreBaseResponseModel.fromJson(response.data);
       } else {
         throw Exception('faild to load request');

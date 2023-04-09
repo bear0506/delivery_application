@@ -253,8 +253,12 @@ class RoomCardWidget extends GetView<RoomController> {
               height: 300.h,
               width: 300.w,
               child: Image.asset(
-                // roomInfo['img'],
-                "assets/icons/c.png",
+                // "assets/icons/c.png",
+                roomInfo.storeIdx == 1
+                    ? "assets/icons/c.png"
+                    : (roomInfo.storeIdx == 2
+                        ? "assets/icons/happyhouse.jpg"
+                        : "assets/icons/dd.jpg"),
                 fit: BoxFit.contain,
               ),
             ),

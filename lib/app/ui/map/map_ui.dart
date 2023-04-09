@@ -1,12 +1,10 @@
 import 'package:delivery_service/app/controller/home/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'dart:convert';
 
 import 'package:kakaomap_webview/kakaomap_webview.dart';
 
 import 'package:delivery_service/app/controller/map/map_controller.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 // const String kakaoMapKey = 'f764cf6bd69b199f8d3676d70ae1f777';
 
@@ -30,7 +28,8 @@ class MapUi extends GetView<MapController> {
         showZoomControl: false,
         markerImageURL:
             'https://t1.daumcdn.net/localimg/localimages/07/2012/img/marker_p.png',
-        customScript: '''
+        customScript:
+            '''
                     var markers = [];
 
                     kakao.maps.event.addListener(map, 'click', function() {

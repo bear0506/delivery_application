@@ -263,11 +263,17 @@ class StoreController extends GetxController with GetTickerProviderStateMixin {
 
     storeIdx = Get.parameters["storeIdx"].obs;
 
+    print("1111");
+    print(storeIdx);
+    print("1111");
+
     try {
       await StoreInitProvider()
           .dio(idx: int.parse(storeIdx.value))
           .then((value) {
         if (value.status == "success") {
+          print("2222");
+
           store.value = value.stores[0];
           store.refresh();
 
@@ -485,7 +491,9 @@ class StoreController extends GetxController with GetTickerProviderStateMixin {
               name: menu.name,
               info: menu.info,
               price: menu.price.toDouble(),
-              image: "asssets/icons/ch.png",
+              image: j < 14
+                  ? "assets/icons/bbq/${j + 1}.png"
+                  : "asssets/icons/ch.png",
               isLast: j == storeTab.menu.length - 1 ? true : false,
             ),
           ),

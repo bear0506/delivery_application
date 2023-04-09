@@ -73,7 +73,12 @@ class RoomHorizontalListUi extends GetView<RoomController> {
                               Container(
                                 decoration: BoxDecoration(
                                   image: DecorationImage(
-                                    image: AssetImage("assets/icons/c.png"),
+                                    // image: AssetImage("assets/icons/c.png"),
+                                    image: AssetImage(data.storeIdx == 1
+                                        ? "assets/icons/c.png"
+                                        : (data.storeIdx == 2
+                                            ? "assets/icons/happyhouse.jpg"
+                                            : "assets/icons/dd.jpg")),
                                     fit: BoxFit.cover,
                                   ),
                                   borderRadius: const BorderRadius.all(

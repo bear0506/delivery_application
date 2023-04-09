@@ -18,6 +18,8 @@ class StoreMenuDetailUi extends GetView<StoreController> {
 
   @override
   Widget build(BuildContext context) {
+    print(storeController.currentMenu.value.idx);
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: NestedScrollView(
@@ -69,9 +71,16 @@ class StoreMenuDetailUi extends GetView<StoreController> {
                 ),
                 flexibleSpace: FlexibleSpaceBar(
                   background: Container(
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       image: DecorationImage(
-                        image: AssetImage("assets/icons/ch.png"),
+                        // image: AssetImage("assets/icons/ch.png"),
+                        image: AssetImage(storeController
+                                    .currentMenu.value.idx !=
+                                0
+                            ? (storeController.currentMenu.value.idx < 14
+                                ? "assets/icons/bbq/${storeController.currentMenu.value.idx % 14}.png"
+                                : "assets/icons/ch.png")
+                            : "assets/icons/ch.png"),
                         fit: BoxFit.cover,
                       ),
                     ),

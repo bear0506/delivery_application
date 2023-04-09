@@ -23,7 +23,7 @@ class MapController extends GetxController {
     // handleRoomAllProvider();
   }
 
-  RxString kakaoMapKey = 'f764cf6bd69b199f8d3676d70ae1f777'.obs;
+  RxString kakaoMapKey = '6834c3db49a607e65d7d6b307a850ce2'.obs;
 
   RxDouble mapLat = 37.560202.obs;
   RxDouble mapLng = 126.993718.obs;
